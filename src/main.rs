@@ -2,18 +2,24 @@ mod friend;
 mod food;
 mod shapes;
 mod utils;
+mod game_state;
 
 use macroquad::prelude::*;
-use crate::shapes::CreatureShapes;
+use crate::game_state::GameState;
+
 
 #[macroquad::main(main_window_conf)]
 async fn main() {
+    let game_state = GameState::from_file("./save-file.txt")
+        .await
+        .unwrap_or(GameState::new("temp"));
+
     loop {
         clear_background(WHITE);
 
-        draw_text("Hello, Macroquad!", 100.0, 100.0, 14.0, DARKGRAY);
+        draw_text(game_state.friend().name(), 100.0, 100.0, 14.0, DARKGRAY);
 
-        let test = CreatureShapes::Squid.get_texture();
+        let test = game_state.friend().shape().get_texture();
 
         draw_texture(&test, 10.0, 10.0, BLACK);
 

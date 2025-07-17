@@ -226,6 +226,10 @@ impl Friend {
     }
 
     pub fn time_created(&self) -> i64 { self.time_created }
+    
+    pub fn shape(&self) -> &CreatureShapes {
+        &self.shape
+    }
 }
 
 
