@@ -8,8 +8,6 @@ use crate::shapes::CreatureShapes;
 
 #[macroquad::main(main_window_conf)]
 async fn main() {
-    request_new_screen_size(250.0, 250.0);
-
     loop {
         clear_background(WHITE);
 
@@ -26,9 +24,8 @@ async fn main() {
 fn main_window_conf() -> Conf {
     Conf {
         window_title: "minigotchi".to_string(),
-        window_width: 250,
-        window_height: 250,
-        fullscreen: false,
+        window_width: 200,
+        window_height: 200,
         window_resizable: false,
         ..Default::default()
     }
