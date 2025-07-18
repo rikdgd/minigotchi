@@ -3,9 +3,11 @@ mod food;
 mod shapes;
 mod utils;
 mod game_state;
+mod ui;
 
 use macroquad::prelude::*;
 use crate::game_state::GameState;
+use crate::ui::button::Button;
 
 
 #[macroquad::main(main_window_conf)]
@@ -14,14 +16,25 @@ async fn main() {
         .await
         .unwrap_or(GameState::new("temp"));
 
+    let buttons = vec![
+        Button { pos: Vec2::new(0.0, 180.0), ..Default::default() },
+        Button { pos: Vec2::new(50.0, 180.0), ..Default::default() },
+        Button { pos: Vec2::new(100.0, 180.0), ..Default::default() },
+        Button { pos: Vec2::new(150.0, 180.0), ..Default::default() },
+    ];
+
     loop {
-        clear_background(WHITE);
+        let delta_time = get_frame_time();
+        let mouse_pos = mouse_position();
 
-        draw_text(game_state.friend().name(), 100.0, 100.0, 14.0, DARKGRAY);
+        clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
-        let test = game_state.friend().shape().get_texture();
+        let friend_texture = game_state.friend().shape().get_texture();
+        draw_texture(&friend_texture, 10.0, 10.0, BLACK);
 
-        draw_texture(&test, 10.0, 10.0, BLACK);
+        for button in &buttons {
+            button.render(mouse_position().into());
+        }
 
         next_frame().await;
     }
