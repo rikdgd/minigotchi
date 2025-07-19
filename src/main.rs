@@ -34,19 +34,17 @@ async fn render_game(state: GameState) {
 
 
     loop {
-
-        let delta_time = get_frame_time();
         let mouse_pos = mouse_position();
-
+        
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
-
+        
         let friend_texture = state.friend().shape().get_texture();
         draw_texture(&friend_texture, 10.0, 10.0, BLACK);
-
+        
         for button in &buttons {
             button.render(mouse_pos.into());
         }
-
+        
         next_frame().await;
     }
 }
