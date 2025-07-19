@@ -38,7 +38,7 @@ impl Button {
         );
     }
 
-    fn collision_rect(&self) -> Rect {
+    pub fn collision_rect(&self) -> Rect {
         Rect::new(self.pos.x, self.pos.y, self.size.x, self.size.y)
     }
 }

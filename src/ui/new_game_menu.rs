@@ -16,8 +16,11 @@ pub async fn render_new_game_menu() -> GameState {
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
         confirm_btn.render(mouse_pos.into());
+        let col_rect = confirm_btn.collision_rect();
         
-        // TODO: on button click, break loop
+        if col_rect.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left) {
+            break;
+        }
 
         next_frame().await;
     }

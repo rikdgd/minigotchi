@@ -18,8 +18,13 @@ pub const SCREEN_HEIGHT: i32 = 200;
 async fn main() {
     let game_state = GameState::from_file("./save-file.txt")
         .await
-        .unwrap_or(GameState::new("temp"));
+        .unwrap_or(render_new_game_menu().await);
 
+
+    render_game(game_state).await;
+}
+
+async fn render_game(state: GameState) {
     let buttons = vec![
         Button { pos: Vec2::new(0.0, 180.0), ..Default::default() },
         Button { pos: Vec2::new(50.0, 180.0), ..Default::default() },
@@ -27,15 +32,15 @@ async fn main() {
         Button { pos: Vec2::new(150.0, 180.0), ..Default::default() },
     ];
 
+
     loop {
-        // render_new_game_menu().await;
 
         let delta_time = get_frame_time();
         let mouse_pos = mouse_position();
 
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
-        let friend_texture = game_state.friend().shape().get_texture();
+        let friend_texture = state.friend().shape().get_texture();
         draw_texture(&friend_texture, 10.0, 10.0, BLACK);
 
         for button in &buttons {
