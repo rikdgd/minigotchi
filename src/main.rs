@@ -8,6 +8,10 @@ mod ui;
 use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::ui::button::Button;
+use ui::render_new_game_menu;
+
+pub const SCREEN_WIDTH: i32 = 200;
+pub const SCREEN_HEIGHT: i32 = 200;
 
 
 #[macroquad::main(main_window_conf)]
@@ -24,6 +28,8 @@ async fn main() {
     ];
 
     loop {
+        // render_new_game_menu().await;
+
         let delta_time = get_frame_time();
         let mouse_pos = mouse_position();
 
@@ -33,7 +39,7 @@ async fn main() {
         draw_texture(&friend_texture, 10.0, 10.0, BLACK);
 
         for button in &buttons {
-            button.render(mouse_position().into());
+            button.render(mouse_pos.into());
         }
 
         next_frame().await;
@@ -43,8 +49,8 @@ async fn main() {
 fn main_window_conf() -> Conf {
     Conf {
         window_title: "minigotchi".to_string(),
-        window_width: 200,
-        window_height: 200,
+        window_width: SCREEN_WIDTH,
+        window_height: SCREEN_HEIGHT,
         window_resizable: false,
         ..Default::default()
     }

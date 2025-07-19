@@ -12,10 +12,10 @@ pub struct GameState {
 impl GameState {
     pub fn new(creature_name: &str) -> Self {
         let creature = Friend::new(creature_name, CreatureShapes::Squid);
-        
+
         Self {
             friend: creature,
-            last_update_time: chrono::Utc::now().timestamp(),
+            last_update_time: chrono::Utc::now().timestamp_millis(),
         }
     }
     
