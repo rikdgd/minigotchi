@@ -4,13 +4,12 @@ mod shapes;
 mod utils;
 mod game_state;
 mod ui;
+mod save_management;
 
-use std::fs::OpenOptions;
-use std::io::Write;
-use std::path::PathBuf;
 use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::ui::button::Button;
+use save_management::get_save_file_path;
 use ui::render_new_game_menu;
 
 pub const SCREEN_WIDTH: i32 = 200;
@@ -56,8 +55,6 @@ async fn render_game(state: GameState) {
 
         next_frame().await;
     }
-
-    store_game_state(state).unwrap();
 }
 
 fn main_window_conf() -> Conf {
@@ -70,28 +67,3 @@ fn main_window_conf() -> Conf {
     }
 }
 
-fn store_game_state(state: GameState) -> std::io::Result<()> {
-    let file_path = get_save_file_path();
-
-    let game_state = serde_json::to_string_pretty(&state)?;
-
-    let mut file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .create(true)
-        .open(file_path)?;
-
-
-    file.write_all(game_state.as_bytes())?;
-    file.flush()?;
-
-    Ok(())
-}
-
-fn get_save_file_path() -> String {
-    let exe_path = std::env::current_exe().unwrap();
-    let exe_dir = exe_path.parent().expect("Executable must be in some directory");
-    let data_file_path: PathBuf = exe_dir.join("save-file.txt");
-
-    data_file_path.to_str().unwrap().to_string()
-}

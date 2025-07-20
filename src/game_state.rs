@@ -2,6 +2,7 @@ use macroquad::file::load_file;
 use serde::{Serialize, Deserialize};
 use crate::friend::Friend;
 use crate::shapes::CreatureShapes;
+use crate::save_management::store_game_state;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameState {
@@ -37,5 +38,11 @@ impl GameState {
     
     pub fn friend(&self) -> &Friend {
         &self.friend
+    }
+}
+
+impl Drop for GameState {
+    fn drop(&mut self) {
+        store_game_state(&self).expect("Failed to save the game to disk");
     }
 }
