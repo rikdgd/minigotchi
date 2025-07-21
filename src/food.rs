@@ -1,4 +1,4 @@
-use rand::prelude::*;
+use macroquad::prelude::*;
 
 const FOOD_COUNT: u8 = 3;
 
@@ -19,8 +19,7 @@ impl Food {
     }
 
     pub fn new_random() -> Self {
-        let mut rng = rand::rng();
-        match rng.random_range(0..FOOD_COUNT) {
+        match rand::gen_range(0, FOOD_COUNT) {
             0 => Food::Soup,
             1 => Food::Cookie,
             _ => Food::Burger,

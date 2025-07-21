@@ -18,6 +18,9 @@ pub const SCREEN_HEIGHT: i32 = 200;
 
 #[macroquad::main(main_window_conf)]
 async fn main() {
+    // Seed the random number generator
+    rand::srand(miniquad::date::now() as u64);
+    
     let save_file_path = get_save_file_path();
 
     let game_state = match GameState::from_file(&save_file_path).await {
