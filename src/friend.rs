@@ -212,6 +212,22 @@ impl Friend {
             self.health.add(40);
         }
     }
+    
+    pub fn food(&self) -> Stat {
+        self.food
+    }
+
+    pub fn joy(&self) -> Stat {
+        self.joy
+    }
+
+    pub fn energy(&self) -> Stat {
+        self.energy
+    }
+
+    pub fn health(&self) -> Stat {
+        self.health
+    }
 
     pub fn is_asleep(&self) -> bool {
         self.asleep
