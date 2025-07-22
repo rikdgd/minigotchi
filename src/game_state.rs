@@ -12,7 +12,7 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(creature_name: &str) -> Self {
-        let creature = Friend::new(creature_name, CreatureShapes::Squid);
+        let creature = Friend::new(creature_name, CreatureShapes::new_random());
 
         Self {
             friend: creature,

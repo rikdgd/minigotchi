@@ -32,7 +32,7 @@ async fn main() {
     render_game(game_state).await;
 }
 
-async fn render_game(state: GameState) {
+async fn render_game(mut state: GameState) {
     let buttons = vec![
         Button { pos: Vec2::new(0.0, 180.0), ..Default::default() },
         Button { pos: Vec2::new(50.0, 180.0), ..Default::default() },
@@ -42,11 +42,12 @@ async fn render_game(state: GameState) {
 
 
     loop {
+        state.update();
         let mouse_pos = mouse_position();
 
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
-        let friend_texture = state.friend().shape().get_texture();
+        let friend_texture = state.friend().shape();
         draw_texture(&friend_texture, 10.0, 10.0, BLACK);
 
         for button in &buttons {

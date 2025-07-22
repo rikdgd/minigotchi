@@ -1,3 +1,5 @@
+use macroquad::prelude::*;
+use macroquad::rand::gen_range;
 use macroquad::texture::Texture2D;
 use serde::{Serialize, Deserialize};
 
@@ -24,4 +26,23 @@ impl CreatureShapes {
             CreatureShapes::Squid => Texture2D::from_file_with_format(include_bytes!("../resources/squid.png"), None),
         }
     }
+    
+    pub fn new_random() -> Self {
+        match gen_range(0, NUM_SHAPES) {
+            0 => Self::Turtle,
+            1 => Self::Snail,
+            2 => Self::Fish,
+            3 => Self::Mouse,
+            4 => Self::Frog,
+            _ => Self::Squid,
+        }
+    }
+}
+
+pub fn egg_shape() -> Texture2D {
+    Texture2D::from_file_with_format(include_bytes!("../resources/egg.png"), None)
+}
+
+pub fn baby_shape() -> Texture2D {
+    Texture2D::from_file_with_format(include_bytes!("../resources/baby.png"), None)
 }
