@@ -11,6 +11,7 @@ use crate::game_state::GameState;
 use crate::ui::button::Button;
 use save_management::get_save_file_path;
 use ui::render_new_game_menu;
+use crate::ui::stat_display::stat_display;
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -55,6 +56,8 @@ async fn render_game(state: GameState) {
         if is_key_pressed(KeyCode::Escape) {
             break;
         }
+        
+        stat_display(state.friend());
 
         next_frame().await;
     }
@@ -62,7 +65,7 @@ async fn render_game(state: GameState) {
 
 fn main_window_conf() -> Conf {
     Conf {
-        window_title: "minigotchi".to_string(),
+        window_title: String::from("minigotchi"),
         window_width: SCREEN_WIDTH,
         window_height: SCREEN_HEIGHT,
         window_resizable: false,
