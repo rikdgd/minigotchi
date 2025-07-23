@@ -39,6 +39,10 @@ impl GameState {
     pub fn friend(&self) -> &Friend {
         &self.friend
     }
+    
+    pub fn friend_mut(&mut self) -> &mut Friend {
+        &mut self.friend
+    }
 }
 
 impl Drop for GameState {

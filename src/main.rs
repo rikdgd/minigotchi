@@ -8,10 +8,11 @@ mod save_management;
 
 use macroquad::prelude::*;
 use crate::game_state::GameState;
-use crate::ui::button::Button;
 use save_management::get_save_file_path;
 use ui::render_new_game_menu;
 use crate::ui::stat_display::stat_display;
+use ui::interaction_buttons::InteractionButton;
+use crate::food::Food;
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -33,17 +34,12 @@ async fn main() {
 }
 
 async fn render_game(mut state: GameState) {
-    let buttons = vec![
-        Button { pos: Vec2::new(0.0, 180.0), ..Default::default() },
-        Button { pos: Vec2::new(50.0, 180.0), ..Default::default() },
-        Button { pos: Vec2::new(100.0, 180.0), ..Default::default() },
-        Button { pos: Vec2::new(150.0, 180.0), ..Default::default() },
-    ];
-
+    let buttons = InteractionButton::main_menu_buttons();
 
     loop {
         state.update();
         let mouse_pos = mouse_position();
+        handle_button_click(&buttons, &mut state, mouse_pos.into());
 
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
@@ -51,7 +47,7 @@ async fn render_game(mut state: GameState) {
         draw_texture(&friend_texture, 10.0, 10.0, BLACK);
 
         for button in &buttons {
-            button.render(mouse_pos.into());
+            button.get_button().render(mouse_pos.into());
         }
 
         if is_key_pressed(KeyCode::Escape) {
@@ -74,3 +70,16 @@ fn main_window_conf() -> Conf {
     }
 }
 
+fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState, mouse_pos: Vec2) {
+    for button in buttons {
+        let button_area = button.get_button().collision_rect();
+        if button_area.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left) {
+            match button {
+                InteractionButton::Food(_) => game_state.friend_mut().eat(Food::new_random()),
+                InteractionButton::Joy(_) => game_state.friend_mut().play(),
+                InteractionButton::Energy(_) => game_state.friend_mut().toggle_sleep(),
+                InteractionButton::Health(_) => game_state.friend_mut().take_medicine(),
+            }
+        }
+    }
+}
