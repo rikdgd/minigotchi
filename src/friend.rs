@@ -7,7 +7,7 @@ use crate::utils::Stat;
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
     Egg,
     Baby,
@@ -91,7 +91,7 @@ impl Friend {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
         while now - self.last_time_lower_food >= food_offset_minutes {
-            self.food.add(1);
+            self.food.subtract(1);
             self.last_time_lower_food += food_offset_minutes;
         }
 
@@ -299,7 +299,7 @@ mod tests {
         friend.health = Stat::new(100).unwrap();
         friend.toggle_sleep();
 
-        friend.update_state(now + 10 * max_sleep_time); // Make sure the termagotchi energy is at zero.
+        friend.update_state(now + 10 * max_sleep_time); // Make sure the creature's energy is at zero.
 
         assert!(!friend.asleep);
         assert_eq!(None, friend.asleep_since);
