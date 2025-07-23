@@ -249,7 +249,7 @@ impl Friend {
             GrowthStage::Egg => egg_shape(),
             GrowthStage::Baby => baby_shape(),
             GrowthStage::Kid => baby_shape(),
-            GrowthStage::Adult => self.shape()
+            GrowthStage::Adult => self.shape.get_texture()
         }
     }
 }
