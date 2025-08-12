@@ -1,4 +1,5 @@
 mod egg_hop;
+mod zig_zag;
 
 pub use egg_hop::EggHop;
 
