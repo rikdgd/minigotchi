@@ -22,6 +22,28 @@ impl ZigZag {
         self.base_location = location;
         self
     }
+    
+    /// Updates the state of the movement to its next position. It doesn't account for the amount 
+    /// of time that has passed.
+    fn update_state(&mut self) {
+        match self.x_toggle {
+            true => self.x_shift += 1.0,
+            false => self.x_shift -= 1.0,
+        }
+        
+        match self.y_toggle {
+            true => self.y_shift += 1.0,
+            false => self.y_shift -= 1.0,
+        }
+        
+        if self.x_shift.abs() >= 10.0 {
+            self.x_toggle = !self.x_toggle;
+        }
+        
+        if self.y_shift.abs() >= 2.0 {
+            self.y_toggle = !self.y_toggle;
+        }
+    }
 }
 
 impl Default for ZigZag {
@@ -48,11 +70,14 @@ impl Default for ZigZag {
 impl CreatureMovement for ZigZag {
     fn next_position(&mut self) -> Option<Location> {
         self.timer += get_frame_time();
-        if self.timer > 1.0 {
-            // TODO: update state
+        if self.timer > 0.25 {
+            self.update_state();
             self.timer = 0.0;
         }
         
-        todo!()
+        Some(Location {
+            x: self.base_location.x + self.x_shift,
+            y: self.base_location.y + self.y_shift,
+        })
     }
 }

@@ -2,6 +2,7 @@ mod egg_hop;
 mod zig_zag;
 
 pub use egg_hop::EggHop;
+pub use zig_zag::ZigZag;
 
 use crate::utils::Location;
 

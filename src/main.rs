@@ -14,7 +14,7 @@ use ui::render_new_game_menu;
 use crate::ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use crate::food::Food;
-use crate::movements::{CreatureMovement, EggHop};
+use crate::movements::{CreatureMovement, EggHop, ZigZag};
 use crate::utils::Location;
 
 pub const SCREEN_WIDTH: i32 = 200;
@@ -38,7 +38,7 @@ async fn main() {
 
 async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
-    let mut egg_hop_movement = EggHop::new(Location { x: 75.0, y: 50.0 });
+    let mut egg_hop_movement = ZigZag::default().base_location(Location { x: 75.0, y: 50.0 });
 
     loop {
         state.update();
