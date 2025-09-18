@@ -129,11 +129,10 @@ impl Friend {
             return;
         }
 
-        if let Some(start_sleeping) = self.asleep_since {
-            if now - start_sleeping > MINUTE_MILLIS * 60 * 12 {
+        if let Some(start_sleeping) = self.asleep_since &&
+            now - start_sleeping > MINUTE_MILLIS * 60 * 12 {
                 self.asleep = false;
                 self.asleep_since = None;
-            }
         }
     }
 
@@ -166,10 +165,9 @@ impl Friend {
             GrowthStage::Adult => None,
         };
 
-        if let Some(growth_delay) = growth_delay {
-            if now - self.time_created > growth_delay {
+        if let Some(growth_delay) = growth_delay &&
+            now - self.time_created > growth_delay {
                 self.growth_stage.next_stage();
-            }
         }
     }
 

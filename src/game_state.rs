@@ -47,6 +47,6 @@ impl GameState {
 
 impl Drop for GameState {
     fn drop(&mut self) {
-        store_game_state(&self).expect("Failed to save the game to disk");
+        store_game_state(self).expect("Failed to save the game to disk");
     }
 }

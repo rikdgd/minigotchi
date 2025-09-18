@@ -14,7 +14,7 @@ use ui::render_new_game_menu;
 use crate::ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use crate::food::Food;
-use crate::movements::{CreatureMovement, EggHop, ZigZag};
+use crate::movements::get_creature_movement;
 use crate::utils::Location;
 
 pub const SCREEN_WIDTH: i32 = 200;
@@ -38,7 +38,10 @@ async fn main() {
 
 async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
-    let mut egg_hop_movement = ZigZag::default().base_location(Location { x: 75.0, y: 50.0 });
+    let mut creature_movement = get_creature_movement(
+        state.friend(),
+        Location { x: 75.0, y: 50.0 }
+    );
 
     loop {
         state.update();
@@ -48,7 +51,7 @@ async fn render_game(mut state: GameState) {
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
         let friend_texture = state.friend().shape();
-        let friend_location = egg_hop_movement.next_position().unwrap();
+        let friend_location = creature_movement.next_position().unwrap();
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
         
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);
@@ -80,7 +83,7 @@ fn main_window_conf() -> Conf {
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState, mouse_pos: Vec2) {
     for button in buttons {
         let button_area = button.get_button().collision_rect();
-        if button_area.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left) {
+        if button_area.contains(mouse_pos) && is_mouse_button_pressed(MouseButton::Left) {
             match button {
                 InteractionButton::Food(_) => game_state.friend_mut().eat(Food::new_random()),
                 InteractionButton::Joy(_) => game_state.friend_mut().play(),
