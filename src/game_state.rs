@@ -22,7 +22,7 @@ impl GameState {
     
     pub async fn from_file(path: &str) -> Result<Self, macroquad::Error> {
         let file_bytes = load_file(path).await?;
-        let content_string = String::from_utf8_lossy(&file_bytes).into_owned();
+        let content_string = String::from_utf8_lossy(&file_bytes);
 
         let state: Self = serde_json::from_str(&content_string)
             .expect("Failed to deserialize GameState from savefile");
