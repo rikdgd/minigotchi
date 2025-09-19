@@ -5,6 +5,7 @@ use crate::utils::Location;
 const SHAPE_DIMENSION: f32 = 25.0;
 const STEP_SIZE: f32 = 1.0;
 
+/// A `CreatureMovement` that makes the creature bounce around in a "box" like the dvd logo.
 pub struct DvdBounce {
     timer: f32,
     creature_location: Location,
@@ -23,6 +24,7 @@ impl DvdBounce {
         }
     }
 
+    /// Updates the movement toggles when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
         if self.creature_location.y >= 100.0 - SHAPE_DIMENSION ||
             self.creature_location.y <= 0.0
@@ -37,6 +39,8 @@ impl DvdBounce {
         }
     }
 
+    /// Updates the state of the movement, this does **not** keep track of the amount of time
+    /// passed since the previous update.
     fn update_state(&mut self) {
         self.update_toggles();
 

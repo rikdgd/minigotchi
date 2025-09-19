@@ -40,7 +40,7 @@ async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
     let mut creature_movement = get_creature_movement(
         state.friend(),
-        Location { x: 75.0, y: 50.0 }
+        Location { x: 100.0, y: 50.0 }
     );
 
     loop {
