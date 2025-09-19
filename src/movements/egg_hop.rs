@@ -19,7 +19,7 @@ impl EggHop {
 }
 
 impl CreatureMovement for EggHop {
-    fn next_position(&mut self) -> Option<Location> {
+    fn next_position(&mut self) -> Location {
         // Update the animation timer
         self.timer += get_frame_time();
         if self.timer > 1.0 {
@@ -28,8 +28,8 @@ impl CreatureMovement for EggHop {
         }
         
         match self.is_grounded {
-            true => Some(self.base_location),
-            false => Some(self.base_location.translate(0.0, 5.0)),
+            true => self.base_location,
+            false => self.base_location.translate(0.0, 5.0),
         }
     }
 }

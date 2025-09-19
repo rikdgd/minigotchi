@@ -3,8 +3,8 @@ use crate::utils::Location;
 use macroquad::time::get_frame_time;
 
 /// This is the sprite size for the sprite used in the `ZigZag` movement, which is 
-/// 15x15 pixels.
-const SPRITE_SIZE: f32 = 15.0;
+/// 25x25 pixels.
+const SPRITE_SIZE: f32 = 25.0;
 
 /// The movement that should be displayed when the creature is in the **"Kid"** growth
 /// stage.
@@ -68,16 +68,16 @@ impl Default for ZigZag {
 }
 
 impl CreatureMovement for ZigZag {
-    fn next_position(&mut self) -> Option<Location> {
+    fn next_position(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer > 0.25 {
             self.update_state();
             self.timer = 0.0;
         }
         
-        Some(Location {
+        Location {
             x: self.base_location.x + self.x_shift,
             y: self.base_location.y + self.y_shift,
-        })
+        }
     }
 }
