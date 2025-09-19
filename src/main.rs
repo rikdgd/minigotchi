@@ -40,7 +40,7 @@ async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
     let mut creature_movement = get_creature_movement(
         state.friend(),
-        Location { x: 75.0, y: 50.0 }
+        Location { x: 100.0, y: 50.0 }
     );
 
     loop {
@@ -51,7 +51,7 @@ async fn render_game(mut state: GameState) {
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
         let friend_texture = state.friend().shape();
-        let friend_location = creature_movement.next_position().unwrap();
+        let friend_location = creature_movement.next_position();
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
         
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);

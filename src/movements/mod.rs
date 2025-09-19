@@ -1,15 +1,17 @@
 mod egg_hop;
 mod zig_zag;
+mod dvd_bounce;
 
 pub use egg_hop::EggHop;
 pub use zig_zag::ZigZag;
+pub use dvd_bounce::DvdBounce;
 use crate::friend::{Friend, GrowthStage};
 use crate::utils::Location;
 
 /// Represents a movement the creature can make on the screen, for example as an idle animation.
 pub trait CreatureMovement {
-    /// Returns the next `Location` of the animation. If the animation has ended, it should return `None`.
-    fn next_position(&mut self) -> Option<Location>;
+    /// Returns the next `Location` of the animation.
+    fn next_position(&mut self) -> Location;
 }
 
 /// Returns the movement/animation the creature should have on screen when idle, depending on its growth stage.
@@ -23,6 +25,7 @@ pub trait CreatureMovement {
 pub fn get_creature_movement(creature: &Friend, base_location: Location) -> Box<dyn CreatureMovement> {
     match creature.growth_stage() {
         GrowthStage::Egg => Box::new(EggHop::new(base_location)),
+        GrowthStage::Adult => Box::new(DvdBounce::new()),
         _ => Box::new(ZigZag::default().base_location(base_location)),
     }
 }

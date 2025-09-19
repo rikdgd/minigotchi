@@ -2,6 +2,8 @@ use macroquad::time::get_frame_time;
 use crate::movements::CreatureMovement;
 use crate::utils::Location;
 
+const SPRITE_DIMENSION: f32 = 10.0;
+
 pub struct EggHop {
     base_location: Location,
     is_grounded: bool,
@@ -11,7 +13,7 @@ pub struct EggHop {
 impl EggHop {
     pub fn new(base_location: Location) -> Self {
         Self {
-            base_location,
+            base_location: base_location.translate(-SPRITE_DIMENSION, -SPRITE_DIMENSION),
             is_grounded: true,
             timer: 0.0,
         }
@@ -19,7 +21,7 @@ impl EggHop {
 }
 
 impl CreatureMovement for EggHop {
-    fn next_position(&mut self) -> Option<Location> {
+    fn next_position(&mut self) -> Location {
         // Update the animation timer
         self.timer += get_frame_time();
         if self.timer > 1.0 {
@@ -28,8 +30,8 @@ impl CreatureMovement for EggHop {
         }
         
         match self.is_grounded {
-            true => Some(self.base_location),
-            false => Some(self.base_location.translate(0.0, 5.0)),
+            true => self.base_location,
+            false => self.base_location.translate(0.0, 5.0),
         }
     }
 }
