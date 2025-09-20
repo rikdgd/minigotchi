@@ -53,7 +53,7 @@ async fn render_game(mut state: GameState) {
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
         
         // Draw the playing area the creature walks around in
-        draw_play_area(state.friend().is_asleep());
+        draw_play_area(state.friend());
         
         // Draw the creature at the correct location:
         let friend_texture = state.friend().shape();
