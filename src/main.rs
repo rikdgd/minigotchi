@@ -14,7 +14,7 @@ use ui::render_new_game_menu;
 use crate::ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use crate::food::Food;
-use crate::movements::get_creature_movement;
+use crate::movements::{get_creature_movement, get_sleeping_location};
 use crate::utils::Location;
 
 pub const SCREEN_WIDTH: i32 = 200;
@@ -50,8 +50,13 @@ async fn render_game(mut state: GameState) {
 
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
 
+        // Draw the creature at the correct location:
         let friend_texture = state.friend().shape();
-        let friend_location = creature_movement.next_position();
+        let friend_location = if state.friend().is_asleep() {
+            get_sleeping_location(state.friend())
+        } else {
+            creature_movement.next_position()
+        };
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
         
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);

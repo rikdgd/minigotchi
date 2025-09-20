@@ -20,7 +20,10 @@ pub struct ZigZag {
 impl ZigZag {
     /// Updates the base location, while keeping account for the sprite's size.
     pub fn base_location(mut self, location: Location) -> Self {
-        self.base_location = location.translate(-SPRITE_SIZE, -SPRITE_SIZE);
+        self.base_location = location.translate(
+            (-SPRITE_SIZE / 2.0).round(),
+            (-SPRITE_SIZE / 2.0).round(),
+        );
         self
     }
     

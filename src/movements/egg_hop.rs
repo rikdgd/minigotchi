@@ -13,7 +13,10 @@ pub struct EggHop {
 impl EggHop {
     pub fn new(base_location: Location) -> Self {
         Self {
-            base_location: base_location.translate(-SPRITE_DIMENSION, -SPRITE_DIMENSION),
+            base_location: base_location.translate(
+                (-SPRITE_DIMENSION / 2.0).round(),
+                (-SPRITE_DIMENSION / 2.0).round(),
+            ),
             is_grounded: true,
             timer: 0.0,
         }
