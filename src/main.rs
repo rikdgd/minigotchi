@@ -18,6 +18,7 @@ use movements::{get_creature_movement, get_sleeping_location};
 use utils::Location;
 use ui::play_area::draw_play_area;
 use shapes::sleeping_icon;
+use crate::movements::{CreatureMovement, EggHop};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -44,6 +45,7 @@ async fn render_game(mut state: GameState) {
         state.friend(),
         Location { x: 100.0, y: 50.0 }
     );
+    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.friend()).translate(-8.0, -12.0));
 
     loop {
         state.update();
@@ -66,7 +68,7 @@ async fn render_game(mut state: GameState) {
 
         // Draw the "Zz" texture when sleeping
         if state.friend().is_asleep() {
-            let location = friend_location.translate(-15.0, -15.0);
+            let location = sleeping_icon_movement.next_position();
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
