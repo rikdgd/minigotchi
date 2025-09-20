@@ -6,6 +6,7 @@ pub use egg_hop::EggHop;
 pub use zig_zag::ZigZag;
 pub use dvd_bounce::DvdBounce;
 use crate::friend::{Friend, GrowthStage};
+use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
 
 /// Represents a movement the creature can make on the screen, for example as an idle animation.
@@ -28,4 +29,19 @@ pub fn get_creature_movement(creature: &Friend, base_location: Location) -> Box<
         GrowthStage::Adult => Box::new(DvdBounce::new()),
         _ => Box::new(ZigZag::default().base_location(base_location)),
     }
+}
+
+pub fn get_sleeping_location(friend: &Friend) -> Location {
+    let base_location = Location { x: SCREEN_WIDTH as f32 / 2.0, y: SCREEN_HEIGHT as f32 / 4.0 };
+    let sprite_dimension: f32 = match friend.growth_stage() {
+        GrowthStage::Egg => 10.0,
+        GrowthStage::Baby => 15.0,
+        GrowthStage::Kid => 20.0,
+        _ => 25.0,
+    };
+
+    base_location.translate(
+        (-sprite_dimension / 2.0).round(),
+        (-sprite_dimension / 2.0).round(),
+    )
 }
