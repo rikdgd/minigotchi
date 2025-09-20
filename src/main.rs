@@ -17,6 +17,7 @@ use food::Food;
 use movements::{get_creature_movement, get_sleeping_location};
 use utils::Location;
 use ui::play_area::draw_play_area;
+use shapes::sleeping_icon;
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -62,6 +63,12 @@ async fn render_game(mut state: GameState) {
             creature_movement.next_position()
         };
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
+
+        // Draw the "Zz" texture when sleeping
+        if state.friend().is_asleep() {
+            let location = friend_location.translate(-15.0, -15.0);
+            draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
+        }
         
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);
 
