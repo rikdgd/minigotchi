@@ -18,7 +18,7 @@ use movements::{get_creature_movement, get_sleeping_location};
 use utils::Location;
 use ui::play_area::draw_play_area;
 use shapes::sleeping_icon;
-use crate::movements::{CreatureMovement, EggHop};
+use movements::{CreatureMovement, EggHop};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;

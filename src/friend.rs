@@ -159,9 +159,9 @@ impl Friend {
 
     fn update_growth_stage(&mut self, now: i64) {
         let growth_delay = match self.growth_stage {
-            GrowthStage::Egg => Some(300000),     // 5 minutes
-            GrowthStage::Baby => Some(18000000),  // 5 hours
-            GrowthStage::Kid => Some(86400000),   // 24 hours
+            GrowthStage::Egg => Some(MINUTE_MILLIS),
+            GrowthStage::Baby => Some(60 * MINUTE_MILLIS),
+            GrowthStage::Kid => Some(5 * 60 * MINUTE_MILLIS),
             GrowthStage::Adult => None,
         };
 
