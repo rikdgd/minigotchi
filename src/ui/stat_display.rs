@@ -3,6 +3,7 @@ use macroquad::texture::Texture2D;
 use crate::friend::Friend;
 use crate::utils::Stat;
 
+const Y_SPACING: f32 = 17.0;
 const RENDER_COLOR: Color = Color::new(0.35, 0.35, 0.35, 1.0);
 
 /// Renders a visualisation of the creature's status, using status bars. 
@@ -16,8 +17,7 @@ pub fn stat_display(friend: &Friend) {
     let rectangle_x: f32 = 30.0;
     
     let mut y_pos: f32 = 110.0;
-    let y_spacing: f32 = 17.0;
-    
+
     let bar_length = |stat: Stat| {
         let value = stat.value() as f32;
         (150.0 / 100.0) * value
@@ -28,17 +28,17 @@ pub fn stat_display(friend: &Friend) {
     draw_rectangle(rectangle_x, y_pos, bar_length(friend.food()), 10.0, RENDER_COLOR);
 
     // joy
-    y_pos += y_spacing;
+    y_pos += Y_SPACING;
     draw_texture(&StatIcon::Joy.get_texture(), icon_x, y_pos, RENDER_COLOR);
     draw_rectangle(rectangle_x, y_pos, bar_length(friend.joy()), 10.0, RENDER_COLOR);
     
     // energy
-    y_pos += y_spacing;
+    y_pos += Y_SPACING;
     draw_texture(&StatIcon::Energy.get_texture(), icon_x, y_pos, RENDER_COLOR);
     draw_rectangle(rectangle_x, y_pos, bar_length(friend.energy()), 10.0, RENDER_COLOR);
 
     // health
-    y_pos += y_spacing;
+    y_pos += Y_SPACING;
     draw_texture(&StatIcon::Health.get_texture(), icon_x, y_pos, RENDER_COLOR);
     draw_rectangle(rectangle_x, y_pos, bar_length(friend.health()), 10.0, RENDER_COLOR);
 }

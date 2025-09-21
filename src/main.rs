@@ -8,14 +8,17 @@ mod save_management;
 mod movements;
 
 use macroquad::prelude::*;
-use crate::game_state::GameState;
+use game_state::GameState;
 use save_management::get_save_file_path;
 use ui::render_new_game_menu;
-use crate::ui::stat_display::stat_display;
+use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
-use crate::food::Food;
-use crate::movements::get_creature_movement;
-use crate::utils::Location;
+use food::Food;
+use movements::{get_creature_movement, get_sleeping_location};
+use utils::Location;
+use ui::play_area::draw_play_area;
+use shapes::sleeping_icon;
+use crate::movements::{CreatureMovement, EggHop};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -42,6 +45,7 @@ async fn render_game(mut state: GameState) {
         state.friend(),
         Location { x: 100.0, y: 50.0 }
     );
+    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.friend()).translate(-8.0, -12.0));
 
     loop {
         state.update();
@@ -49,10 +53,24 @@ async fn render_game(mut state: GameState) {
         handle_button_click(&buttons, &mut state, mouse_pos.into());
 
         clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
-
+        
+        // Draw the playing area the creature walks around in
+        draw_play_area(state.friend());
+        
+        // Draw the creature at the correct location:
         let friend_texture = state.friend().shape();
-        let friend_location = creature_movement.next_position();
+        let friend_location = if state.friend().is_asleep() {
+            get_sleeping_location(state.friend())
+        } else {
+            creature_movement.next_position()
+        };
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
+
+        // Draw the "Zz" texture when sleeping
+        if state.friend().is_asleep() {
+            let location = sleeping_icon_movement.next_position();
+            draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
+        }
         
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);
 
