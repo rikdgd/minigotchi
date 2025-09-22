@@ -22,6 +22,7 @@ use movements::{CreatureMovement, EggHop};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
+pub const CREATURE_BASE_LOCATION: Location = Location { x: 100.0, y: 50.0 };
 
 
 #[macroquad::main(main_window_conf)]
@@ -43,7 +44,7 @@ async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
     let mut creature_movement = get_creature_movement(
         state.friend(),
-        Location { x: 100.0, y: 50.0 }
+        CREATURE_BASE_LOCATION
     );
     let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.friend()).translate(-8.0, -12.0));
 
@@ -65,6 +66,16 @@ async fn render_game(mut state: GameState) {
             creature_movement.next_position()
         };
         draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
+
+        // Update the creature's movement when it changes growth stage
+        if state.prev_growth_stage != state.friend().growth_stage() {
+            creature_movement = get_creature_movement(
+                state.friend(),
+                CREATURE_BASE_LOCATION
+            );
+
+            state.prev_growth_stage = state.friend().growth_stage();
+        }
 
         // Draw the "Zz" texture when sleeping
         if state.friend().is_asleep() {
