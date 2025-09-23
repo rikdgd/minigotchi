@@ -23,6 +23,7 @@ use movements::{CreatureMovement, EggHop};
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
 pub const CREATURE_BASE_LOCATION: Location = Location { x: 100.0, y: 50.0 };
+pub const BACKGROUND_COLOR: Color = Color::new(0.8, 0.8, 0.8, 1.0);
 
 
 #[macroquad::main(main_window_conf)]
@@ -51,9 +52,9 @@ async fn render_game(mut state: GameState) {
     loop {
         state.update();
         let mouse_pos = mouse_position();
-        handle_button_click(&buttons, &mut state, mouse_pos.into());
+        handle_button_click(&buttons, &mut state);
 
-        clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
+        clear_background(BACKGROUND_COLOR);
         
         // Draw the playing area the creature walks around in
         draw_play_area(state.friend());
@@ -109,10 +110,9 @@ fn main_window_conf() -> Conf {
     }
 }
 
-fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState, mouse_pos: Vec2) {
+fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
     for button in buttons {
-        let button_area = button.get_button().collision_rect();
-        if button_area.contains(mouse_pos) && is_mouse_button_pressed(MouseButton::Left) {
+        if button.get_button().is_clicked() {
             match button {
                 InteractionButton::Food(_) => game_state.friend_mut().eat(Food::new_random()),
                 InteractionButton::Joy(_) => game_state.friend_mut().play(),

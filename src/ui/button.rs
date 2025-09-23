@@ -37,6 +37,15 @@ impl Button {
             BLACK,
         );
     }
+    
+    /// Returns `true` when the button is currently being clicked, meaning the mouse is over it and 
+    /// the left mouse button is being pressed.
+    pub fn is_clicked(&self) -> bool {
+        let col_rect = self.collision_rect();
+        let mouse_pos = mouse_position();
+        
+        col_rect.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left)
+    }
 
     pub fn collision_rect(&self) -> Rect {
         Rect::new(self.pos.x, self.pos.y, self.size.x, self.size.y)
