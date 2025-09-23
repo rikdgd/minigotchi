@@ -2,7 +2,7 @@ use macroquad::texture::Texture2D;
 use crate::food::Food;
 use serde::{Deserialize, Serialize};
 use chrono::Utc;
-use crate::shapes::{CreatureShapes, egg_shape, baby_shape};
+use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::Stat;
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
@@ -246,7 +246,7 @@ impl Friend {
         match self.growth_stage {
             GrowthStage::Egg => egg_shape(),
             GrowthStage::Baby => baby_shape(),
-            GrowthStage::Kid => baby_shape(),
+            GrowthStage::Kid => kid_shape(),
             GrowthStage::Adult => self.shape.get_texture(),
         }
     }

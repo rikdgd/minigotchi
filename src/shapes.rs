@@ -47,6 +47,10 @@ pub fn baby_shape() -> Texture2D {
     Texture2D::from_file_with_format(include_bytes!("../resources/baby.png"), None)
 }
 
+pub fn kid_shape() -> Texture2D {
+    Texture2D::from_file_with_format(include_bytes!("../resources/kid.png"), None)
+}
+
 pub fn sleeping_icon() -> Texture2D {
     Texture2D::from_file_with_format(include_bytes!("../resources/zz.png"), None)
 }
