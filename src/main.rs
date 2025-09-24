@@ -10,7 +10,7 @@ mod movements;
 use macroquad::prelude::*;
 use game_state::GameState;
 use save_management::get_save_file_path;
-use ui::render_new_game_menu;
+use ui::{render_new_game_menu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use food::Food;
@@ -34,7 +34,15 @@ async fn main() {
     let save_file_path = get_save_file_path();
 
     let game_state = match GameState::from_file(&save_file_path).await {
-        Ok(state) => state,
+        Ok(mut state) => {
+            state.update();
+
+            if !state.friend().alive() {
+                render_death_screen(&state).await
+            } else {
+                state
+            }
+        },
         Err(_) => render_new_game_menu().await,
     };
 
@@ -51,7 +59,6 @@ async fn render_game(mut state: GameState) {
 
     loop {
         state.update();
-        let mouse_pos = mouse_position();
         handle_button_click(&buttons, &mut state);
 
         clear_background(BACKGROUND_COLOR);
@@ -87,7 +94,7 @@ async fn render_game(mut state: GameState) {
         draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);
 
         for button in &buttons {
-            button.get_button().render(mouse_pos.into());
+            button.get_button().render();
         }
 
         if is_key_pressed(KeyCode::Escape) {

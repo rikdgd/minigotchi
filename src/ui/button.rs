@@ -9,7 +9,8 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn render(&self, mouse_pos: Vec2) {
+    pub fn render(&self) {
+        let mouse_pos: Vec2 = mouse_position().into();
         let color = if self.collision_rect().contains(mouse_pos) {
             Color::new(
                 self.color.r - 0.06,
