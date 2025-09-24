@@ -17,27 +17,32 @@ pub async fn render_death_screen(old_state: &GameState) -> GameState {
         ..Default::default()
     };
 
+    let text_size_1 = measure_text(&get_death_text(old_state)[0], None, FONT_SIZE, 1.0);
+    let text_size_2 = measure_text(&get_death_text(old_state)[1], None, FONT_SIZE, 1.0);
+
     loop {
         clear_background(BACKGROUND_COLOR);
 
         if confirm_btn.is_clicked() {
             break;
         }
+
         confirm_btn.render();
 
-        let text_size_1 = measure_text(&get_death_text(old_state)[0], None, FONT_SIZE, 1.0);
-        let text_size_2 = measure_text(&get_death_text(old_state)[1], None, FONT_SIZE, 1.0);
-
-        for (i, text) in get_death_text(old_state).iter().enumerate() {
-            draw_text(
-                &text,
-                (SCREEN_WIDTH as f32 - text_size_1.width) / 2.0,
-                (SCREEN_HEIGHT as f32 - text_size_2.height) / 3.0 + (i as f32 * text_size_1.height),
-                FONT_SIZE as f32,
-                GRAY,
-            );
-        }
-
+        draw_text(
+            &get_death_text(old_state)[0],
+            (SCREEN_WIDTH as f32 - text_size_1.width) / 2.0,
+            (SCREEN_HEIGHT as f32 - text_size_1.height) / 3.0,
+            FONT_SIZE as f32,
+            GRAY,
+        );
+        draw_text(
+            &get_death_text(old_state)[1],
+            (SCREEN_WIDTH as f32 - text_size_2.width) / 2.0,
+            (SCREEN_HEIGHT as f32 - text_size_2.height) / 3.0 + text_size_2.height,
+            FONT_SIZE as f32,
+            GRAY,
+        );
 
         next_frame().await;
     }
@@ -58,7 +63,7 @@ fn get_death_text(state: &GameState) -> [String; 2] {
             state.friend().name(),
         ),
         format!(
-            "{} days and {} hours...",
+            "{} days and {} hours",
             hours_alive / 24,
             hours_alive % 24,
         ),
