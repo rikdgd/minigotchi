@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::ui::button::Button;
+use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 pub async fn render_new_game_menu() -> GameState {
     let mut name_buffer = String::new();
@@ -13,33 +14,25 @@ pub async fn render_new_game_menu() -> GameState {
     };
 
     loop {
-        let mouse_pos = mouse_position();
-        clear_background(Color::new(0.8, 0.8, 0.8, 1.0));
+        clear_background(BACKGROUND_COLOR);
 
-        // Render components
-        confirm_btn.render(mouse_pos.into());
+        confirm_btn.render();
 
         let text_size = measure_text(&name_buffer, None, 28, 1.0);
-
-        let text_x = (200.0 - text_size.width) / 2.0;
-        let text_y = (200.0 - text_size.height) / 2.0 - 15.0;
-
         draw_text(
             &name_buffer,
-            text_x,
-            text_y,
+            (SCREEN_WIDTH as f32 - text_size.width) / 2.0,
+            (SCREEN_HEIGHT as f32 - text_size.height) / 2.0 - 15.0,
             28.0,
             BLACK,
         );
 
-        // Check for confirm button clicked
-        let col_rect = confirm_btn.collision_rect();
-        if col_rect.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left) {
+        if confirm_btn.is_clicked() && name_buffer.len() != 0 {
             break;
         }
 
         // Store user input into buffer
-        while let Some (char) = get_char_pressed() {
+        while let Some(char) = get_char_pressed() {
             name_buffer.push(char);
         }
 

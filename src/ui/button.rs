@@ -9,7 +9,8 @@ pub struct Button {
 }
 
 impl Button {
-    pub fn render(&self, mouse_pos: Vec2) {
+    pub fn render(&self) {
+        let mouse_pos: Vec2 = mouse_position().into();
         let color = if self.collision_rect().contains(mouse_pos) {
             Color::new(
                 self.color.r - 0.06,
@@ -36,6 +37,15 @@ impl Button {
             12.0,
             BLACK,
         );
+    }
+    
+    /// Returns `true` when the button is currently being clicked, meaning the mouse is over it and 
+    /// the left mouse button is being pressed.
+    pub fn is_clicked(&self) -> bool {
+        let col_rect = self.collision_rect();
+        let mouse_pos = mouse_position();
+        
+        col_rect.contains(mouse_pos.into()) && is_mouse_button_pressed(MouseButton::Left)
     }
 
     pub fn collision_rect(&self) -> Rect {
