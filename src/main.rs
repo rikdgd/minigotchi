@@ -1,4 +1,4 @@
-mod friend;
+mod creature;
 mod food;
 mod shapes;
 mod utils;
@@ -37,7 +37,7 @@ async fn main() {
         Ok(mut state) => {
             state.update();
 
-            if !state.friend().alive() {
+            if !state.creature().alive() {
                 render_death_screen(&state).await
             } else {
                 state
@@ -52,10 +52,10 @@ async fn main() {
 async fn render_game(mut state: GameState) {
     let buttons = InteractionButton::main_menu_buttons();
     let mut creature_movement = get_creature_movement(
-        state.friend(),
+        state.creature(),
         CREATURE_BASE_LOCATION
     );
-    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.friend()).translate(-8.0, -12.0));
+    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-8.0, -12.0));
 
     loop {
         state.update();
@@ -64,34 +64,34 @@ async fn render_game(mut state: GameState) {
         clear_background(BACKGROUND_COLOR);
         
         // Draw the playing area the creature walks around in
-        draw_play_area(state.friend());
+        draw_play_area(state.creature());
         
         // Draw the creature at the correct location:
-        let friend_texture = state.friend().shape();
-        let friend_location = if state.friend().is_asleep() {
-            get_sleeping_location(state.friend())
+        let creature_texture = state.creature().shape();
+        let creature_location = if state.creature().is_asleep() {
+            get_sleeping_location(state.creature())
         } else {
             creature_movement.next_position()
         };
-        draw_texture(&friend_texture, friend_location.x, friend_location.y, BLACK);
+        draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
 
         // Update the creature's movement when it changes growth stage
-        if state.prev_growth_stage != state.friend().growth_stage() {
+        if state.prev_growth_stage != state.creature().growth_stage() {
             creature_movement = get_creature_movement(
-                state.friend(),
+                state.creature(),
                 CREATURE_BASE_LOCATION
             );
 
-            state.prev_growth_stage = state.friend().growth_stage();
+            state.prev_growth_stage = state.creature().growth_stage();
         }
 
         // Draw the "Zz" texture when sleeping
-        if state.friend().is_asleep() {
+        if state.creature().is_asleep() {
             let location = sleeping_icon_movement.next_position();
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
-        draw_text(state.friend().name(), 100.0, 20.0, 16.0, BLACK);
+        draw_text(state.creature().name(), 100.0, 20.0, 16.0, BLACK);
 
         for button in &buttons {
             button.get_button().render();
@@ -101,7 +101,7 @@ async fn render_game(mut state: GameState) {
             break;
         }
         
-        stat_display(state.friend());
+        stat_display(state.creature());
 
         next_frame().await;
     }
@@ -121,10 +121,10 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
     for button in buttons {
         if button.get_button().is_clicked() {
             match button {
-                InteractionButton::Food(_) => game_state.friend_mut().eat(Food::new_random()),
-                InteractionButton::Joy(_) => game_state.friend_mut().play(),
-                InteractionButton::Energy(_) => game_state.friend_mut().toggle_sleep(),
-                InteractionButton::Health(_) => game_state.friend_mut().take_medicine(),
+                InteractionButton::Food(_) => game_state.creature_mut().eat(Food::new_random()),
+                InteractionButton::Joy(_) => game_state.creature_mut().play(),
+                InteractionButton::Energy(_) => game_state.creature_mut().toggle_sleep(),
+                InteractionButton::Health(_) => game_state.creature_mut().take_medicine(),
             }
         }
     }

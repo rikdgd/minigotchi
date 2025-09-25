@@ -30,7 +30,7 @@ impl GrowthStage {
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Friend {
+pub struct Creature {
     name: String,
     food: Stat,
     joy: Stat,
@@ -49,7 +49,7 @@ pub struct Friend {
     time_created: i64,
 }
 
-impl Friend {
+impl Creature {
     pub fn new(name: &str, shape: CreatureShapes) -> Self {
         let now = Utc::now().timestamp_millis();
         Self {
@@ -72,7 +72,7 @@ impl Friend {
         }
     }
 
-    /// Updates this Friend's state for each minute passed since last update <br>
+    /// Updates this creature's state for each minute passed since last update <br>
     pub fn update_state(&mut self, now: i64) {
         self.update_growth_stage(now);
 
@@ -119,11 +119,11 @@ impl Friend {
         }
     }
 
-    /// Updates the sleeping state of the Friend. This will wake the friend up after it has been asleep
+    /// Updates the sleeping state of the creature. This will wake the creature up after it has been asleep
     /// for to long so the player cannot just let it sleep forever.
     /// <br>
     /// ## parameters:
-    /// * `now` - The current utc time in millis, used to determine the time elapsed since the friend fell asleep.
+    /// * `now` - The current utc time in millis, used to determine the time elapsed since the creature fell asleep.
     fn update_asleep_status(&mut self, now: i64) {
         if !self.asleep {
             return;
@@ -256,51 +256,51 @@ impl Friend {
 #[cfg(test)]
 mod tests {
     use chrono::Utc;
-    use crate::friend::{Friend, GrowthStage, MINUTE_MILLIS};
+    use crate::creature::{Creature, GrowthStage, MINUTE_MILLIS};
     use crate::shapes::CreatureShapes;
     use crate::utils::Stat;
 
     #[test]
-    fn friend_auto_wakeup_test() {
+    fn creature_auto_wakeup_test() {
         let max_sleep_time = MINUTE_MILLIS * 60 * 12;
         let now = Utc::now().timestamp_millis();
-        let mut friend = Friend::new(
-            "test-friend",
+        let mut creature = Creature::new(
+            "test-creature",
             CreatureShapes::Squid
         );
 
-        friend.growth_stage = GrowthStage::Adult;
-        friend.food = Stat::new(100).unwrap();
-        friend.joy = Stat::new(100).unwrap();
-        friend.energy = Stat::new(100).unwrap();
-        friend.health = Stat::new(100).unwrap();
-        friend.toggle_sleep();
+        creature.growth_stage = GrowthStage::Adult;
+        creature.food = Stat::new(100).unwrap();
+        creature.joy = Stat::new(100).unwrap();
+        creature.energy = Stat::new(100).unwrap();
+        creature.health = Stat::new(100).unwrap();
+        creature.toggle_sleep();
 
-        friend.update_state(now + max_sleep_time + 100);
+        creature.update_state(now + max_sleep_time + 100);
 
-        assert!(!friend.asleep);
-        assert_eq!(None, friend.asleep_since);
+        assert!(!creature.asleep);
+        assert_eq!(None, creature.asleep_since);
     }
 
     #[test]
     fn lower_energy_after_auto_wakeup() {
         let max_sleep_time = MINUTE_MILLIS * 60 * 12;
         let now = Utc::now().timestamp_millis();
-        let mut friend = Friend::new(
-            "test-friend",
+        let mut creature = Creature::new(
+            "test-creature",
             CreatureShapes::Squid
         );
 
-        friend.food = Stat::new(100).unwrap();
-        friend.joy = Stat::new(100).unwrap();
-        friend.energy = Stat::new(100).unwrap();
-        friend.health = Stat::new(100).unwrap();
-        friend.toggle_sleep();
+        creature.food = Stat::new(100).unwrap();
+        creature.joy = Stat::new(100).unwrap();
+        creature.energy = Stat::new(100).unwrap();
+        creature.health = Stat::new(100).unwrap();
+        creature.toggle_sleep();
 
-        friend.update_state(now + 10 * max_sleep_time); // Make sure the creature's energy is at zero.
+        creature.update_state(now + 10 * max_sleep_time); // Make sure the creature's energy is at zero.
 
-        assert!(!friend.asleep);
-        assert_eq!(None, friend.asleep_since);
-        assert_eq!(0, friend.energy.value());
+        assert!(!creature.asleep);
+        assert_eq!(None, creature.asleep_since);
+        assert_eq!(0, creature.energy.value());
     }
 }

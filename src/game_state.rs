@@ -1,23 +1,23 @@
 use macroquad::file::load_file;
 use serde::{Serialize, Deserialize};
-use crate::friend::{Friend, GrowthStage};
+use crate::creature::{Creature, GrowthStage};
 use crate::shapes::CreatureShapes;
 use crate::save_management::store_game_state;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameState {
-    friend: Friend,
+    creature: Creature,
     pub prev_growth_stage: GrowthStage,
     last_update_time: i64,
 }
 
 impl GameState {
     pub fn new(creature_name: &str) -> Self {
-        let friend = Friend::new(creature_name, CreatureShapes::new_random());
-        let prev_growth_stage = friend.growth_stage();
+        let creature = Creature::new(creature_name, CreatureShapes::new_random());
+        let prev_growth_stage = creature.growth_stage();
 
         Self {
-            friend,
+            creature,
             prev_growth_stage,
             last_update_time: chrono::Utc::now().timestamp_millis(),
         }
@@ -36,15 +36,15 @@ impl GameState {
     pub fn update(&mut self) {
         let now = chrono::Utc::now().timestamp_millis();
         self.last_update_time = now;
-        self.friend.update_state(now);
+        self.creature.update_state(now);
     }
     
-    pub fn friend(&self) -> &Friend {
-        &self.friend
+    pub fn creature(&self) -> &Creature {
+        &self.creature
     }
     
-    pub fn friend_mut(&mut self) -> &mut Friend {
-        &mut self.friend
+    pub fn creature_mut(&mut self) -> &mut Creature {
+        &mut self.creature
     }
 }
 

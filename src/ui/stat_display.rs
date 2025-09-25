@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use macroquad::texture::Texture2D;
-use crate::friend::Friend;
+use crate::creature::Creature;
 use crate::utils::Stat;
 
 const Y_SPACING: f32 = 17.0;
@@ -12,7 +12,7 @@ const RENDER_COLOR: Color = Color::new(0.35, 0.35, 0.35, 1.0);
 /// * `stat` - The stat which should be displayed by the status bar.
 /// * `icon` - The icon that will be drawn in front of the status bar.
 /// * `y_location` - The y location where the status bar should be rendered on screen.
-pub fn stat_display(friend: &Friend) {
+pub fn stat_display(creature: &Creature) {
     let icon_x: f32 = 10.0;
     let rectangle_x: f32 = 30.0;
     
@@ -25,22 +25,22 @@ pub fn stat_display(friend: &Friend) {
     
     // food
     draw_texture(&StatIcon::Food.get_texture(), icon_x, y_pos, RENDER_COLOR);
-    draw_rectangle(rectangle_x, y_pos, bar_length(friend.food()), 10.0, RENDER_COLOR);
+    draw_rectangle(rectangle_x, y_pos, bar_length(creature.food()), 10.0, RENDER_COLOR);
 
     // joy
     y_pos += Y_SPACING;
     draw_texture(&StatIcon::Joy.get_texture(), icon_x, y_pos, RENDER_COLOR);
-    draw_rectangle(rectangle_x, y_pos, bar_length(friend.joy()), 10.0, RENDER_COLOR);
+    draw_rectangle(rectangle_x, y_pos, bar_length(creature.joy()), 10.0, RENDER_COLOR);
     
     // energy
     y_pos += Y_SPACING;
     draw_texture(&StatIcon::Energy.get_texture(), icon_x, y_pos, RENDER_COLOR);
-    draw_rectangle(rectangle_x, y_pos, bar_length(friend.energy()), 10.0, RENDER_COLOR);
+    draw_rectangle(rectangle_x, y_pos, bar_length(creature.energy()), 10.0, RENDER_COLOR);
 
     // health
     y_pos += Y_SPACING;
     draw_texture(&StatIcon::Health.get_texture(), icon_x, y_pos, RENDER_COLOR);
-    draw_rectangle(rectangle_x, y_pos, bar_length(friend.health()), 10.0, RENDER_COLOR);
+    draw_rectangle(rectangle_x, y_pos, bar_length(creature.health()), 10.0, RENDER_COLOR);
 }
 
 #[derive(Debug, Clone, Copy)]

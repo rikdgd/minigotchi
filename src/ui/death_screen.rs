@@ -54,13 +54,13 @@ pub async fn render_death_screen(old_state: &GameState) -> GameState {
 
 fn get_death_text(state: &GameState) -> [String; 2] {
     let now = Utc::now().timestamp_millis();
-    let millis_alive = now - state.friend().time_created();
+    let millis_alive = now - state.creature().time_created();
     let hours_alive = millis_alive / 1000 / 60 / 60;
 
     [
         format!(
             "{} has died at the age of",
-            state.friend().name(),
+            state.creature().name(),
         ),
         format!(
             "{} days and {} hours",

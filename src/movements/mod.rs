@@ -5,7 +5,7 @@ mod dvd_bounce;
 pub use egg_hop::EggHop;
 pub use zig_zag::ZigZag;
 pub use dvd_bounce::DvdBounce;
-use crate::friend::{Friend, GrowthStage};
+use crate::creature::{Creature, GrowthStage};
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
 
@@ -23,7 +23,7 @@ pub trait CreatureMovement {
 /// 
 /// # Returns:
 /// Returns a `Box<dyn CreatureMovement>` so it has a known size and can be stored in a mutable variable.
-pub fn get_creature_movement(creature: &Friend, base_location: Location) -> Box<dyn CreatureMovement> {
+pub fn get_creature_movement(creature: &Creature, base_location: Location) -> Box<dyn CreatureMovement> {
     match creature.growth_stage() {
         GrowthStage::Egg => Box::new(EggHop::new(base_location)),
         GrowthStage::Adult => Box::new(DvdBounce::new()),
@@ -34,13 +34,13 @@ pub fn get_creature_movement(creature: &Friend, base_location: Location) -> Box<
 /// Returns the `Location` where the given creature should be drawn when it is asleep.
 ///
 /// # Parameters:
-/// * `friend` - The friend that should be sleeping, used to get its sprite size.
+/// * `creature` - The creature that should be sleeping, used to get its sprite size.
 ///
 /// # Returns:
 /// The `Location` to draw the creature at, accounting for the sprite's width/height.
-pub fn get_sleeping_location(friend: &Friend) -> Location {
+pub fn get_sleeping_location(creature: &Creature) -> Location {
     let base_location = Location { x: SCREEN_WIDTH as f32 / 2.0, y: SCREEN_HEIGHT as f32 / 4.0 };
-    let sprite_dimension: f32 = match friend.growth_stage() {
+    let sprite_dimension: f32 = match creature.growth_stage() {
         GrowthStage::Egg => 10.0,
         GrowthStage::Baby => 15.0,
         GrowthStage::Kid => 20.0,
