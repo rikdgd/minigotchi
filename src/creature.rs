@@ -28,7 +28,8 @@ impl GrowthStage {
     }
 }
 
-
+/// This is the struct represents the creature/pet of the player. It mainly keeps track of state-update
+/// times, its status, its shape, and its growth stage.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Creature {
     name: String,
@@ -72,7 +73,7 @@ impl Creature {
         }
     }
 
-    /// Updates this creature's state for each minute passed since last update <br>
+    /// Updates this creature's state for each minute passed since last update.
     pub fn update_state(&mut self, now: i64) {
         self.update_growth_stage(now);
 
