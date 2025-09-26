@@ -85,7 +85,7 @@ impl Creature {
 
     fn update_stats(&mut self, now: i64) {
         let food_offset_minutes = 16 * MINUTE_MILLIS;
-        let energy_offset_minutes = 14 * MINUTE_MILLIS;
+        let energy_offset_minutes = 3 * MINUTE_MILLIS;
         let joy_offset_minutes = 18 * MINUTE_MILLIS;
         let health_offset_minutes = MINUTE_MILLIS;
 
@@ -97,13 +97,11 @@ impl Creature {
         }
 
         while now - self.last_time_lower_energy >= energy_offset_minutes {
-            match self.asleep {
-                true => self.energy.add(3),
-                false => self.energy.subtract(1),
+            if self.asleep {
+                self.energy.add(1);
             }
-            self.last_time_lower_energy += energy_offset_minutes;
 
-            self.update_asleep_status(now);
+            self.last_time_lower_energy += energy_offset_minutes;
         }
 
         while now - self.last_time_lower_joy >= joy_offset_minutes {
@@ -117,23 +115,6 @@ impl Creature {
                 self.health_decrease_time_left -= health_offset_minutes;
             }
             self.last_time_lower_health += health_offset_minutes;
-        }
-    }
-
-    /// Updates the sleeping state of the creature. This will wake the creature up after it has been asleep
-    /// for to long so the player cannot just let it sleep forever.
-    /// <br>
-    /// ## parameters:
-    /// * `now` - The current utc time in millis, used to determine the time elapsed since the creature fell asleep.
-    fn update_asleep_status(&mut self, now: i64) {
-        if !self.asleep {
-            return;
-        }
-
-        if let Some(start_sleeping) = self.asleep_since &&
-            now - start_sleeping > MINUTE_MILLIS * 60 * 12 {
-                self.asleep = false;
-                self.asleep_since = None;
         }
     }
 
@@ -176,6 +157,11 @@ impl Creature {
         &self.name
     }
 
+    /// Interaction used to increase the creature's `food` stat by feeding it something.
+    ///
+    /// # Parameters:
+    /// * `food` - The food item that should be fed to the creature, the amount of food points the
+    /// creature receives, is indicated by the `Food::points()` method.
     pub fn eat(&mut self, food: Food) {
         if self.growth_stage == GrowthStage::Egg {
             return;
@@ -185,6 +171,8 @@ impl Creature {
         self.health_decrease_time_left += (food.points() / 3) as i64 * MINUTE_MILLIS;
     }
 
+    /// Interaction used to make the creature sleep or wake up, when it sleeps, its `asleep_since` state
+    /// will be set to now.
     pub fn toggle_sleep(&mut self) {
         if self.growth_stage == GrowthStage::Egg {
             return;
@@ -200,13 +188,19 @@ impl Creature {
         }
     }
 
+    /// Interaction used to *"play"* with the creature in order to increase its `joy` stat.
     pub fn play(&mut self) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.joy.add(30);
-            self.health_decrease_time_left += 10 * MINUTE_MILLIS;
+        if self.growth_stage == GrowthStage::Egg || self.energy.value() < 5 {
+            return;
         }
+
+        self.joy.add(30);
+        self.health_decrease_time_left += 10 * MINUTE_MILLIS;
+
+        self.energy.subtract(20);
     }
 
+    /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn take_medicine(&mut self) {
         if self.growth_stage != GrowthStage::Egg {
             self.health.add(40);
@@ -250,58 +244,5 @@ impl Creature {
             GrowthStage::Kid => kid_shape(),
             GrowthStage::Adult => self.shape.get_texture(),
         }
-    }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use chrono::Utc;
-    use crate::creature::{Creature, GrowthStage, MINUTE_MILLIS};
-    use crate::shapes::CreatureShapes;
-    use crate::utils::Stat;
-
-    #[test]
-    fn creature_auto_wakeup_test() {
-        let max_sleep_time = MINUTE_MILLIS * 60 * 12;
-        let now = Utc::now().timestamp_millis();
-        let mut creature = Creature::new(
-            "test-creature",
-            CreatureShapes::Squid
-        );
-
-        creature.growth_stage = GrowthStage::Adult;
-        creature.food = Stat::new(100).unwrap();
-        creature.joy = Stat::new(100).unwrap();
-        creature.energy = Stat::new(100).unwrap();
-        creature.health = Stat::new(100).unwrap();
-        creature.toggle_sleep();
-
-        creature.update_state(now + max_sleep_time + 100);
-
-        assert!(!creature.asleep);
-        assert_eq!(None, creature.asleep_since);
-    }
-
-    #[test]
-    fn lower_energy_after_auto_wakeup() {
-        let max_sleep_time = MINUTE_MILLIS * 60 * 12;
-        let now = Utc::now().timestamp_millis();
-        let mut creature = Creature::new(
-            "test-creature",
-            CreatureShapes::Squid
-        );
-
-        creature.food = Stat::new(100).unwrap();
-        creature.joy = Stat::new(100).unwrap();
-        creature.energy = Stat::new(100).unwrap();
-        creature.health = Stat::new(100).unwrap();
-        creature.toggle_sleep();
-
-        creature.update_state(now + 10 * max_sleep_time); // Make sure the creature's energy is at zero.
-
-        assert!(!creature.asleep);
-        assert_eq!(None, creature.asleep_since);
-        assert_eq!(0, creature.energy.value());
     }
 }
