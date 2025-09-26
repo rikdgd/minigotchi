@@ -1,6 +1,7 @@
 use macroquad::time::get_frame_time;
 use crate::movements::CreatureMovement;
 use crate::utils::Location;
+use crate::ui::play_area::PLAY_AREA_RECT;
 
 const SHAPE_DIMENSION: f32 = 25.0;
 const STEP_SIZE: f32 = 1.0;
@@ -26,14 +27,14 @@ impl DvdBounce {
 
     /// Updates the movement toggles when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
-        if self.creature_location.y >= 100.0 - SHAPE_DIMENSION ||
-            self.creature_location.y <= 0.0
+        if self.creature_location.y >= PLAY_AREA_RECT.bottom() - SHAPE_DIMENSION ||
+            self.creature_location.y <= PLAY_AREA_RECT.y
         {
             self.y_toggle = !self.y_toggle;
         }
 
-        if self.creature_location.x >= crate::SCREEN_WIDTH as f32 - SHAPE_DIMENSION ||
-            self.creature_location.x <= 0.0
+        if self.creature_location.x >= PLAY_AREA_RECT.right() - SHAPE_DIMENSION ||
+            self.creature_location.x <= PLAY_AREA_RECT.x
         {
             self.x_toggle = !self.x_toggle;
         }
