@@ -55,7 +55,7 @@ async fn render_game(mut state: GameState) {
         state.creature(),
         CREATURE_BASE_LOCATION
     );
-    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-8.0, -12.0));
+    let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-9.0, -16.0));
 
     loop {
         state.update();
@@ -121,10 +121,23 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
     for button in buttons {
         if button.get_button().is_clicked() {
             match button {
-                InteractionButton::Food(_) => game_state.creature_mut().eat(Food::new_random()),
-                InteractionButton::Joy(_) => game_state.creature_mut().play(),
                 InteractionButton::Energy(_) => game_state.creature_mut().toggle_sleep(),
-                InteractionButton::Health(_) => game_state.creature_mut().take_medicine(),
+
+                InteractionButton::Food(_) => {
+                    if !game_state.creature().is_asleep() {
+                        game_state.creature_mut().eat(Food::new_random());
+                    }
+                },
+                InteractionButton::Joy(_) => {
+                    if !game_state.creature().is_asleep() {
+                        game_state.creature_mut().play();
+                    }
+                },
+                InteractionButton::Health(_) => {
+                    if !game_state.creature().is_asleep() {
+                        game_state.creature_mut().take_medicine();
+                    }
+                },
             }
         }
     }
