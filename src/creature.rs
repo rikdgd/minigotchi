@@ -252,7 +252,7 @@ impl Creature {
 
 #[cfg(test)]
 mod tests {
-    use crate::creature::{Creature, MINUTE_MILLIS};
+    use crate::creature::Creature;
     use crate::shapes::CreatureShapes;
     use crate::utils::Stat;
 
