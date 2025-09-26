@@ -119,7 +119,12 @@ impl Creature {
     }
 
     fn update_alive_status(&mut self) {
-        let stats_sum = self.food.value() as u16 + self.joy.value() as u16 + self.health.value() as u16;
+        // Use u16 conversions to forecome overflows.
+        let stats_sum =
+            self.food.value() as u16 +
+            self.joy.value() as u16 +
+            self.health.value() as u16;
+
         if stats_sum < 15 {
             self.alive = false;
         }
