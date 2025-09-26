@@ -6,6 +6,10 @@ use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::Stat;
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
+const FOOD_OFFSET_MINUTES: i64 = 16 * MINUTE_MILLIS;
+const ENERGY_OFFSET_MINUTES: i64 = 3 * MINUTE_MILLIS;
+const JOY_OFFSET_MINUTES: i64 = 18 * MINUTE_MILLIS;
+const HEALTH_OFFSET_MINUTES: i64 = MINUTE_MILLIS;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -51,8 +55,7 @@ pub struct Creature {
 }
 
 impl Creature {
-    pub fn new(name: &str, shape: CreatureShapes) -> Self {
-        let now = Utc::now().timestamp_millis();
+    pub fn new(name: &str, shape: CreatureShapes, now: i64) -> Self {
         Self {
             name: String::from(name),
             food: Stat::new(50).unwrap(),
@@ -84,37 +87,32 @@ impl Creature {
     }
 
     fn update_stats(&mut self, now: i64) {
-        let food_offset_minutes = 16 * MINUTE_MILLIS;
-        let energy_offset_minutes = 3 * MINUTE_MILLIS;
-        let joy_offset_minutes = 18 * MINUTE_MILLIS;
-        let health_offset_minutes = MINUTE_MILLIS;
-
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= food_offset_minutes {
+        while now - self.last_time_lower_food >= FOOD_OFFSET_MINUTES {
             self.food.subtract(1);
-            self.last_time_lower_food += food_offset_minutes;
+            self.last_time_lower_food += FOOD_OFFSET_MINUTES;
         }
 
-        while now - self.last_time_lower_energy >= energy_offset_minutes {
+        while now - self.last_time_lower_energy >= ENERGY_OFFSET_MINUTES {
             if self.asleep {
                 self.energy.add(1);
             }
 
-            self.last_time_lower_energy += energy_offset_minutes;
+            self.last_time_lower_energy += ENERGY_OFFSET_MINUTES;
         }
 
-        while now - self.last_time_lower_joy >= joy_offset_minutes {
+        while now - self.last_time_lower_joy >= JOY_OFFSET_MINUTES {
             self.joy.subtract(1);
-            self.last_time_lower_joy += joy_offset_minutes;
+            self.last_time_lower_joy += JOY_OFFSET_MINUTES;
         }
 
-        while now - self.last_time_lower_health >= health_offset_minutes {
-            if self.health_decrease_time_left >= health_offset_minutes {
+        while now - self.last_time_lower_health >= HEALTH_OFFSET_MINUTES {
+            if self.health_decrease_time_left >= HEALTH_OFFSET_MINUTES {
                 self.health.subtract(1);
-                self.health_decrease_time_left -= health_offset_minutes;
+                self.health_decrease_time_left -= HEALTH_OFFSET_MINUTES;
             }
-            self.last_time_lower_health += health_offset_minutes;
+            self.last_time_lower_health += HEALTH_OFFSET_MINUTES;
         }
     }
 
@@ -249,5 +247,44 @@ impl Creature {
             GrowthStage::Kid => kid_shape(),
             GrowthStage::Adult => self.shape.get_texture(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::creature::{Creature, MINUTE_MILLIS};
+    use crate::shapes::CreatureShapes;
+    use crate::utils::Stat;
+
+    #[test]
+    fn update_alive_status() {
+        // Arrange
+        let mut creature_a = Creature::new("A", CreatureShapes::Snail, 0);
+        creature_a.food = Stat::new(0).unwrap();
+        creature_a.joy = Stat::new(0).unwrap();
+
+        let mut creature_b = Creature::new("B", CreatureShapes::Mouse, 0);
+        creature_b.food = Stat::new(5).unwrap();
+        creature_b.joy = Stat::new(5).unwrap();
+        creature_b.energy = Stat::new(5).unwrap();
+        creature_b.health = Stat::new(4).unwrap();
+
+        let mut creature_c = Creature::new("C", CreatureShapes::Squid, 0);
+        creature_c.energy = Stat::new(0).unwrap();
+        creature_c.food = Stat::new(5).unwrap();
+        creature_c.joy = Stat::new(5).unwrap();
+        creature_c.health = Stat::new(5).unwrap();
+
+
+        // Act
+        creature_a.update_alive_status();
+        creature_b.update_alive_status();
+        creature_c.update_alive_status();
+
+
+        // Assert
+        assert!(!creature_a.alive);  // Should be dead
+        assert!(!creature_b.alive);  // Should be dead
+        assert!(creature_c.alive);   // Should be alive
     }
 }

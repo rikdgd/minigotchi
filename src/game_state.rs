@@ -1,3 +1,4 @@
+use chrono::Utc;
 use macroquad::file::load_file;
 use serde::{Serialize, Deserialize};
 use crate::creature::{Creature, GrowthStage};
@@ -13,7 +14,8 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(creature_name: &str) -> Self {
-        let creature = Creature::new(creature_name, CreatureShapes::new_random());
+        let now = Utc::now().timestamp_millis();
+        let creature = Creature::new(creature_name, CreatureShapes::new_random(), now);
         let prev_growth_stage = creature.growth_stage();
 
         Self {
