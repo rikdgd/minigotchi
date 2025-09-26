@@ -91,7 +91,7 @@ async fn render_game(mut state: GameState) {
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
-        draw_text(state.creature().name(), 100.0, 20.0, 16.0, BLACK);
+        ui::draw_creature_name(&state);
 
         for button in &buttons {
             button.get_button().render();
