@@ -1,9 +1,8 @@
 use macroquad::texture::Texture2D;
 use crate::food::Food;
 use serde::{Deserialize, Serialize};
-use chrono::Utc;
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
-use crate::utils::Stat;
+use crate::utils::{time::get_now_millis, Stat};
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
 const FOOD_OFFSET_MINUTES: i64 = 16 * MINUTE_MILLIS;
@@ -184,7 +183,7 @@ impl Creature {
         self.asleep = !self.asleep;
 
         if self.asleep {
-            let now = Utc::now().timestamp_millis();
+            let now = get_now_millis().expect("Failed to get the current time in millis");
             self.asleep_since = Some(now);
         } else {
             self.asleep_since = None;
