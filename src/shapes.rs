@@ -3,6 +3,13 @@ use macroquad::rand::gen_range;
 use macroquad::texture::Texture2D;
 use serde::{Serialize, Deserialize};
 
+#[macro_export]
+macro_rules! include_texture {
+    ($sprite_path:expr) => {
+        Texture2D::from_file_with_format(include_bytes!($sprite_path), None)
+    };
+}
+
 const NUM_SHAPES: u32 = 6;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,12 +25,13 @@ pub enum CreatureShapes {
 impl CreatureShapes {
     pub fn get_texture(&self) -> Texture2D {
         match self {
-            CreatureShapes::Turtle => Texture2D::from_file_with_format(include_bytes!("../resources/turtle.png"), None),
-            CreatureShapes::Snail => Texture2D::from_file_with_format(include_bytes!("../resources/snail.png"), None),
-            CreatureShapes::Fish => Texture2D::from_file_with_format(include_bytes!("../resources/fish.png"), None),
-            CreatureShapes::Mouse => Texture2D::from_file_with_format(include_bytes!("../resources/mouse.png"), None),
-            CreatureShapes::Frog => Texture2D::from_file_with_format(include_bytes!("../resources/frog.png"), None),
-            CreatureShapes::Squid => Texture2D::from_file_with_format(include_bytes!("../resources/squid.png"), None),
+            // CreatureShapes::Turtle => Texture2D::from_file_with_format(include_bytes!("../resources/turtle.png"), None),
+            CreatureShapes::Turtle => include_texture!("../resources/turtle.png"),
+            CreatureShapes::Snail => include_texture!("../resources/snail.png"),
+            CreatureShapes::Fish => include_texture!("../resources/fish.png"),
+            CreatureShapes::Mouse => include_texture!("../resources/mouse.png"),
+            CreatureShapes::Frog => include_texture!("../resources/frog.png"),
+            CreatureShapes::Squid => include_texture!("../resources/squid.png"),
         }
     }
     
@@ -40,17 +48,17 @@ impl CreatureShapes {
 }
 
 pub fn egg_shape() -> Texture2D {
-    Texture2D::from_file_with_format(include_bytes!("../resources/egg.png"), None)
+    include_texture!("../resources/egg.png")
 }
 
 pub fn baby_shape() -> Texture2D {
-    Texture2D::from_file_with_format(include_bytes!("../resources/baby.png"), None)
+    include_texture!("../resources/baby.png")
 }
 
 pub fn kid_shape() -> Texture2D {
-    Texture2D::from_file_with_format(include_bytes!("../resources/kid.png"), None)
+    include_texture!("../resources/kid.png")
 }
 
 pub fn sleeping_icon() -> Texture2D {
-    Texture2D::from_file_with_format(include_bytes!("../resources/zz.png"), None)
+    include_texture!("../resources/zz.png")
 }

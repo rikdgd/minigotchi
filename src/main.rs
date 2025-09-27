@@ -118,24 +118,26 @@ fn main_window_conf() -> Conf {
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
+    let creature = game_state.creature_mut();
+
     for button in buttons {
         if button.get_button().is_clicked() {
             match button {
-                InteractionButton::Energy(_) => game_state.creature_mut().toggle_sleep(),
+                InteractionButton::Energy(_) => creature.toggle_sleep(),
 
                 InteractionButton::Food(_) => {
-                    if !game_state.creature().is_asleep() {
-                        game_state.creature_mut().eat(Food::new_random());
+                    if !creature.is_asleep() && creature.food().value() != 100 {
+                        creature.eat(Food::new_random());
                     }
                 },
                 InteractionButton::Joy(_) => {
-                    if !game_state.creature().is_asleep() {
-                        game_state.creature_mut().play();
+                    if !creature.is_asleep() && creature.joy().value() != 100 {
+                        creature.play();
                     }
                 },
                 InteractionButton::Health(_) => {
-                    if !game_state.creature().is_asleep() {
-                        game_state.creature_mut().take_medicine();
+                    if !creature.is_asleep() && creature.health().value() != 100 {
+                        creature.take_medicine();
                     }
                 },
             }
