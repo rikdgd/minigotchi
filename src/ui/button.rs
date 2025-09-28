@@ -5,6 +5,7 @@ pub struct Button {
     pub pos: Vec2,
     pub size: Vec2,
     pub text: String,
+    pub font_size: f32,
     pub color: Color,
 }
 
@@ -25,7 +26,7 @@ impl Button {
         draw_rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y, color);
 
         // Calculates the dimensions of the text so they can be used to position the button text
-        let text_size = measure_text(&self.text, None, 12, 1.0);
+        let text_size = measure_text(&self.text, None, self.font_size as u16, 1.0);
 
         let text_x = self.pos.x + (self.size.x - text_size.width) / 2.0;
         let text_y = self.pos.y + (self.size.y + text_size.height) / 2.0;
@@ -34,7 +35,7 @@ impl Button {
             &self.text,
             text_x,
             text_y,
-            12.0,
+            self.font_size,
             BLACK,
         );
     }
@@ -59,6 +60,7 @@ impl Default for Button {
             pos: Vec2::new(0.0, 0.0),
             size: Vec2::new(50.0, 20.0),
             text: String::from("[button]"),
+            font_size: 12.0,
             color: Color::new(0.70, 0.70, 0.70, 1.0),
         }
     }
