@@ -27,7 +27,7 @@ pub async fn render_new_game_menu() -> GameState {
             BLACK,
         );
 
-        if confirm_btn.is_clicked() && name_buffer.len() != 0 {
+        if confirm_btn.is_clicked() && !name_buffer.is_empty() {
             break;
         }
 

@@ -163,7 +163,7 @@ impl Creature {
     ///
     /// # Parameters:
     /// * `food` - The food item that should be fed to the creature, the amount of food points the
-    /// creature receives, is indicated by the `Food::points()` method.
+    ///   creature receives, is indicated by the `Food::points()` method.
     pub fn eat(&mut self, food: Food) {
         if self.growth_stage == GrowthStage::Egg {
             return;
