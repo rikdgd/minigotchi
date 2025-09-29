@@ -4,9 +4,11 @@ pub mod stat_display;
 pub mod interaction_buttons;
 pub mod play_area;
 mod death_screen;
+mod age_display;
 
 pub use new_game_menu::*;
 pub use death_screen::render_death_screen;
+pub use age_display::draw_age_display;
 
 use macroquad::color::BLACK;
 use macroquad::prelude::{draw_text, measure_text};

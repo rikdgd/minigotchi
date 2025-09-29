@@ -91,7 +91,9 @@ async fn render_game(mut state: GameState) {
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
+        // Draw the creatures name and age
         ui::draw_creature_name(&state);
+        ui::draw_age_display(&state);
 
         for button in &buttons {
             button.get_button().render();
