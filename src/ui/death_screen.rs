@@ -2,7 +2,6 @@ use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::ui::{new_game_menu::render_new_game_menu, button::Button};
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
-use crate::utils::time::get_now_millis;
 
 const FONT_SIZE: u16 = 16;
 const ROW_HEIGHT: f32 = 12.0;
@@ -60,8 +59,9 @@ pub async fn render_death_screen(old_state: &GameState) -> GameState {
 }
 
 fn get_death_text(state: &GameState) -> [String; 3] {
-    let now = get_now_millis().expect("Failed to get the current time in millis");
-    let millis_alive = now - state.creature().time_created();
+    let death_time = state.creature().time_of_death()
+        .expect("The creature has no recorded time of death");
+    let millis_alive = death_time - state.creature().time_created();
     let hours_alive = millis_alive / 1000 / 60 / 60;
 
     [

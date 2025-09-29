@@ -51,6 +51,7 @@ pub struct Creature {
     asleep_since: Option<i64>,
     alive: bool,
     time_created: i64,
+    time_of_death: Option<i64>,
 }
 
 impl Creature {
@@ -72,6 +73,7 @@ impl Creature {
             asleep_since: None,
             alive: true,
             time_created: now,
+            time_of_death: None,
         }
     }
 
@@ -123,7 +125,7 @@ impl Creature {
             self.health.value() as u16;
 
         if stats_sum < 15 {
-            self.alive = false;
+            self.die()
         }
 
         let mut counter: u8 = 0;
@@ -133,12 +135,21 @@ impl Creature {
             }
         }
         if counter >= 2 {
-            self.alive = false;
+            self.die();
         }
 
         if self.health.value() == 0 {
-            self.alive = false;
+            self.die();
         }
+    }
+
+    /// Sets the creature's "alive" stat to `false` and records the time of death.
+    fn die(&mut self) {
+        let now = get_now_millis()
+            .expect("Failed to get the current SystemTime in millis");
+        
+        self.alive = false;
+        self.time_of_death = Some(now);
     }
 
     fn update_growth_stage(&mut self, now: i64) {
@@ -238,6 +249,10 @@ impl Creature {
     }
 
     pub fn time_created(&self) -> i64 { self.time_created }
+    
+    pub fn time_of_death(&self) -> Option<i64> {
+        self.time_of_death
+    }
     
     pub fn shape(&self) -> Texture2D {
         match self.growth_stage {
