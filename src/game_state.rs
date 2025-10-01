@@ -15,7 +15,7 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(creature_name: &str) -> Self {
-        let now = get_now_millis().expect("Failed to get the current time in millis");
+        let now = get_now_millis();
         let creature = Creature::new(creature_name, CreatureShapes::new_random(), now);
         let prev_growth_stage = creature.growth_stage();
 
@@ -37,7 +37,7 @@ impl GameState {
     }
 
     pub fn update(&mut self) {
-        let now = get_now_millis().expect("Failed to get the current time in millis");
+        let now = get_now_millis();
         self.last_update_time = now;
         self.creature.update_state(now);
     }

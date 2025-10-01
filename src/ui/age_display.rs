@@ -3,7 +3,7 @@ use crate::{GameState, SCREEN_WIDTH};
 use crate::utils::time::get_now_millis;
 
 pub fn draw_age_display(state: &GameState) {
-    let now_millis = get_now_millis().unwrap();
+    let now_millis = get_now_millis();
     let created_millis = state.creature().time_created();
     let hours_alive = (now_millis - created_millis) / 1000 / 60 / 60;
 
