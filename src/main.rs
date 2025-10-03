@@ -20,6 +20,8 @@ use utils::Location;
 use ui::play_area::draw_play_area;
 use shapes::sleeping_icon;
 use movements::{CreatureMovement, EggHop};
+use crate::animations::Animation;
+use crate::animations::creature_eat::CreatureEatAnimation;
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -51,16 +53,19 @@ async fn main() {
 }
 
 async fn render_game(mut state: GameState) {
+    // Set some state
     let buttons = InteractionButton::main_menu_buttons();
     let mut creature_movement = get_creature_movement(
         state.creature(),
         CREATURE_BASE_LOCATION
     );
     let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-9.0, -16.0));
+    let mut current_animation: Option<Box<dyn Animation>> = None;
 
+    // Enter the actual game loop
     loop {
         state.update();
-        handle_button_click(&buttons, &mut state);
+        handle_button_click(&buttons, &mut state, &mut current_animation);
 
         clear_background(BACKGROUND_COLOR);
         
@@ -99,6 +104,15 @@ async fn render_game(mut state: GameState) {
         for button in &buttons {
             button.get_button().render();
         }
+        
+        // If an animation is playing, render it
+        if let Some(animation) = current_animation.as_mut() {
+            if animation.playing() {
+                animation.render();
+            } else {
+                current_animation = None;
+            }
+        }
 
         if is_key_pressed(KeyCode::Escape) {
             break;
@@ -120,7 +134,7 @@ fn main_window_conf() -> Conf {
     }
 }
 
-fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
+fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState, animation: &mut Option<Box<dyn Animation>>) {
     let creature = game_state.creature_mut();
 
     for button in buttons {
@@ -131,6 +145,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                 InteractionButton::Food(_) => {
                     if !creature.is_asleep() && creature.food().value() != 100 {
                         creature.eat(Food::new_random());
+                        *animation = Some(Box::new(CreatureEatAnimation::new()));
                     }
                 },
                 InteractionButton::Joy(_) => {
