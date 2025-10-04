@@ -11,8 +11,8 @@ use crate::utils::time::get_now_millis;
 pub struct GameState {
     creature: Creature,
     pub prev_growth_stage: GrowthStage,
-    creature_movement: Box<dyn CreatureMovement>,
-    current_animation: Option<Box<dyn Animation>>,
+    pub creature_movement: Box<dyn CreatureMovement>,
+    pub current_animation: Option<Box<dyn Animation>>,
 }
 
 impl GameState {
@@ -50,7 +50,25 @@ impl GameState {
 
     pub fn update(&mut self) {
         let now = get_now_millis();
+
+        // Update the creature's state
         self.creature.update_state(now);
+
+        // Set the animation to None when it has finished
+        if let Some(animation) = &self.current_animation {
+            if !animation.playing() {
+                self.current_animation = None;
+            }
+        }
+
+        // Update the creature's movement if it happens to "evolve"
+        if self.prev_growth_stage != self.creature().growth_stage() {
+            self.creature_movement = get_creature_movement(
+                self.creature(),
+                CREATURE_BASE_LOCATION
+            );
+            self.prev_growth_stage = self.creature().growth_stage();
+        }
     }
     
     pub fn creature(&self) -> &Creature {
@@ -59,6 +77,10 @@ impl GameState {
     
     pub fn creature_mut(&mut self) -> &mut Creature {
         &mut self.creature
+    }
+
+    pub fn set_animation(&mut self, animation: Option<Box<dyn Animation>>) {
+        self.current_animation = animation;
     }
 }
 
