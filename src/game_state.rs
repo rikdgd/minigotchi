@@ -1,16 +1,18 @@
 use macroquad::file::load_file;
-use serde::{Serialize, Deserialize};
+use crate::animations::Animation;
 use crate::creature::{Creature, GrowthStage};
+use crate::CREATURE_BASE_LOCATION;
+use crate::movements::{get_creature_movement, CreatureMovement};
 use crate::shapes::CreatureShapes;
 use crate::save_management::store_game_state;
 use crate::utils::time::get_now_millis;
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameState {
     creature: Creature,
     pub prev_growth_stage: GrowthStage,
-    last_update_time: i64,
+    pub creature_movement: Box<dyn CreatureMovement>,
+    pub current_animation: Option<Box<dyn Animation>>,
 }
 
 impl GameState {
@@ -20,9 +22,19 @@ impl GameState {
         let prev_growth_stage = creature.growth_stage();
 
         Self {
+            creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
             prev_growth_stage,
-            last_update_time: now,
+            current_animation: None,
+        }
+    }
+
+    fn from_creature(creature: Creature) -> Self {
+        Self {
+            creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
+            prev_growth_stage: creature.growth_stage(),
+            creature,
+            current_animation: None,
         }
     }
     
@@ -30,16 +42,33 @@ impl GameState {
         let file_bytes = load_file(path).await?;
         let content_string = String::from_utf8_lossy(&file_bytes);
 
-        let state: Self = serde_json::from_str(&content_string)
+        let creature: Creature = serde_json::from_str(&content_string)
             .expect("Failed to deserialize GameState from savefile");
 
-        Ok(state)
+        Ok(Self::from_creature(creature))
     }
 
     pub fn update(&mut self) {
         let now = get_now_millis();
-        self.last_update_time = now;
+
+        // Update the creature's state
         self.creature.update_state(now);
+
+        // Set the animation to None when it has finished
+        if let Some(animation) = &self.current_animation {
+            if !animation.playing() {
+                self.current_animation = None;
+            }
+        }
+
+        // Update the creature's movement if it happens to "evolve"
+        if self.prev_growth_stage != self.creature().growth_stage() {
+            self.creature_movement = get_creature_movement(
+                self.creature(),
+                CREATURE_BASE_LOCATION
+            );
+            self.prev_growth_stage = self.creature().growth_stage();
+        }
     }
     
     pub fn creature(&self) -> &Creature {
@@ -48,6 +77,10 @@ impl GameState {
     
     pub fn creature_mut(&mut self) -> &mut Creature {
         &mut self.creature
+    }
+
+    pub fn set_animation(&mut self, animation: Box<dyn Animation>) {
+        self.current_animation = Some(animation);
     }
 }
 
