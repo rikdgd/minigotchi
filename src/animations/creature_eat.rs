@@ -4,6 +4,7 @@ use crate::include_texture;
 
 
 /// A `PopupAnimation` that shows the creature eating some food.
+#[derive(Debug, Copy, Clone)]
 pub struct CreatureEatAnimation {
     current_frame: usize,
     frame_timer: f32,
