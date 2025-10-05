@@ -85,6 +85,11 @@ impl Creature {
             self.update_stats(now);
             self.update_alive_status();
         }
+
+        // If the creature is still sleeping while its energy is already full, wake it up.
+        if self.asleep && self.energy.value() == 100 {
+            self.asleep = false;
+        }
     }
 
     fn update_stats(&mut self, now: i64) {
