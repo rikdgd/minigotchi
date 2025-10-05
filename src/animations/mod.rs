@@ -2,8 +2,7 @@ use macroquad::prelude::*;
 use crate::{BACKGROUND_COLOR, SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
 
-pub mod creature_eat;
-pub mod creature_health;
+pub mod creature_actions;
 
 /// An animation that can be rendered on the screen.
 pub trait Animation {

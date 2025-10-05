@@ -20,7 +20,7 @@ use utils::Location;
 use ui::play_area::draw_play_area;
 use shapes::sleeping_icon;
 use movements::{CreatureMovement, EggHop};
-use crate::animations::creature_eat::CreatureEatAnimation;
+use animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -126,7 +126,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.food().value() != 100 {
                         creature.eat(Food::new_random());
-                        game_state.set_animation(Box::new(CreatureEatAnimation::new()));
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Eating)));
                     }
                 },
                 InteractionButton::Joy(_) => {
@@ -139,6 +139,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.health().value() != 100 {
                         creature.take_medicine();
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Health)));
                     }
                 },
             }
