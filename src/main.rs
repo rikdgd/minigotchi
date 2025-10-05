@@ -133,6 +133,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.joy().value() != 100 {
                         creature.play();
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Play)));
                     }
                 },
                 InteractionButton::Health(_) => {

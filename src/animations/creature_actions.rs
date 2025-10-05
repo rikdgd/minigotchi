@@ -10,6 +10,7 @@ use crate::include_texture;
 pub enum ActionAnimationType {
     Eating,
     Health,
+    Play,
 }
 
 /// The `PopupAnimation` that is used to display animations for *actions* the user can take to take
@@ -95,6 +96,14 @@ impl CreatureActionAnimation {
                 include_texture!("../../resources/animations/health/syringe1.png"),
                 include_texture!("../../resources/animations/health/syringe2.png"),
                 include_texture!("../../resources/animations/health/syringe3.png"),
+            ],
+            
+            ActionAnimationType::Play =>
+            [
+                include_texture!("../../resources/animations/playing/basketball0.png"),
+                include_texture!("../../resources/animations/playing/basketball1.png"),
+                include_texture!("../../resources/animations/playing/basketball2.png"),
+                include_texture!("../../resources/animations/playing/basketball3.png"),
             ]
         }
     }
