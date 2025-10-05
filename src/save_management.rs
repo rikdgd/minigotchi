@@ -5,8 +5,7 @@ use crate::game_state::GameState;
 
 pub fn store_game_state(state: &GameState) -> std::io::Result<()> {
     let file_path = get_save_file_path();
-
-    let game_state = serde_json::to_string_pretty(&state)?;
+    let creature = serde_json::to_string_pretty(state.creature())?;
 
     let mut file = OpenOptions::new()
         .write(true)
@@ -15,7 +14,7 @@ pub fn store_game_state(state: &GameState) -> std::io::Result<()> {
         .open(file_path)?;
 
 
-    file.write_all(game_state.as_bytes())?;
+    file.write_all(creature.as_bytes())?;
     file.flush()?;
 
     Ok(())

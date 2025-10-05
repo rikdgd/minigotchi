@@ -25,7 +25,6 @@ pub enum CreatureShapes {
 impl CreatureShapes {
     pub fn get_texture(&self) -> Texture2D {
         match self {
-            // CreatureShapes::Turtle => Texture2D::from_file_with_format(include_bytes!("../resources/turtle.png"), None),
             CreatureShapes::Turtle => include_texture!("../resources/turtle.png"),
             CreatureShapes::Snail => include_texture!("../resources/snail.png"),
             CreatureShapes::Fish => include_texture!("../resources/fish.png"),

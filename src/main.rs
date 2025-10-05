@@ -6,6 +6,7 @@ mod game_state;
 mod ui;
 mod save_management;
 mod movements;
+mod animations;
 
 use macroquad::prelude::*;
 use game_state::GameState;
@@ -14,11 +15,12 @@ use ui::{render_new_game_menu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use food::Food;
-use movements::{get_creature_movement, get_sleeping_location};
+use movements::get_sleeping_location;
 use utils::Location;
 use ui::play_area::draw_play_area;
 use shapes::sleeping_icon;
 use movements::{CreatureMovement, EggHop};
+use animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
@@ -50,17 +52,15 @@ async fn main() {
 }
 
 async fn render_game(mut state: GameState) {
+    // Set some state
     let buttons = InteractionButton::main_menu_buttons();
-    let mut creature_movement = get_creature_movement(
-        state.creature(),
-        CREATURE_BASE_LOCATION
-    );
     let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-9.0, -16.0));
 
+    // Enter the actual game loop
     loop {
         state.update();
         handle_button_click(&buttons, &mut state);
-
+        
         clear_background(BACKGROUND_COLOR);
         
         // Draw the playing area the creature walks around in
@@ -71,19 +71,9 @@ async fn render_game(mut state: GameState) {
         let creature_location = if state.creature().is_asleep() {
             get_sleeping_location(state.creature())
         } else {
-            creature_movement.next_position()
+            state.creature_movement.next_position()
         };
         draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
-
-        // Update the creature's movement when it changes growth stage
-        if state.prev_growth_stage != state.creature().growth_stage() {
-            creature_movement = get_creature_movement(
-                state.creature(),
-                CREATURE_BASE_LOCATION
-            );
-
-            state.prev_growth_stage = state.creature().growth_stage();
-        }
 
         // Draw the "Zz" texture when sleeping
         if state.creature().is_asleep() {
@@ -97,6 +87,13 @@ async fn render_game(mut state: GameState) {
 
         for button in &buttons {
             button.get_button().render();
+        }
+        
+        // If an animation is playing, render it
+        if let Some(animation) = state.current_animation.as_mut() {
+            if animation.playing() {
+                animation.render();
+            }
         }
 
         if is_key_pressed(KeyCode::Escape) {
@@ -120,26 +117,30 @@ fn main_window_conf() -> Conf {
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
-    let creature = game_state.creature_mut();
-
     for button in buttons {
         if button.get_button().is_clicked() {
             match button {
-                InteractionButton::Energy(_) => creature.toggle_sleep(),
+                InteractionButton::Energy(_) => game_state.creature_mut().toggle_sleep(),
 
                 InteractionButton::Food(_) => {
+                    let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.food().value() != 100 {
                         creature.eat(Food::new_random());
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Eating)));
                     }
                 },
                 InteractionButton::Joy(_) => {
+                    let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.joy().value() != 100 {
                         creature.play();
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Play)));
                     }
                 },
                 InteractionButton::Health(_) => {
+                    let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.health().value() != 100 {
                         creature.take_medicine();
+                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Health)));
                     }
                 },
             }

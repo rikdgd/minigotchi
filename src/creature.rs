@@ -145,8 +145,7 @@ impl Creature {
 
     /// Sets the creature's "alive" stat to `false` and records the time of death.
     fn die(&mut self) {
-        let now = get_now_millis()
-            .expect("Failed to get the current SystemTime in millis");
+        let now = get_now_millis();
         
         self.alive = false;
         self.time_of_death = Some(now);
@@ -194,7 +193,7 @@ impl Creature {
         self.asleep = !self.asleep;
 
         if self.asleep {
-            let now = get_now_millis().expect("Failed to get the current time in millis");
+            let now = get_now_millis();
             self.asleep_since = Some(now);
         } else {
             self.asleep_since = None;
