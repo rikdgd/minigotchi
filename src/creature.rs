@@ -78,6 +78,9 @@ impl Creature {
     }
 
     /// Updates this creature's state for each minute passed since last update.
+    ///
+    /// # Parameters:
+    /// `now` - The current time in milliseconds based on **SystemTime**
     pub fn update_state(&mut self, now: i64) {
         self.update_growth_stage(now);
 
