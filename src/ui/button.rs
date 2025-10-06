@@ -29,7 +29,7 @@ impl Button {
         let text_size = measure_text(&self.text, None, self.font_size as u16, 1.0);
 
         let text_x = self.pos.x + (self.size.x - text_size.width) / 2.0;
-        let text_y = self.pos.y + (self.size.y + text_size.height) / 2.0;
+        let text_y = self.pos.y + (self.size.y + 6.0) / 2.0;
 
         draw_text(
             &self.text,
