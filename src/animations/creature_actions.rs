@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use super::{Animation, PopupAnimation};
 use crate::include_texture;
+use crate::food::Food;
 
 /// An enum used with the `CreatureActionAnimation` struct to tell it which animation to render. 
 /// There are multiple different animations that can be rendered, mapped to the following values:
@@ -8,7 +9,7 @@ use crate::include_texture;
 /// * `ActionAnimationType::Health` - The animation that plays when the creature's health stat is increased
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ActionAnimationType {
-    Eating,
+    Eating(Food),
     Health,
     Play,
 }
@@ -82,24 +83,37 @@ impl CreatureActionAnimation {
     
     fn get_frames(action_type: ActionAnimationType) -> [Texture2D; 4] {
         match action_type {
-            ActionAnimationType::Eating => 
-            [
-                include_texture!("../../resources/animations/eating/burger0.png"),
-                include_texture!("../../resources/animations/eating/burger1.png"),
-                include_texture!("../../resources/animations/eating/burger2.png"),
-                include_texture!("../../resources/animations/eating/burger3.png"),
-            ],
+            ActionAnimationType::Eating(food) => {
+                match food {
+                    Food::Soup => [
+                        include_texture!("../../resources/animations/eating/soup0.png"),
+                        include_texture!("../../resources/animations/eating/soup1.png"),
+                        include_texture!("../../resources/animations/eating/soup2.png"),
+                        include_texture!("../../resources/animations/eating/soup3.png"),
+                    ],
+                    Food::Cookie => [
+                        include_texture!("../../resources/animations/eating/cookie0.png"),
+                        include_texture!("../../resources/animations/eating/cookie1.png"),
+                        include_texture!("../../resources/animations/eating/cookie2.png"),
+                        include_texture!("../../resources/animations/eating/cookie3.png"),
+                    ],
+                    Food::Burger => [
+                        include_texture!("../../resources/animations/eating/burger0.png"),
+                        include_texture!("../../resources/animations/eating/burger1.png"),
+                        include_texture!("../../resources/animations/eating/burger2.png"),
+                        include_texture!("../../resources/animations/eating/burger3.png"),
+                    ],
+                }
+            },
             
-            ActionAnimationType::Health => 
-            [
+            ActionAnimationType::Health => [
                 include_texture!("../../resources/animations/health/syringe0.png"),
                 include_texture!("../../resources/animations/health/syringe1.png"),
                 include_texture!("../../resources/animations/health/syringe2.png"),
                 include_texture!("../../resources/animations/health/syringe3.png"),
             ],
             
-            ActionAnimationType::Play =>
-            [
+            ActionAnimationType::Play => [
                 include_texture!("../../resources/animations/playing/basketball0.png"),
                 include_texture!("../../resources/animations/playing/basketball1.png"),
                 include_texture!("../../resources/animations/playing/basketball2.png"),
