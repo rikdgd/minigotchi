@@ -66,14 +66,16 @@ async fn render_game(mut state: GameState) {
         // Draw the playing area the creature walks around in
         draw_play_area(state.creature());
         
-        // Draw the creature at the correct location:
-        let creature_texture = state.creature().shape();
-        let creature_location = if state.creature().is_asleep() {
-            get_sleeping_location(state.creature())
-        } else {
-            state.creature_movement.next_position()
-        };
-        draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
+        // Draw the creature at the correct location when there is no animation playing:
+        if state.current_animation.is_none() {
+            let creature_texture = state.creature().shape();
+            let creature_location = if state.creature().is_asleep() {
+                get_sleeping_location(state.creature())
+            } else {
+                state.creature_movement.next_position()
+            };
+            draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
+        }
 
         // Draw the "Zz" texture when sleeping
         if state.creature().is_asleep() {
