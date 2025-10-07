@@ -69,6 +69,9 @@ async fn render_game(mut state: GameState) {
         // Draw the creature at the correct location when there is no animation playing:
         if state.current_animation.is_none() {
             let creature_texture = state.creature().shape();
+            if state.creature_movement.mirror_sprite() {
+                // TODO: Mirror the sprite somehow
+            }
             let creature_location = if state.creature().is_asleep() {
                 get_sleeping_location(state.creature())
             } else {

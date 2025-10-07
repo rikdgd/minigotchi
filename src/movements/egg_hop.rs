@@ -37,4 +37,8 @@ impl CreatureMovement for EggHop {
             false => self.base_location.translate(0.0, 5.0),
         }
     }
+
+    fn mirror_sprite(&self) -> bool {
+        false
+    }
 }
