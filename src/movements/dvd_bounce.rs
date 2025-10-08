@@ -55,6 +55,14 @@ impl DvdBounce {
             false => self.creature_location.y -= STEP_SIZE,
         }
     }
+
+    pub fn moving_right(&self) -> bool {
+        self.x_toggle
+    }
+
+    pub fn moving_down(&self) -> bool {
+        self.y_toggle
+    }
 }
 
 impl CreatureMovement for DvdBounce {
@@ -66,5 +74,9 @@ impl CreatureMovement for DvdBounce {
         }
 
         self.creature_location
+    }
+
+    fn mirror_sprite(&self) -> bool {
+        self.x_toggle
     }
 }

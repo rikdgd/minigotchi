@@ -65,17 +65,7 @@ async fn render_game(mut state: GameState) {
         
         // Draw the playing area the creature walks around in
         draw_play_area(state.creature());
-        
-        // Draw the creature at the correct location when there is no animation playing:
-        if state.current_animation.is_none() {
-            let creature_texture = state.creature().shape();
-            let creature_location = if state.creature().is_asleep() {
-                get_sleeping_location(state.creature())
-            } else {
-                state.creature_movement.next_position()
-            };
-            draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
-        }
+        draw_creature(&mut state);
 
         // Draw the "Zz" texture when sleeping
         if state.creature().is_asleep() {
@@ -115,6 +105,35 @@ fn main_window_conf() -> Conf {
         window_height: SCREEN_HEIGHT,
         window_resizable: false,
         ..Default::default()
+    }
+}
+
+fn draw_creature(state: &mut GameState) {
+    // The creature shouldn't be drawn when an animation is playing.
+    if state.current_animation.is_some() {
+        return;
+    }
+
+    let creature_texture = state.creature().shape();
+    let creature_location = if state.creature().is_asleep() {
+        get_sleeping_location(state.creature())
+    } else {
+        state.creature_movement.next_position()
+    };
+
+    if state.creature_movement.mirror_sprite() {
+        draw_texture_ex(
+            &creature_texture,
+            creature_location.x,
+            creature_location.y,
+            BLACK,
+            DrawTextureParams {
+                flip_x: true,
+                ..Default::default()
+            }
+        );
+    } else {
+        draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
     }
 }
 

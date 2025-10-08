@@ -13,6 +13,9 @@ use crate::utils::Location;
 pub trait CreatureMovement {
     /// Returns the next `Location` of the animation.
     fn next_position(&mut self) -> Location;
+    /// Returns `true` when the creature's sprite should be horizontally mirrored in the current
+    /// state of the movement.
+    fn mirror_sprite(&self) -> bool;
 }
 
 /// Returns the movement/animation the creature should have on screen when idle, depending on its growth stage.
