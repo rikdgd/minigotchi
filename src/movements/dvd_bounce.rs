@@ -77,7 +77,6 @@ impl CreatureMovement for DvdBounce {
     }
 
     fn mirror_sprite(&self) -> bool {
-        // When x_toggle is true, the creature moves right. It should be mirrored when going left
-        !self.x_toggle
+        self.x_toggle
     }
 }
