@@ -9,7 +9,7 @@ const FOOD_OFFSET_MINUTES: i64 = 16 * MINUTE_MILLIS;
 const ENERGY_OFFSET_MINUTES: i64 = 3 * MINUTE_MILLIS;
 const JOY_OFFSET_MINUTES: i64 = 18 * MINUTE_MILLIS;
 const HEALTH_OFFSET_MINUTES: i64 = MINUTE_MILLIS;
-pub const PLAYING_ENERGY_COST: u8 = 10;
+pub const PLAYING_ENERGY_COST: u8 = 20;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
