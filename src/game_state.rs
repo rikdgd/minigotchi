@@ -79,8 +79,11 @@ impl GameState {
         &mut self.creature
     }
 
+    /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
     pub fn set_animation<T: Animation + 'static>(&mut self, animation: T) {
-        self.current_animation = Some(Box::new(animation));
+        if self.current_animation.is_none() {
+            self.current_animation = Some(Box::new(animation));
+        }
     }
 }
 

@@ -138,6 +138,10 @@ fn draw_creature(state: &mut GameState) {
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
+    if game_state.current_animation.is_some() {
+        return;
+    }
+    
     for button in buttons {
         if button.get_button().is_clicked() {
             match button {
