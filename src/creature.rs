@@ -9,6 +9,7 @@ const FOOD_OFFSET_MINUTES: i64 = 16 * MINUTE_MILLIS;
 const ENERGY_OFFSET_MINUTES: i64 = 3 * MINUTE_MILLIS;
 const JOY_OFFSET_MINUTES: i64 = 18 * MINUTE_MILLIS;
 const HEALTH_OFFSET_MINUTES: i64 = MINUTE_MILLIS;
+pub const PLAYING_ENERGY_COST: u8 = 10;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -208,16 +209,17 @@ impl Creature {
         }
     }
 
-    /// Interaction used to *"play"* with the creature in order to increase its `joy` stat.
+    /// Interaction used to *"play"* with the creature in order to increase its `joy` stat. This also
+    /// adds more time to its `health_decrease_time_left` field, and decreases its `energy` by 20.
     pub fn play(&mut self) {
-        if self.growth_stage == GrowthStage::Egg || self.energy.value() < 5 {
+        if self.growth_stage == GrowthStage::Egg || self.energy.value() < PLAYING_ENERGY_COST {
             return;
         }
 
         self.joy.add(30);
         self.health_decrease_time_left += 10 * MINUTE_MILLIS;
 
-        self.energy.subtract(20);
+        self.energy.subtract(PLAYING_ENERGY_COST);
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.

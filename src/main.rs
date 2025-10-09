@@ -148,21 +148,25 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                     if !creature.is_asleep() && creature.food().value() != 100 {
                         let food = Food::new_random();
                         creature.eat(food);
-                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Eating(food))));
+                        game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
                     }
                 },
                 InteractionButton::Joy(_) => {
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.joy().value() != 100 {
-                        creature.play();
-                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Play)));
+                        if creature.energy().value() >= creature::PLAYING_ENERGY_COST {
+                            creature.play();
+                            game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
+
+                        }
+
                     }
                 },
                 InteractionButton::Health(_) => {
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.health().value() != 100 {
                         creature.take_medicine();
-                        game_state.set_animation(Box::new(CreatureActionAnimation::new(ActionAnimationType::Health)));
+                        game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
                     }
                 },
             }

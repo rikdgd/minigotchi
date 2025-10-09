@@ -79,8 +79,8 @@ impl GameState {
         &mut self.creature
     }
 
-    pub fn set_animation(&mut self, animation: Box<dyn Animation>) {
-        self.current_animation = Some(animation);
+    pub fn set_animation<T: Animation + 'static>(&mut self, animation: T) {
+        self.current_animation = Some(Box::new(animation));
     }
 }
 
