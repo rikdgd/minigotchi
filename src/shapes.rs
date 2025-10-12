@@ -10,7 +10,7 @@ macro_rules! include_texture {
     };
 }
 
-const NUM_SHAPES: u32 = 7;
+const NUM_SHAPES: u32 = 8;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -21,6 +21,7 @@ pub enum CreatureShapes {
     Frog,
     Squid,
     BigEar,
+    Sheep,
 }
 
 impl CreatureShapes {
@@ -33,6 +34,7 @@ impl CreatureShapes {
             CreatureShapes::Frog => include_texture!("../resources/frog.png"),
             CreatureShapes::Squid => include_texture!("../resources/squid.png"),
             CreatureShapes::BigEar => include_texture!("../resources/big-ear.png"),
+            CreatureShapes::Sheep => include_texture!("../resources/sheep.png"),
         }
     }
     
@@ -44,7 +46,8 @@ impl CreatureShapes {
             3 => Self::Mouse,
             4 => Self::Frog,
             5 => Self::Squid,
-            _ => Self::BigEar,
+            6 => Self::BigEar,
+            _ => Self::Sheep,
         }
     }
 }
