@@ -48,7 +48,6 @@ pub struct Creature {
     health_decrease_time_left: i64,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
-    asleep: bool,
     asleep_since: Option<i64>,
     alive: bool,
     time_created: i64,
@@ -70,7 +69,6 @@ impl Creature {
             health_decrease_time_left: 0,
             shape,
             growth_stage: GrowthStage::Egg,
-            asleep: false,
             asleep_since: None,
             alive: true,
             time_created: now,
@@ -91,8 +89,8 @@ impl Creature {
         }
 
         // If the creature is still sleeping while its energy is already full, wake it up.
-        if self.asleep && self.energy.value() == 100 {
-            self.asleep = false;
+        if self.is_asleep() && self.energy.value() == 100 {
+            self.asleep_since = None;
         }
     }
 
@@ -105,7 +103,7 @@ impl Creature {
         }
 
         while now - self.last_time_lower_energy >= ENERGY_OFFSET_MINUTES {
-            if self.asleep {
+            if self.is_asleep() {
                 self.energy.add(1);
             }
 
@@ -199,11 +197,8 @@ impl Creature {
             return;
         }
 
-        self.asleep = !self.asleep;
-
-        if self.asleep {
-            let now = get_now_millis();
-            self.asleep_since = Some(now);
+        if self.asleep_since.is_none() {
+            self.asleep_since = Some(get_now_millis());
         } else {
             self.asleep_since = None;
         }
@@ -246,7 +241,7 @@ impl Creature {
     }
 
     pub fn is_asleep(&self) -> bool {
-        self.asleep
+        self.asleep_since.is_some()
     }
 
     pub fn growth_stage(&self) -> GrowthStage {
