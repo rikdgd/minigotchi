@@ -10,7 +10,7 @@ macro_rules! include_texture {
     };
 }
 
-const NUM_SHAPES: u32 = 8;
+const NUM_SHAPES: u8 = 8;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CreatureShapes {
