@@ -29,7 +29,7 @@ pub trait CreatureMovement {
 pub fn get_creature_movement(creature: &Creature, base_location: Location) -> Box<dyn CreatureMovement> {
     match creature.growth_stage() {
         GrowthStage::Egg => Box::new(EggHop::new(base_location)),
-        GrowthStage::Adult => Box::new(DvdBounce::new()),
+        GrowthStage::Adult => Box::new(DvdBounce::new(creature)),
         _ => Box::new(ZigZag::default().base_location(base_location)),
     }
 }

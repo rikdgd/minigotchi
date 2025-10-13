@@ -1,9 +1,9 @@
 use macroquad::time::get_frame_time;
+use crate::creature::Creature;
 use crate::movements::CreatureMovement;
-use crate::utils::Location;
+use crate::utils::{Dimensions, Location};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
-const SHAPE_DIMENSION: f32 = 25.0;
 const STEP_SIZE: f32 = 1.0;
 
 /// A `CreatureMovement` that makes the creature bounce around in a "box" like the dvd logo.
@@ -12,31 +12,37 @@ pub struct DvdBounce {
     creature_location: Location,
     x_toggle: bool,
     y_toggle: bool,
+    shape_dimensions: Dimensions,
 }
 
 impl DvdBounce {
-    pub fn new() -> Self {
+    pub fn new(creature: &Creature) -> Self {
+        let shape = creature.shape();
         // TODO: Randomize the starting location and direction
         Self {
             timer: 0.0,
             creature_location: Location { x: 50.0, y: 50.0 },
             x_toggle: true,
             y_toggle: true,
+            shape_dimensions: Dimensions {
+                width: shape.width(),
+                height: shape.height(),
+            }
         }
     }
 
     /// Updates the movement toggles when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
-        if self.creature_location.y >= PLAY_AREA_RECT.bottom() - SHAPE_DIMENSION ||
-            self.creature_location.y <= PLAY_AREA_RECT.y
-        {
-            self.y_toggle = !self.y_toggle;
-        }
-
-        if self.creature_location.x >= PLAY_AREA_RECT.right() - SHAPE_DIMENSION ||
+        if self.creature_location.x >= PLAY_AREA_RECT.right() - self.shape_dimensions.width ||
             self.creature_location.x <= PLAY_AREA_RECT.x
         {
             self.x_toggle = !self.x_toggle;
+        }
+        
+        if self.creature_location.y >= PLAY_AREA_RECT.bottom() - self.shape_dimensions.height ||
+            self.creature_location.y <= PLAY_AREA_RECT.y
+        {
+            self.y_toggle = !self.y_toggle;
         }
     }
 
