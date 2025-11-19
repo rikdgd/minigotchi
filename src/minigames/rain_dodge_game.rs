@@ -2,11 +2,18 @@ use macroquad::prelude::*;
 use crate::utils::Location;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 
+/// Any implementation of this is a playable minigame inside minigotchi.
+///
+/// ## Methods:
+/// * `run_game` - Calling this method runs and renders the minigame onto the screen.
+/// * `is_running` - Returns a `bool` that tells whether the game has ended or not,
+/// **true** if it is still running.
 pub trait MiniGame {
     async fn run_game(&mut self);
     fn is_running(&self) -> bool;
 }
 
+/// A minigame in which the player needs to dodge falling droplets of rain.
 #[derive(Debug, Clone)]
 pub struct RainDodgeGame {
     player_x_pos: f32,
@@ -39,6 +46,9 @@ impl RainDodgeGame {
         self.update_drop_locations();
     }
 
+    /// Updates the drops in the current game's state. It makes existing drop locations move down,
+    /// and adds up to **5** new droplets to the state. Drop locations that exit the screen are also
+    /// removed.
     fn update_drop_locations(&mut self) {
         let mut new_drops = Vec::new();
 
@@ -56,7 +66,7 @@ impl RainDodgeGame {
         for _ in 0..new_drop_count {
             let new_drop = Location {
                 x: rand::gen_range(0, SCREEN_WIDTH) as f32,
-                y: rand::gen_range(0, SCREEN_HEIGHT) as f32,
+                y: SCREEN_HEIGHT as f32,
             };
 
             new_drops.push(new_drop);
