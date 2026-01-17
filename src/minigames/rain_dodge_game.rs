@@ -2,6 +2,10 @@ use macroquad::prelude::*;
 use crate::utils::Location;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 
+
+const MAX_NEW_DROP_SPAWNS: i32 = 5;
+
+
 /// Any implementation of this is a playable minigame inside minigotchi.
 ///
 /// ## Methods:
@@ -10,7 +14,6 @@ use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 /// **true** if it is still running.
 pub trait MiniGame {
     async fn run_game(&mut self);
-    fn is_running(&self) -> bool;
 }
 
 /// A minigame in which the player needs to dodge falling droplets of rain.
@@ -20,15 +23,21 @@ pub struct RainDodgeGame {
     drop_locations: Vec<Location>,
     health: i32,
     score: i32,
+    update_timer: f32,
 }
 
 impl MiniGame for RainDodgeGame {
     async fn run_game(&mut self) {
-        todo!()
-    }
+        while self.health > 0 {
+            self.update_timer += get_frame_time();
+            if self.update_timer >= 1.0 {
+                self.update_timer = 0.0;
 
-    fn is_running(&self) -> bool {
-        self.health > 0
+                self.update_state();
+
+                // TODO: Draw the raindrops
+            }
+        }
     }
 }
 
@@ -39,11 +48,13 @@ impl RainDodgeGame {
             drop_locations: Vec::new(),
             health: 100,
             score: 0,
+            update_timer: 0.0,
         }
     }
 
     fn update_state(&mut self) {
         self.update_drop_locations();
+        self.generate_new_drops();
     }
 
     /// Updates the drops in the current game's state. It makes existing drop locations move down,
@@ -61,17 +72,34 @@ impl RainDodgeGame {
             }
         }
 
-        // Generate new drops at the top of the screen
-        let new_drop_count = rand::gen_range(0, 5);
+        self.drop_locations = new_drops;
+    }
+    
+    /// Generates some new raindrops at the top of the screen with a random x location. These are
+    /// directly added to `self.drop_locations`.
+    fn generate_new_drops(&mut self) {
+        let new_drop_count = rand::gen_range(0, MAX_NEW_DROP_SPAWNS);
         for _ in 0..new_drop_count {
             let new_drop = Location {
                 x: rand::gen_range(0, SCREEN_WIDTH) as f32,
                 y: SCREEN_HEIGHT as f32,
             };
 
-            new_drops.push(new_drop);
+            self.drop_locations.push(new_drop);
         }
+    }
+}
 
-        self.drop_locations = new_drops;
+
+
+#[cfg(test)]
+mod Tests {
+    use crate::utils::Location;
+    use crate::minigames::rain_dodge_game::*;
+    
+    #[test]
+    fn update_drop_locations() {
+        let mut game = RainDodgeGame::new();
+        game.drop_locations.push(Location { x: 0.0, y: 10.0 });
     }
 }
