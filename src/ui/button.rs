@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-
+#[derive(Debug, Clone)]
 pub struct Button {
     pub pos: Vec2,
     pub size: Vec2,

@@ -1,10 +1,12 @@
 mod egg_hop;
 mod zig_zag;
 mod dvd_bounce;
+mod cursor_stalk;
 
 pub use egg_hop::EggHop;
 pub use zig_zag::ZigZag;
 pub use dvd_bounce::DvdBounce;
+pub use cursor_stalk::CursorStalk;
 use crate::creature::{Creature, GrowthStage};
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
