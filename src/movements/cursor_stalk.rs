@@ -37,9 +37,7 @@ impl CursorStalk {
 
         self.current_location.x += x_move;
         self.current_location.y += y_move;
-
-        // TODO: Check if the creature is running out of bounds
-        let _play_area = PLAY_AREA_RECT;    // Use this for bound checking
+        self.validify_location();
     }
 
     fn calc_mouse_distance(&self, mouse_pos: &Vec2) -> f32 {
@@ -58,6 +56,30 @@ impl CursorStalk {
             x_dist / mouse_dist * MOVE_SPEED,
             y_dist / mouse_dist * MOVE_SPEED,
         )
+    }
+
+    /// Checks if `self.current_location` is still within the bounds of the playing area, and if not,
+    /// sets it's location to the nearest one inside of bounds.
+    fn validify_location(&mut self) {
+        let left_limit = PLAY_AREA_RECT.left();
+        if self.current_location.x <= left_limit {
+            self.current_location.x = left_limit;
+        }
+
+        let right_limit = PLAY_AREA_RECT.right() - self.shape_dimensions.width;
+        if self.current_location.x >= right_limit {
+            self.current_location.x = right_limit;
+        }
+
+        let top_limit = PLAY_AREA_RECT.top();
+        if self.current_location.y <= top_limit {
+            self.current_location.y = top_limit;
+        }
+
+        let bottom_limit = PLAY_AREA_RECT.bottom() - self.shape_dimensions.height;
+        if self.current_location.y >= bottom_limit {
+            self.current_location.y = bottom_limit;
+        }
     }
 }
 
