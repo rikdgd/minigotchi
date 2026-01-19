@@ -98,3 +98,84 @@ impl CreatureMovement for CursorStalk {
         self.last_x_movement >= 0.0
     }
 }
+
+
+
+#[cfg(test)]
+mod test {
+    use crate::movements::CursorStalk;
+    use crate::utils::{Dimensions, Location};
+    use crate::ui::play_area::PLAY_AREA_RECT;
+
+    struct LocationExpectedPair {
+        test_location: Location,
+        expected_location: Location,
+    }
+
+    #[test]
+    fn validify_location() {
+        let valid_location = Location {
+            x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
+            y: PLAY_AREA_RECT.top() + PLAY_AREA_RECT.h / 2.0,
+        };
+
+        let invalid_locations = vec![
+            // Location is too low
+            LocationExpectedPair {
+                test_location: Location {
+                    x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
+                    y: PLAY_AREA_RECT.bottom() + 10.0
+                },
+                expected_location: Location {
+                    x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
+                    y: PLAY_AREA_RECT.bottom(),
+                },
+            },
+            // Location is too far left
+            LocationExpectedPair {
+                test_location: Location {
+                    x: PLAY_AREA_RECT.left() - 1.0,
+                    y: PLAY_AREA_RECT.top() + PLAY_AREA_RECT.h / 2.0
+                },
+                expected_location: Location {
+                    x: PLAY_AREA_RECT.left(),
+                    y: PLAY_AREA_RECT.top() + PLAY_AREA_RECT.h / 2.0,
+                },
+            },
+            // Location is too low and too far to the right
+            LocationExpectedPair {
+                test_location: Location {
+                    x: PLAY_AREA_RECT.right() + 1.0,
+                    y: PLAY_AREA_RECT.bottom() + 5.0,
+                },
+                expected_location: Location {
+                    x: PLAY_AREA_RECT.right(),
+                    y: PLAY_AREA_RECT.bottom(),
+                },
+            },
+        ];
+
+
+        // Test the valid location
+        let mut valid_movement = CursorStalk {
+            current_location: valid_location,
+            last_x_movement: 0.0,
+            timer: 0.0,
+            shape_dimensions: Dimensions { width: 10.0, height: 10.0 },
+        };
+        valid_movement.validify_location();
+        assert_eq!(valid_movement.current_location, valid_location);
+
+        // Test invalid locations
+        for test_pair in invalid_locations {
+            let mut stalk_movement = CursorStalk {
+                current_location: test_pair.test_location,
+                last_x_movement: 0.0,
+                timer: 0.0,
+                shape_dimensions: Dimensions { width: 10.0, height: 10.0 },
+            };
+            stalk_movement.validify_location();
+            assert_eq!(stalk_movement.current_location, test_pair.expected_location);
+        }
+    }
+}
