@@ -1,10 +1,13 @@
+use macroquad::prelude::*;
 use macroquad::file::load_file;
+use macroquad::input::mouse_position;
 use crate::animations::Animation;
 use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
-use crate::movements::{get_creature_movement, CreatureMovement};
+use crate::movements::{get_creature_movement, CreatureMovement, CursorStalk};
 use crate::shapes::CreatureShapes;
 use crate::save_management::store_game_state;
+use crate::ui::play_area::PLAY_AREA_RECT;
 use crate::utils::time::get_now_millis;
 
 
@@ -13,6 +16,7 @@ pub struct GameState {
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
+    is_stalking_cursor: bool,
 }
 
 impl GameState {
@@ -26,6 +30,7 @@ impl GameState {
             creature,
             prev_growth_stage,
             current_animation: None,
+            is_stalking_cursor: false,
         }
     }
 
@@ -35,6 +40,7 @@ impl GameState {
             prev_growth_stage: creature.growth_stage(),
             creature,
             current_animation: None,
+            is_stalking_cursor: false,
         }
     }
     
@@ -68,6 +74,30 @@ impl GameState {
                 CREATURE_BASE_LOCATION
             );
             self.prev_growth_stage = self.creature().growth_stage();
+        }
+
+        if self.creature.growth_stage() == GrowthStage::Adult {
+            // Make the creature move towards the mouse pointer when it is in the playing area
+            let mouse_pos: Vec2 = mouse_position().into();
+            if PLAY_AREA_RECT.contains(mouse_pos) && !self.is_stalking_cursor {
+                self.is_stalking_cursor = true;
+                self.creature_movement = Box::new(CursorStalk::new(
+                    self.creature_movement.next_position(),
+                    self.creature()
+                ));
+            }
+
+            // Stop the creature from moving towards the mouse pointer when it's not inside
+            // the play area anymore
+            if !PLAY_AREA_RECT.contains(mouse_pos) && self.is_stalking_cursor {
+                self.is_stalking_cursor = false;
+                let new_movement = get_creature_movement(
+                    self.creature(),
+                    self.creature_movement.current_position()
+                );
+
+                self.creature_movement = new_movement;
+            }
         }
     }
     

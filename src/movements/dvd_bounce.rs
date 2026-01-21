@@ -31,6 +31,11 @@ impl DvdBounce {
         }
     }
 
+    pub fn start_location(mut self, location: Location) -> Self {
+        self.creature_location = location;
+        self
+    }
+
     /// Updates the movement toggles when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
         if self.creature_location.x >= PLAY_AREA_RECT.right() - self.shape_dimensions.width ||
@@ -79,6 +84,10 @@ impl CreatureMovement for DvdBounce {
             self.timer = 0.0;
         }
 
+        self.creature_location
+    }
+
+    fn current_position(&self) -> Location {
         self.creature_location
     }
 

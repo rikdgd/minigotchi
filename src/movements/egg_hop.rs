@@ -38,6 +38,13 @@ impl CreatureMovement for EggHop {
         }
     }
 
+    fn current_position(&self) -> Location {
+        match self.is_grounded {
+            true => self.base_location,
+            false => self.base_location.translate(0.0, 5.0),
+        }
+    }
+
     fn mirror_sprite(&self) -> bool {
         false
     }

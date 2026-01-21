@@ -94,6 +94,10 @@ impl CreatureMovement for CursorStalk {
         self.current_location
     }
 
+    fn current_position(&self) -> Location {
+        self.current_location
+    }
+
     fn mirror_sprite(&self) -> bool {
         self.last_x_movement >= 0.0
     }
