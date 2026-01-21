@@ -114,6 +114,7 @@ mod test {
 
     #[test]
     fn validify_location() {
+        const TEST_SPRITE_DIMENSION: f32 = 10.0;
         let valid_location = Location {
             x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
             y: PLAY_AREA_RECT.top() + PLAY_AREA_RECT.h / 2.0,
@@ -124,11 +125,11 @@ mod test {
             LocationExpectedPair {
                 test_location: Location {
                     x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
-                    y: PLAY_AREA_RECT.bottom() + 10.0
+                    y: PLAY_AREA_RECT.bottom(),
                 },
                 expected_location: Location {
                     x: PLAY_AREA_RECT.left() + PLAY_AREA_RECT.w / 2.0,
-                    y: PLAY_AREA_RECT.bottom(),
+                    y: PLAY_AREA_RECT.bottom() - TEST_SPRITE_DIMENSION,
                 },
             },
             // Location is too far left
@@ -149,8 +150,8 @@ mod test {
                     y: PLAY_AREA_RECT.bottom() + 5.0,
                 },
                 expected_location: Location {
-                    x: PLAY_AREA_RECT.right(),
-                    y: PLAY_AREA_RECT.bottom(),
+                    x: PLAY_AREA_RECT.right() - TEST_SPRITE_DIMENSION,
+                    y: PLAY_AREA_RECT.bottom() - TEST_SPRITE_DIMENSION,
                 },
             },
         ];
@@ -161,7 +162,7 @@ mod test {
             current_location: valid_location,
             last_x_movement: 0.0,
             timer: 0.0,
-            shape_dimensions: Dimensions { width: 10.0, height: 10.0 },
+            shape_dimensions: Dimensions { width: TEST_SPRITE_DIMENSION, height: TEST_SPRITE_DIMENSION },
         };
         valid_movement.validify_location();
         assert_eq!(valid_movement.current_location, valid_location);
@@ -172,7 +173,7 @@ mod test {
                 current_location: test_pair.test_location,
                 last_x_movement: 0.0,
                 timer: 0.0,
-                shape_dimensions: Dimensions { width: 10.0, height: 10.0 },
+                shape_dimensions: Dimensions { width: TEST_SPRITE_DIMENSION, height: TEST_SPRITE_DIMENSION },
             };
             stalk_movement.validify_location();
             assert_eq!(stalk_movement.current_location, test_pair.expected_location);
