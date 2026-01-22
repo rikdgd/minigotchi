@@ -4,7 +4,7 @@ use crate::movements::CreatureMovement;
 use crate::utils::{Dimensions, Location};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
-const MOVE_SPEED: f32 = 1.0;
+const MOVE_SPEED: f32 = 1.5;
 const FRAME_TIME: f32 = 0.25;
 
 /// # CursorStalk
@@ -35,11 +35,13 @@ impl CursorStalk {
         let mouse_pos: Vec2 = mouse_position().into();
         let (x_move, y_move) = self.calc_xy_movement(&mouse_pos);
 
+        self.last_x_movement = x_move;
         self.current_location.x += x_move;
         self.current_location.y += y_move;
         self.validify_location();
     }
 
+    // TODO: Use sprite center for calculations
     fn calc_mouse_distance(&self, mouse_pos: &Vec2) -> f32 {
         let x_dist = mouse_pos.x - self.current_location.x;
         let y_dist = mouse_pos.y - self.current_location.y;
@@ -47,6 +49,7 @@ impl CursorStalk {
         (x_dist.powi(2) + y_dist.powi(2)).sqrt()
     }
 
+    // TODO: Use sprite center for calculations
     fn calc_xy_movement(&self, mouse_pos: &Vec2) -> (f32, f32) {
         let x_dist = mouse_pos.x - self.current_location.x;
         let y_dist = mouse_pos.y - self.current_location.y;
@@ -84,6 +87,10 @@ impl CursorStalk {
 }
 
 impl CreatureMovement for CursorStalk {
+    fn current_position(&self) -> Location {
+        self.current_location
+    }
+
     fn next_position(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer >= FRAME_TIME {
@@ -91,10 +98,6 @@ impl CreatureMovement for CursorStalk {
             self.timer = 0.0;
         }
 
-        self.current_location
-    }
-
-    fn current_position(&self) -> Location {
         self.current_location
     }
 

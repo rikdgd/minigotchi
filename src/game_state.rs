@@ -76,6 +76,7 @@ impl GameState {
             self.prev_growth_stage = self.creature().growth_stage();
         }
 
+        // TODO: Move cursor stalking logic into a separate function
         if self.creature.growth_stage() == GrowthStage::Adult {
             // Make the creature move towards the mouse pointer when it is in the playing area
             let mouse_pos: Vec2 = mouse_position().into();
