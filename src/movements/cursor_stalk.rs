@@ -36,23 +36,33 @@ impl CursorStalk {
         let (x_move, y_move) = self.calc_xy_movement(&mouse_pos);
 
         self.last_x_movement = x_move;
-        self.current_location.x += x_move;
-        self.current_location.y += y_move;
+        self.current_location.x = (self.current_location.x + x_move).round();
+        self.current_location.y = (self.current_location.y + y_move).round();
         self.validify_location();
     }
+    
+    /// Gets the `Location` representing the center of the sprite, accounting for the creature's
+    /// location on the screen.
+    fn sprite_center(&self) -> Location {
+        Location {
+            x: self.current_location.x + self.shape_dimensions.width / 2.0,
+            y: self.current_location.y + self.shape_dimensions.height / 2.0,
+        }
+    }
 
-    // TODO: Use sprite center for calculations
     fn calc_mouse_distance(&self, mouse_pos: &Vec2) -> f32 {
-        let x_dist = mouse_pos.x - self.current_location.x;
-        let y_dist = mouse_pos.y - self.current_location.y;
+        let creature_location = self.sprite_center();
+        let x_dist = mouse_pos.x - creature_location.x;
+        let y_dist = mouse_pos.y - creature_location.y;
 
         (x_dist.powi(2) + y_dist.powi(2)).sqrt()
     }
 
     // TODO: Use sprite center for calculations
     fn calc_xy_movement(&self, mouse_pos: &Vec2) -> (f32, f32) {
-        let x_dist = mouse_pos.x - self.current_location.x;
-        let y_dist = mouse_pos.y - self.current_location.y;
+        let creature_location = self.sprite_center();
+        let x_dist = mouse_pos.x - creature_location.x;
+        let y_dist = mouse_pos.y - creature_location.y;
         let mouse_dist = self.calc_mouse_distance(mouse_pos);
 
         (
