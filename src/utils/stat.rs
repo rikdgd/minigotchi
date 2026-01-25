@@ -42,6 +42,7 @@ impl Stat {
     /// Sets the Stat to the provided value <br>
     /// returns [std::io::ErrorKind::InvalidInput] when value does not fit range: <br>
     /// _0 <= value <= 100_
+    #[allow(unused)]
     pub fn set(&mut self, value: u8) -> Result<(), std::io::Error> {
         if value <= 100 {
             self.0 = value;

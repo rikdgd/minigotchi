@@ -2,9 +2,10 @@
 name = "minigotchi"
 version = "0.1.0"
 edition = "2024"
+authors = ["Rik de Goede <rik.dgd@gmail.com>"]
+description = "A very small tamagotchi for your desktop."
 
 [dependencies]
 macroquad = "0.4.14"
-chrono = "0.4.41"
 serde =  { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
