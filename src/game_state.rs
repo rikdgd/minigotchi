@@ -76,7 +76,27 @@ impl GameState {
             self.prev_growth_stage = self.creature().growth_stage();
         }
 
-        // TODO: Move cursor stalking logic into a separate function
+        self.toggle_cursor_stalking();
+    }
+    
+    pub fn creature(&self) -> &Creature {
+        &self.creature
+    }
+    
+    pub fn creature_mut(&mut self) -> &mut Creature {
+        &mut self.creature
+    }
+
+    /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
+    pub fn set_animation<T: Animation + 'static>(&mut self, animation: T) {
+        if self.current_animation.is_none() {
+            self.current_animation = Some(Box::new(animation));
+        }
+    }
+    
+    /// The **toggle_cursor_stalking** function toggles `self.is_stalking_cursor` when appropriate. 
+    /// This in turn sets the creature's movement to `movements::cursor_stalk::CursorStalk`.
+    fn toggle_cursor_stalking(&mut self) {
         if self.creature.growth_stage() == GrowthStage::Adult {
             // Make the creature move towards the mouse pointer when it is in the playing area
             let mouse_pos: Vec2 = mouse_position().into();
@@ -99,21 +119,6 @@ impl GameState {
 
                 self.creature_movement = new_movement;
             }
-        }
-    }
-    
-    pub fn creature(&self) -> &Creature {
-        &self.creature
-    }
-    
-    pub fn creature_mut(&mut self) -> &mut Creature {
-        &mut self.creature
-    }
-
-    /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
-    pub fn set_animation<T: Animation + 'static>(&mut self, animation: T) {
-        if self.current_animation.is_none() {
-            self.current_animation = Some(Box::new(animation));
         }
     }
 }

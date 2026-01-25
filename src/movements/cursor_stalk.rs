@@ -58,7 +58,6 @@ impl CursorStalk {
         (x_dist.powi(2) + y_dist.powi(2)).sqrt()
     }
 
-    // TODO: Use sprite center for calculations
     fn calc_xy_movement(&self, mouse_pos: &Vec2) -> (f32, f32) {
         let creature_location = self.sprite_center();
         let x_dist = mouse_pos.x - creature_location.x;
