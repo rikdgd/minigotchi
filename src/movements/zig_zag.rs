@@ -85,6 +85,13 @@ impl CreatureMovement for ZigZag {
         }
     }
 
+    fn current_position(&self) -> Location {
+        Location {
+            x: self.base_location.x + self.x_shift,
+            y: self.base_location.y + self.y_shift,
+        }
+    }
+
     fn mirror_sprite(&self) -> bool {
         self.x_toggle
     }
