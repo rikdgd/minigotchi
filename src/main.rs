@@ -14,6 +14,7 @@ use save_management::get_save_file_path;
 use ui::{render_new_game_menu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
+use ui::play_area::PLAY_AREA_RECT;
 use food::Food;
 use movements::get_sleeping_location;
 use utils::Location;
@@ -79,6 +80,9 @@ async fn render_game(mut state: GameState) {
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
+        // Draw the sickness icon when the creature is sick
+        draw_sickness_icon(&state);
+        
         // Draw the creatures name and age
         ui::draw_creature_name(&state);
         ui::draw_age_display(&state);
@@ -143,6 +147,26 @@ fn draw_creature(state: &mut GameState) {
     }
 }
 
+fn draw_sickness_icon(state: &GameState) {
+    // The sprite has a width of 20 pixels: 'resources/status_icons/creature-sick.png'
+    const SICKNESS_ICON_WIDTH: f32 = 20.0;
+    
+    if state.creature().is_sick() {
+        let icon = shapes::creature_sick_icon();
+        let draw_location = Location {
+            x: PLAY_AREA_RECT.right() - SICKNESS_ICON_WIDTH - 2.0,
+            y: PLAY_AREA_RECT.top() + 2.0,
+        };
+        
+        draw_texture(
+            &icon, 
+            draw_location.x,
+            draw_location.y, 
+            BLACK,
+        );
+    }
+}
+
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
     if game_state.current_animation.is_some() {
         return;
@@ -174,7 +198,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                 },
                 InteractionButton::Health(_) => {
                     let creature = game_state.creature_mut();
-                    if !creature.is_asleep() && creature.health().value() != 100 {
+                    if !creature.is_asleep() && creature.is_sick() {
                         creature.take_medicine();
                         game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
                     }
