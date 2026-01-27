@@ -1,14 +1,15 @@
 use macroquad::texture::Texture2D;
+use macroquad::rand::gen_range;
 use crate::food::Food;
 use serde::{Deserialize, Serialize};
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
-const FOOD_OFFSET_MINUTES: i64 = 16 * MINUTE_MILLIS;
-const ENERGY_OFFSET_MINUTES: i64 = 3 * MINUTE_MILLIS;
-const JOY_OFFSET_MINUTES: i64 = 18 * MINUTE_MILLIS;
-const HEALTH_OFFSET_MINUTES: i64 = MINUTE_MILLIS;
+const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
+const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
+const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
+const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
 pub const PLAYING_ENERGY_COST: u8 = 20;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
@@ -45,10 +46,10 @@ pub struct Creature {
     last_time_lower_joy: i64,
     last_time_lower_energy: i64,
     last_time_lower_health: i64,
-    health_decrease_time_left: i64,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
+    is_sick: bool,
     alive: bool,
     time_created: i64,
     time_of_death: Option<i64>,
@@ -66,10 +67,10 @@ impl Creature {
             last_time_lower_joy: now,
             last_time_lower_energy: now,
             last_time_lower_health: now,
-            health_decrease_time_left: 0,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
+            is_sick: false,
             alive: true,
             time_created: now,
             time_of_death: None,
@@ -97,30 +98,32 @@ impl Creature {
     fn update_stats(&mut self, now: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= FOOD_OFFSET_MINUTES {
+        while now - self.last_time_lower_food >= FOOD_OFFSET_MILLIS {
             self.food.subtract(1);
-            self.last_time_lower_food += FOOD_OFFSET_MINUTES;
+            self.last_time_lower_food += FOOD_OFFSET_MILLIS;
         }
 
-        while now - self.last_time_lower_energy >= ENERGY_OFFSET_MINUTES {
+        while now - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS {
             if self.is_asleep() {
                 self.energy.add(1);
             }
 
-            self.last_time_lower_energy += ENERGY_OFFSET_MINUTES;
+            self.last_time_lower_energy += ENERGY_OFFSET_MILLIS;
         }
 
-        while now - self.last_time_lower_joy >= JOY_OFFSET_MINUTES {
+        while now - self.last_time_lower_joy >= JOY_OFFSET_MILLIS {
             self.joy.subtract(1);
-            self.last_time_lower_joy += JOY_OFFSET_MINUTES;
+            self.last_time_lower_joy += JOY_OFFSET_MILLIS;
         }
 
-        while now - self.last_time_lower_health >= HEALTH_OFFSET_MINUTES {
-            if self.health_decrease_time_left >= HEALTH_OFFSET_MINUTES {
-                self.health.subtract(1);
-                self.health_decrease_time_left -= HEALTH_OFFSET_MINUTES;
+        while now - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS {
+            if self.is_sick {
+                self.health.subtract(10);
+            } else {
+                self.health.add(1);
             }
-            self.last_time_lower_health += HEALTH_OFFSET_MINUTES;
+
+            self.last_time_lower_health += HEALTH_OFFSET_MILLIS;
         }
     }
 
@@ -135,13 +138,13 @@ impl Creature {
             self.die()
         }
 
-        let mut counter: u8 = 0;
+        let mut zero_stat_counter: u8 = 0;
         for stat in [self.food, self.joy, self.energy, self.health] {
             if stat.value() == 0 {
-                counter += 1;
+                zero_stat_counter += 1;
             }
         }
-        if counter >= 2 {
+        if zero_stat_counter >= 2 {
             self.die();
         }
 
@@ -187,7 +190,11 @@ impl Creature {
         }
 
         self.food.add(food.points());
-        self.health_decrease_time_left += (food.points() / 3) as i64 * MINUTE_MILLIS;
+
+        // The creature has a 20% chance of getting sick when eating
+        if gen_range(0, 6) == 0 {
+            self.is_sick = true;
+        }
     }
 
     /// Interaction used to make the creature sleep or wake up, when it sleeps, its `asleep_since` state
@@ -212,15 +219,14 @@ impl Creature {
         }
 
         self.joy.add(30);
-        self.health_decrease_time_left += 10 * MINUTE_MILLIS;
-
         self.energy.subtract(PLAYING_ENERGY_COST);
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn take_medicine(&mut self) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.health.add(40);
+        // Only heal the creature successfully 50% of the time.
+        if gen_range(0, 2) == 0 && self.growth_stage != GrowthStage::Egg {
+            self.is_sick = false;
         }
     }
     
