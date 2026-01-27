@@ -131,20 +131,16 @@ fn draw_creature(state: &mut GameState) {
         state.creature_movement.next_position()
     };
 
-    if state.creature_movement.mirror_sprite() {
-        draw_texture_ex(
+    draw_texture_ex(
             &creature_texture,
             creature_location.x,
             creature_location.y,
             BLACK,
             DrawTextureParams {
-                flip_x: true,
+                flip_x: state.creature_movement.mirror_sprite(),
                 ..Default::default()
             }
         );
-    } else {
-        draw_texture(&creature_texture, creature_location.x, creature_location.y, BLACK);
-    }
 }
 
 fn draw_sickness_icon(state: &GameState) {
