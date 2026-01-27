@@ -59,6 +59,12 @@ async fn render_game(mut state: GameState) {
     // Enter the actual game loop
     loop {
         state.update();
+
+        // If the creature has died, render the death screen and set the new state
+        if !state.creature().alive() {
+            state = render_death_screen(&state).await;
+        }
+
         handle_button_click(&buttons, &mut state);
         
         clear_background(BACKGROUND_COLOR);
