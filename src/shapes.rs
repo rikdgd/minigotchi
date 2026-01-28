@@ -64,3 +64,7 @@ pub fn kid_shape() -> Texture2D {
 pub fn sleeping_icon() -> Texture2D {
     include_texture!("../resources/zz.png")
 }
+
+pub fn creature_sick_icon() -> Texture2D {
+    include_texture!("../resources/status_icons/creature-sick.png")
+}
