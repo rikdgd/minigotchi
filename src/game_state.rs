@@ -97,7 +97,7 @@ impl GameState {
     /// The **toggle_cursor_stalking** function toggles `self.is_stalking_cursor` when appropriate. 
     /// This in turn sets the creature's movement to `movements::cursor_stalk::CursorStalk`.
     fn toggle_cursor_stalking(&mut self) {
-        if self.creature.growth_stage() == GrowthStage::Adult {
+        if self.creature.growth_stage() == GrowthStage::Adult && !self.creature.is_asleep() {
             // Make the creature move towards the mouse pointer when it is in the playing area
             let mouse_pos: Vec2 = mouse_position().into();
             if PLAY_AREA_RECT.contains(mouse_pos) && !self.is_stalking_cursor {
