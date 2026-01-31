@@ -118,7 +118,7 @@ impl Creature {
 
         while now - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS {
             if self.is_sick {
-                self.health.subtract(10);
+                self.health.subtract(20);
             } else {
                 self.health.add(1);
             }
@@ -128,18 +128,15 @@ impl Creature {
     }
 
     fn update_alive_status(&mut self) {
-        // Use u16 conversions to forecome overflows.
-        let stats_sum =
-            self.food.value() as u16 +
-            self.joy.value() as u16 +
-            self.health.value() as u16;
-
-        if stats_sum < 15 {
+        // Use u16 conversions to prevent overflows.
+        let stats_sum = self.food.value() as u16 + self.joy.value() as u16;
+        if stats_sum < 10 {
             self.die()
         }
 
         let mut zero_stat_counter: u8 = 0;
-        for stat in [self.food, self.joy, self.energy, self.health] {
+        // Health can be ignored, since 0 health always results in death
+        for stat in [self.food, self.joy, self.energy] {
             if stat.value() == 0 {
                 zero_stat_counter += 1;
             }
@@ -191,8 +188,8 @@ impl Creature {
 
         self.food.add(food.points());
 
-        // The creature has a 1/6 chance of getting sick when eating
-        if gen_range(0, 6) == 0 {
+        // The creature has a 1/4 chance of getting sick when eating
+        if gen_range(0, 4) == 0 {
             self.is_sick = true;
         }
     }
