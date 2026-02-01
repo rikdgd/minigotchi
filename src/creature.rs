@@ -56,23 +56,23 @@ pub struct Creature {
 }
 
 impl Creature {
-    pub fn new(name: &str, shape: CreatureShapes, now: i64) -> Self {
+    pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
         Self {
             name: String::from(name),
             food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
-            last_time_lower_food: now,
-            last_time_lower_joy: now,
-            last_time_lower_energy: now,
-            last_time_lower_health: now,
+            last_time_lower_food: now_millis,
+            last_time_lower_joy: now_millis,
+            last_time_lower_energy: now_millis,
+            last_time_lower_health: now_millis,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
             is_sick: false,
             alive: true,
-            time_created: now,
+            time_created: now_millis,
             time_of_death: None,
         }
     }
@@ -80,12 +80,12 @@ impl Creature {
     /// Updates this creature's state for each minute passed since last update.
     ///
     /// # Parameters:
-    /// `now` - The current time in milliseconds based on **SystemTime**
-    pub fn update_state(&mut self, now: i64) {
-        self.update_growth_stage(now);
+    /// `now_millis` - The current time in milliseconds based on **SystemTime**
+    pub fn update_state(&mut self, now_millis: i64) {
+        self.update_growth_stage(now_millis);
 
         if self.growth_stage != GrowthStage::Egg {
-            self.update_stats(now);
+            self.update_stats(now_millis);
         }
 
         // If the creature is still sleeping while its energy is already full, wake it up.
@@ -94,17 +94,17 @@ impl Creature {
         }
     }
 
-    fn update_stats(&mut self, now: i64) {
+    fn update_stats(&mut self, now_millis: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= FOOD_OFFSET_MILLIS && self.alive{
+        while now_millis - self.last_time_lower_food >= FOOD_OFFSET_MILLIS && self.alive{
             self.food.subtract(1);
             self.last_time_lower_food += FOOD_OFFSET_MILLIS;
 
             self.update_alive_status(self.last_time_lower_food);
         }
 
-        while now - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS && self.alive {
             if self.is_asleep() {
                 self.energy.add(1);
             }
@@ -113,14 +113,14 @@ impl Creature {
             self.update_alive_status(self.last_time_lower_energy);
         }
 
-        while now - self.last_time_lower_joy >= JOY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.last_time_lower_joy >= JOY_OFFSET_MILLIS && self.alive {
             self.joy.subtract(1);
             self.last_time_lower_joy += JOY_OFFSET_MILLIS;
 
             self.update_alive_status(self.last_time_lower_joy);
         }
 
-        while now - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS && self.alive {
+        while now_millis - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
                 self.health.subtract(20);
             } else {
@@ -169,7 +169,7 @@ impl Creature {
         self.time_of_death = Some(time_of_death);
     }
 
-    fn update_growth_stage(&mut self, now: i64) {
+    fn update_growth_stage(&mut self, now_millis: i64) {
         let growth_delay = match self.growth_stage {
             GrowthStage::Egg => Some(MINUTE_MILLIS),
             GrowthStage::Baby => Some(60 * MINUTE_MILLIS),
@@ -178,7 +178,7 @@ impl Creature {
         };
 
         if let Some(growth_delay) = growth_delay &&
-            now - self.time_created > growth_delay {
+            now_millis - self.time_created > growth_delay {
                 self.growth_stage.next_stage();
         }
     }
