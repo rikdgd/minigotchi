@@ -12,9 +12,10 @@ simple animations, input-driven interactions, and persistent saves.
 
 ## Features
 
-- Egg → hatch lifecycle
+- Creature lifecycle
+- Multiple different creatures to hatch 
 - Feed, play and care actions
-- Animated actions and simple movement behaviours
+- Animated actions and simple movement behaviors
 - Persistent save file written next to the executable (`save-file.txt`)
 
 ## Build
