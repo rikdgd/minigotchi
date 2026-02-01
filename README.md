@@ -1,5 +1,5 @@
 # Minigotchi
-This is a very small desktop Tamagotchi built using the **macroquad** crate. Your pet starts as an egg and
+This is a very small desktop Tamagotchi built using the [**macroquad**](https://macroquad.rs/) crate. Your pet starts as an egg and
 hatches quickly; you take care of it by interacting with on-screen buttons and watching simple
 animations and movement behaviours.
 
