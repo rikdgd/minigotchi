@@ -56,23 +56,23 @@ pub struct Creature {
 }
 
 impl Creature {
-    pub fn new(name: &str, shape: CreatureShapes, now: i64) -> Self {
+    pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
         Self {
             name: String::from(name),
             food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
-            last_time_lower_food: now,
-            last_time_lower_joy: now,
-            last_time_lower_energy: now,
-            last_time_lower_health: now,
+            last_time_lower_food: now_millis,
+            last_time_lower_joy: now_millis,
+            last_time_lower_energy: now_millis,
+            last_time_lower_health: now_millis,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
             is_sick: false,
             alive: true,
-            time_created: now,
+            time_created: now_millis,
             time_of_death: None,
         }
     }
@@ -80,13 +80,12 @@ impl Creature {
     /// Updates this creature's state for each minute passed since last update.
     ///
     /// # Parameters:
-    /// `now` - The current time in milliseconds based on **SystemTime**
-    pub fn update_state(&mut self, now: i64) {
-        self.update_growth_stage(now);
+    /// `now_millis` - The current time in milliseconds based on **SystemTime**
+    pub fn update_state(&mut self, now_millis: i64) {
+        self.update_growth_stage(now_millis);
 
         if self.growth_stage != GrowthStage::Egg {
-            self.update_stats(now);
-            self.update_alive_status();
+            self.update_stats(now_millis);
         }
 
         // If the creature is still sleeping while its energy is already full, wake it up.
@@ -95,73 +94,82 @@ impl Creature {
         }
     }
 
-    fn update_stats(&mut self, now: i64) {
+    fn update_stats(&mut self, now_millis: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now - self.last_time_lower_food >= FOOD_OFFSET_MILLIS {
+        while now_millis - self.last_time_lower_food >= FOOD_OFFSET_MILLIS && self.alive{
             self.food.subtract(1);
             self.last_time_lower_food += FOOD_OFFSET_MILLIS;
+
+            self.update_alive_status(self.last_time_lower_food);
         }
 
-        while now - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS {
+        while now_millis - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS && self.alive {
             if self.is_asleep() {
                 self.energy.add(1);
             }
 
             self.last_time_lower_energy += ENERGY_OFFSET_MILLIS;
+            self.update_alive_status(self.last_time_lower_energy);
         }
 
-        while now - self.last_time_lower_joy >= JOY_OFFSET_MILLIS {
+        while now_millis - self.last_time_lower_joy >= JOY_OFFSET_MILLIS && self.alive {
             self.joy.subtract(1);
             self.last_time_lower_joy += JOY_OFFSET_MILLIS;
+
+            self.update_alive_status(self.last_time_lower_joy);
         }
 
-        while now - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS {
+        while now_millis - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
-                self.health.subtract(10);
+                self.health.subtract(20);
             } else {
                 self.health.add(1);
             }
 
             self.last_time_lower_health += HEALTH_OFFSET_MILLIS;
+            self.update_alive_status(self.last_time_lower_health);
         }
     }
 
-    fn update_alive_status(&mut self) {
-        // Use u16 conversions to forecome overflows.
-        let stats_sum =
-            self.food.value() as u16 +
-            self.joy.value() as u16 +
-            self.health.value() as u16;
-
-        if stats_sum < 15 {
-            self.die()
+    /// Calls the creature's `die()` method when appropriate, updating its `alive` status.
+    ///
+    /// ## Parameters:
+    /// * `update_time` - The time at which the creature's alive status should be updated. This time
+    /// is only used to calculate and display the creature's age on the death screen.
+    fn update_alive_status(&mut self, update_time: i64) {
+        // Use u16 conversions to prevent overflows.
+        let stats_sum = self.food.value() as u16 + self.joy.value() as u16;
+        if stats_sum < 10 {
+            self.die(update_time)
         }
 
         let mut zero_stat_counter: u8 = 0;
-        for stat in [self.food, self.joy, self.energy, self.health] {
+        // Health can be ignored, since 0 health always results in death
+        for stat in [self.food, self.joy, self.energy] {
             if stat.value() == 0 {
                 zero_stat_counter += 1;
             }
         }
         if zero_stat_counter >= 2 {
-            self.die();
+            self.die(update_time);
         }
 
         if self.health.value() == 0 {
-            self.die();
+            self.die(update_time);
         }
     }
 
     /// Sets the creature's "alive" stat to `false` and records the time of death.
-    fn die(&mut self) {
-        let now = get_now_millis();
-        
+    ///
+    /// ## Parameters:
+    /// * `time_of_death` - The time at which the creature has died in millis.
+    fn die(&mut self, time_of_death: i64) {
         self.alive = false;
-        self.time_of_death = Some(now);
+        self.time_of_death = Some(time_of_death);
     }
 
-    fn update_growth_stage(&mut self, now: i64) {
+    fn update_growth_stage(&mut self, now_millis: i64) {
         let growth_delay = match self.growth_stage {
             GrowthStage::Egg => Some(MINUTE_MILLIS),
             GrowthStage::Baby => Some(60 * MINUTE_MILLIS),
@@ -170,7 +178,7 @@ impl Creature {
         };
 
         if let Some(growth_delay) = growth_delay &&
-            now - self.time_created > growth_delay {
+            now_millis - self.time_created > growth_delay {
                 self.growth_stage.next_stage();
         }
     }
@@ -191,8 +199,8 @@ impl Creature {
 
         self.food.add(food.points());
 
-        // The creature has a 1/6 chance of getting sick when eating
-        if gen_range(0, 6) == 0 {
+        // The creature has a 1/4 chance of getting sick when eating
+        if gen_range(0, 4) == 0 {
             self.is_sick = true;
         }
     }
@@ -287,27 +295,28 @@ mod tests {
     #[test]
     fn update_alive_status() {
         // Arrange
+        let example_time = 1000;
         let mut creature_a = Creature::new("A", CreatureShapes::Snail, 0);
         creature_a.food = Stat::new(0).unwrap();
         creature_a.joy = Stat::new(0).unwrap();
 
         let mut creature_b = Creature::new("B", CreatureShapes::Mouse, 0);
         creature_b.food = Stat::new(5).unwrap();
-        creature_b.joy = Stat::new(5).unwrap();
-        creature_b.energy = Stat::new(5).unwrap();
-        creature_b.health = Stat::new(4).unwrap();
+        creature_b.joy = Stat::new(4).unwrap();
+        creature_b.energy = Stat::new(100).unwrap();
+        creature_b.health = Stat::new(100).unwrap();
 
         let mut creature_c = Creature::new("C", CreatureShapes::Squid, 0);
         creature_c.energy = Stat::new(0).unwrap();
         creature_c.food = Stat::new(5).unwrap();
-        creature_c.joy = Stat::new(5).unwrap();
-        creature_c.health = Stat::new(5).unwrap();
+        creature_c.joy = Stat::new(6).unwrap();
+        creature_c.health = Stat::new(1).unwrap();
 
 
         // Act
-        creature_a.update_alive_status();
-        creature_b.update_alive_status();
-        creature_c.update_alive_status();
+        creature_a.update_alive_status(example_time);
+        creature_b.update_alive_status(example_time);
+        creature_c.update_alive_status(example_time);
 
 
         // Assert
