@@ -18,11 +18,21 @@ pub async fn render_new_game_menu() -> GameState {
 
         confirm_btn.render();
 
-        let text_size = measure_text(&name_buffer, None, 28, 1.0);
+        let message = "Enter name:";
+        let message_text_size = measure_text(message, None, 20, 1.0);
+        draw_text(
+            message,
+            (SCREEN_WIDTH as f32 - message_text_size.width) / 2.0,
+            (SCREEN_HEIGHT as f32 - message_text_size.height) / 2.0 - 45.0,
+            20.0,
+            BLACK,
+        );
+
+        let name_text_size = measure_text(&name_buffer, None, 28, 1.0);
         draw_text(
             &name_buffer,
-            (SCREEN_WIDTH as f32 - text_size.width) / 2.0,
-            (SCREEN_HEIGHT as f32 - text_size.height) / 2.0 - 15.0,
+            (SCREEN_WIDTH as f32 - name_text_size.width) / 2.0,
+            (SCREEN_HEIGHT as f32 - name_text_size.height) / 2.0 - 15.0,
             28.0,
             BLACK,
         );
