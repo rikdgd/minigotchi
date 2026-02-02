@@ -96,11 +96,11 @@ impl CursorStalk {
 }
 
 impl CreatureMovement for CursorStalk {
-    fn current_position(&self) -> Location {
+    fn current_location(&self) -> Location {
         self.current_location
     }
 
-    fn next_position(&mut self) -> Location {
+    fn next_location(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer >= FRAME_TIME {
             self.update_state();

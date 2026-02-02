@@ -2,11 +2,13 @@ mod egg_hop;
 mod zig_zag;
 mod dvd_bounce;
 mod cursor_stalk;
+mod sickness_shake;
 
 pub use egg_hop::EggHop;
 pub use zig_zag::ZigZag;
 pub use dvd_bounce::DvdBounce;
 pub use cursor_stalk::CursorStalk;
+pub use sickness_shake::SicknessShakeMovement;
 use crate::creature::{Creature, GrowthStage};
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
@@ -14,9 +16,9 @@ use crate::utils::Location;
 /// Represents a movement the creature can make on the screen, for example as an idle animation.
 pub trait CreatureMovement {
     /// Returns the current `Location` and **does not** advance the movements state.
-    fn current_position(&self) -> Location;
+    fn current_location(&self) -> Location;
     /// Returns the next `Location` of the movement and updates it's state.
-    fn next_position(&mut self) -> Location;
+    fn next_location(&mut self) -> Location;
     /// Returns `true` when the creature's sprite should be horizontally mirrored in the current
     /// state of the movement.
     fn mirror_sprite(&self) -> bool;
@@ -24,11 +26,11 @@ pub trait CreatureMovement {
 
 /// Returns the movement/animation the creature should have on screen when idle, depending on its growth stage.
 /// 
-/// # Parameters:
+/// ## Parameters:
 /// * `creature` - The creature from the save file that is being played.
 /// * `base_location` - The place where the movement starts, most movements stay around this location.
 /// 
-/// # Returns:
+/// ## Returns:
 /// Returns a `Box<dyn CreatureMovement>` so it has a known size and can be stored in a mutable variable.
 pub fn get_creature_movement(creature: &Creature, base_location: Location) -> Box<dyn CreatureMovement> {
     match creature.growth_stage() {

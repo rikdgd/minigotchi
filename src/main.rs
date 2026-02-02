@@ -76,7 +76,7 @@ async fn render_game(mut state: GameState) {
 
         // Draw the "Zz" texture when sleeping
         if state.creature().is_asleep() {
-            let location = sleeping_icon_movement.next_position();
+            let location = sleeping_icon_movement.next_location();
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
@@ -128,7 +128,7 @@ fn draw_creature(state: &mut GameState) {
     let creature_location = if state.creature().is_asleep() {
         get_sleeping_location(state.creature())
     } else {
-        state.creature_movement.next_position()
+        state.creature_movement.next_location()
     };
 
     draw_texture_ex(
