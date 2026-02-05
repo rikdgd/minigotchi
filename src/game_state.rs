@@ -130,7 +130,7 @@ impl GameState {
     /// and disables it when the creature is cured.
     fn toggle_sickness_movement(&mut self) {
         if self.creature().is_sick() && !self.sickness_movement_playing {
-            self.creature_movement = Box::new(SicknessShakeMovement::default());
+            self.creature_movement = Box::new(SicknessShakeMovement::new(self.creature()));
             self.sickness_movement_playing = true;
         }
         
