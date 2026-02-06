@@ -14,7 +14,6 @@ use save_management::get_save_file_path;
 use ui::{render_new_game_menu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
-use ui::play_area::PLAY_AREA_RECT;
 use food::Food;
 use movements::get_sleeping_location;
 use utils::Location;
