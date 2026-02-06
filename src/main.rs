@@ -80,9 +80,6 @@ async fn render_game(mut state: GameState) {
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
         
-        // Draw the sickness icon when the creature is sick
-        draw_sickness_icon(&state);
-        
         // Draw the creatures name and age
         ui::draw_creature_name(&state);
         ui::draw_age_display(&state);
@@ -141,26 +138,6 @@ fn draw_creature(state: &mut GameState) {
                 ..Default::default()
             }
         );
-}
-
-fn draw_sickness_icon(state: &GameState) {
-    // The sprite has a width of 20 pixels: 'resources/status_icons/creature-sick.png'
-    const SICKNESS_ICON_WIDTH: f32 = 20.0;
-    
-    if state.creature().is_sick() {
-        let icon = shapes::creature_sick_icon();
-        let draw_location = Location {
-            x: PLAY_AREA_RECT.right() - SICKNESS_ICON_WIDTH - 2.0,
-            y: PLAY_AREA_RECT.top() + 2.0,
-        };
-        
-        draw_texture(
-            &icon, 
-            draw_location.x,
-            draw_location.y, 
-            BLACK,
-        );
-    }
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
