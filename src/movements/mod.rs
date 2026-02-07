@@ -24,7 +24,8 @@ pub trait CreatureMovement {
     fn mirror_sprite(&self) -> bool;
 }
 
-/// Returns the movement/animation the creature should have on screen when idle, depending on its growth stage.
+/// Returns the movement/animation the creature should have on screen when idle, depending on its
+/// growth stage and status.
 /// 
 /// ## Parameters:
 /// * `creature` - The creature from the save file that is being played.
@@ -33,6 +34,10 @@ pub trait CreatureMovement {
 /// ## Returns:
 /// Returns a `Box<dyn CreatureMovement>` so it has a known size and can be stored in a mutable variable.
 pub fn get_creature_movement(creature: &Creature, base_location: Location) -> Box<dyn CreatureMovement> {
+    if creature.is_sick() {
+        return Box::new(SicknessShakeMovement::new(creature));
+    }
+
     match creature.growth_stage() {
         GrowthStage::Egg => Box::new(EggHop::new(base_location)),
         GrowthStage::Adult => Box::new(DvdBounce::new(creature).start_location(base_location)),
