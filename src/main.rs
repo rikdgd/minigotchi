@@ -14,7 +14,6 @@ use save_management::get_save_file_path;
 use ui::{render_new_game_menu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
-use ui::play_area::PLAY_AREA_RECT;
 use food::Food;
 use movements::get_sleeping_location;
 use utils::Location;
@@ -76,12 +75,9 @@ async fn render_game(mut state: GameState) {
 
         // Draw the "Zz" texture when sleeping
         if state.creature().is_asleep() {
-            let location = sleeping_icon_movement.next_position();
+            let location = sleeping_icon_movement.next_location();
             draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
         }
-        
-        // Draw the sickness icon when the creature is sick
-        draw_sickness_icon(&state);
         
         // Draw the creatures name and age
         ui::draw_creature_name(&state);
@@ -128,7 +124,7 @@ fn draw_creature(state: &mut GameState) {
     let creature_location = if state.creature().is_asleep() {
         get_sleeping_location(state.creature())
     } else {
-        state.creature_movement.next_position()
+        state.creature_movement.next_location()
     };
 
     draw_texture_ex(
@@ -141,26 +137,6 @@ fn draw_creature(state: &mut GameState) {
                 ..Default::default()
             }
         );
-}
-
-fn draw_sickness_icon(state: &GameState) {
-    // The sprite has a width of 20 pixels: 'resources/status_icons/creature-sick.png'
-    const SICKNESS_ICON_WIDTH: f32 = 20.0;
-    
-    if state.creature().is_sick() {
-        let icon = shapes::creature_sick_icon();
-        let draw_location = Location {
-            x: PLAY_AREA_RECT.right() - SICKNESS_ICON_WIDTH - 2.0,
-            y: PLAY_AREA_RECT.top() + 2.0,
-        };
-        
-        draw_texture(
-            &icon, 
-            draw_location.x,
-            draw_location.y, 
-            BLACK,
-        );
-    }
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {

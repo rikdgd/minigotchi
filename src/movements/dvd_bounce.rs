@@ -77,7 +77,7 @@ impl DvdBounce {
 }
 
 impl CreatureMovement for DvdBounce {
-    fn next_position(&mut self) -> Location {
+    fn next_location(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer > 0.25 {
             self.update_state();
@@ -87,7 +87,7 @@ impl CreatureMovement for DvdBounce {
         self.creature_location
     }
 
-    fn current_position(&self) -> Location {
+    fn current_location(&self) -> Location {
         self.creature_location
     }
 

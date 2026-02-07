@@ -199,8 +199,8 @@ impl Creature {
 
         self.food.add(food.points());
 
-        // The creature has a 1/4 chance of getting sick when eating
-        if gen_range(0, 4) == 0 {
+        // The creature has a 1/3 chance of getting sick when eating
+        if gen_range(0, 3) == 0 {
             self.is_sick = true;
         }
     }

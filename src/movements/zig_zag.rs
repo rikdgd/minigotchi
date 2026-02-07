@@ -72,7 +72,7 @@ impl Default for ZigZag {
 }
 
 impl CreatureMovement for ZigZag {
-    fn next_position(&mut self) -> Location {
+    fn next_location(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer > 0.25 {
             self.update_state();
@@ -85,7 +85,7 @@ impl CreatureMovement for ZigZag {
         }
     }
 
-    fn current_position(&self) -> Location {
+    fn current_location(&self) -> Location {
         Location {
             x: self.base_location.x + self.x_shift,
             y: self.base_location.y + self.y_shift,
