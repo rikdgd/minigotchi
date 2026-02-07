@@ -64,10 +64,9 @@ impl GameState {
         self.creature.update_state(now);
 
         // Set the animation to None when it has finished
-        if let Some(animation) = &self.current_animation {
-            if !animation.playing() {
-                self.current_animation = None;
-            }
+        if let Some(animation) = &self.current_animation
+            && !animation.playing() {
+            self.current_animation = None;
         }
 
         // Update the creature's movement if it happens to "evolve"

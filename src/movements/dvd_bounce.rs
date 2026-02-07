@@ -31,6 +31,7 @@ impl DvdBounce {
         }
     }
 
+    /// **Builder pattern** setter for the starting location of this movement.
     pub fn start_location(mut self, location: Location) -> Self {
         self.creature_location = location;
         self
@@ -66,17 +67,13 @@ impl DvdBounce {
             false => self.creature_location.y -= STEP_SIZE,
         }
     }
-
-    pub fn moving_right(&self) -> bool {
-        self.x_toggle
-    }
-
-    pub fn moving_down(&self) -> bool {
-        self.y_toggle
-    }
 }
 
 impl CreatureMovement for DvdBounce {
+    fn current_location(&self) -> Location {
+        self.creature_location
+    }
+
     fn next_location(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer > 0.25 {
@@ -84,10 +81,6 @@ impl CreatureMovement for DvdBounce {
             self.timer = 0.0;
         }
 
-        self.creature_location
-    }
-
-    fn current_location(&self) -> Location {
         self.creature_location
     }
 

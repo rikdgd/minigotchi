@@ -88,10 +88,9 @@ async fn render_game(mut state: GameState) {
         }
         
         // If an animation is playing, render it
-        if let Some(animation) = state.current_animation.as_mut() {
-            if animation.playing() {
-                animation.render();
-            }
+        if let Some(animation) = state.current_animation.as_mut()
+            && animation.playing(){
+            animation.render();
         }
 
         if is_key_pressed(KeyCode::Escape) {
@@ -159,13 +158,12 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                 },
                 InteractionButton::Joy(_) => {
                     let creature = game_state.creature_mut();
-                    if !creature.is_asleep() && creature.joy().value() != 100 {
-                        if creature.energy().value() >= creature::PLAYING_ENERGY_COST {
-                            creature.play();
-                            game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
-
-                        }
-
+                    if !creature.is_asleep()
+                        && creature.joy().value() != 100
+                        && creature.energy().value() >= creature::PLAYING_ENERGY_COST
+                    {
+                        creature.play();
+                        game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
                     }
                 },
                 InteractionButton::Health(_) => {
