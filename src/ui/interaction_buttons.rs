@@ -18,7 +18,7 @@ impl InteractionButton {
             InteractionButton::Food(Button { 
                 pos: Vec2::new(0.0, 180.0),
                 text: "Eat".to_string(),
-                ..Default::default() 
+                ..Default::default()
             }),
             InteractionButton::Joy(Button { 
                 pos: Vec2::new(50.0, 180.0), 
@@ -32,7 +32,7 @@ impl InteractionButton {
             }),
             InteractionButton::Health(Button { 
                 pos: Vec2::new(150.0, 180.0),
-                text: "Health".to_string(),
+                text: "Heal".to_string(),
                 ..Default::default() 
             }),
         ]
