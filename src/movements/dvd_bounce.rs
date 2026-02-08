@@ -1,7 +1,7 @@
 use macroquad::time::get_frame_time;
 use crate::creature::Creature;
 use crate::movements::CreatureMovement;
-use crate::utils::{Dimensions, Location};
+use crate::utils::{Dimensions, Location, random_helpers::get_random_bool};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
 const STEP_SIZE: f32 = 1.0;
@@ -18,16 +18,15 @@ pub struct DvdBounce {
 impl DvdBounce {
     pub fn new(creature: &Creature) -> Self {
         let shape = creature.shape();
-        // TODO: Randomize the starting location and direction
         Self {
             timer: 0.0,
             creature_location: Location { x: 50.0, y: 50.0 },
-            x_toggle: true,
-            y_toggle: true,
+            x_toggle: get_random_bool(),
+            y_toggle: get_random_bool(),
             shape_dimensions: Dimensions {
                 width: shape.width(),
                 height: shape.height(),
-            }
+            },
         }
     }
 
@@ -37,7 +36,7 @@ impl DvdBounce {
         self
     }
 
-    /// Updates the movement toggles when the creature is about to move out of bounds.
+    /// Updates the movement toggles `self.x_toggle` and `self.y_toggle` when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
         if self.creature_location.x >= PLAY_AREA_RECT.right() - self.shape_dimensions.width ||
             self.creature_location.x <= PLAY_AREA_RECT.x
