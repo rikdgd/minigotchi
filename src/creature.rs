@@ -136,11 +136,11 @@ impl Creature {
     ///
     /// ## Parameters:
     /// * `update_time` - The time at which the creature's alive status should be updated. This time
-    /// is only used to calculate and display the creature's age on the death screen.
+    ///   is only used to calculate and display the creature's age on the death screen.
     fn update_alive_status(&mut self, update_time: i64) {
         // Use u16 conversions to prevent overflows.
         let stats_sum = self.food.value() as u16 + self.joy.value() as u16;
-        if stats_sum < 10 {
+        if stats_sum < 15 {
             self.die(update_time)
         }
 
@@ -199,8 +199,8 @@ impl Creature {
 
         self.food.add(food.points());
 
-        // The creature has a 1/4 chance of getting sick when eating
-        if gen_range(0, 4) == 0 {
+        // The creature has a 1/3 chance of getting sick when eating
+        if gen_range(0, 3) == 0 {
             self.is_sick = true;
         }
     }
@@ -296,20 +296,24 @@ mod tests {
     fn update_alive_status() {
         // Arrange
         let example_time = 1000;
+
+        // Should be death
         let mut creature_a = Creature::new("A", CreatureShapes::Snail, 0);
         creature_a.food = Stat::new(0).unwrap();
         creature_a.joy = Stat::new(0).unwrap();
 
+        // Should be death
         let mut creature_b = Creature::new("B", CreatureShapes::Mouse, 0);
-        creature_b.food = Stat::new(5).unwrap();
-        creature_b.joy = Stat::new(4).unwrap();
+        creature_b.food = Stat::new(6).unwrap();
+        creature_b.joy = Stat::new(8).unwrap();
         creature_b.energy = Stat::new(100).unwrap();
         creature_b.health = Stat::new(100).unwrap();
 
+        // Should be alive
         let mut creature_c = Creature::new("C", CreatureShapes::Squid, 0);
+        creature_c.food = Stat::new(7).unwrap();
+        creature_c.joy = Stat::new(8).unwrap();
         creature_c.energy = Stat::new(0).unwrap();
-        creature_c.food = Stat::new(5).unwrap();
-        creature_c.joy = Stat::new(6).unwrap();
         creature_c.health = Stat::new(1).unwrap();
 
 

@@ -4,10 +4,10 @@ use macroquad::input::mouse_position;
 use crate::animations::Animation;
 use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
-use crate::movements::{get_creature_movement, CreatureMovement, CursorStalk};
+use crate::movements::{get_creature_movement, CreatureMovement, CursorStalk, SicknessShakeMovement};
 use crate::shapes::CreatureShapes;
 use crate::save_management::store_game_state;
-use crate::ui::play_area::PLAY_AREA_RECT;
+use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::time::get_now_millis;
 
 
@@ -17,6 +17,7 @@ pub struct GameState {
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
     is_stalking_cursor: bool,
+    sickness_movement_playing: bool,
 }
 
 impl GameState {
@@ -31,6 +32,7 @@ impl GameState {
             prev_growth_stage,
             current_animation: None,
             is_stalking_cursor: false,
+            sickness_movement_playing: false,
         }
     }
 
@@ -38,9 +40,10 @@ impl GameState {
         Self {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             prev_growth_stage: creature.growth_stage(),
-            creature,
             current_animation: None,
             is_stalking_cursor: false,
+            sickness_movement_playing: creature.is_sick(),
+            creature,
         }
     }
     
@@ -61,10 +64,9 @@ impl GameState {
         self.creature.update_state(now);
 
         // Set the animation to None when it has finished
-        if let Some(animation) = &self.current_animation {
-            if !animation.playing() {
-                self.current_animation = None;
-            }
+        if let Some(animation) = &self.current_animation
+            && !animation.playing() {
+            self.current_animation = None;
         }
 
         // Update the creature's movement if it happens to "evolve"
@@ -77,6 +79,7 @@ impl GameState {
         }
 
         self.toggle_cursor_stalking();
+        self.toggle_sickness_movement();
     }
     
     pub fn creature(&self) -> &Creature {
@@ -93,17 +96,23 @@ impl GameState {
             self.current_animation = Some(Box::new(animation));
         }
     }
+
+    fn should_follow_cursor(&self) -> bool {
+        self.creature.growth_stage() == GrowthStage::Adult &&
+        !self.creature.is_asleep() &&
+        !self.creature.is_sick()
+    }
     
     /// The **toggle_cursor_stalking** function toggles `self.is_stalking_cursor` when appropriate. 
     /// This in turn sets the creature's movement to `movements::cursor_stalk::CursorStalk`.
     fn toggle_cursor_stalking(&mut self) {
-        if self.creature.growth_stage() == GrowthStage::Adult && !self.creature.is_asleep() {
+        if self.should_follow_cursor() {
             // Make the creature move towards the mouse pointer when it is in the playing area
             let mouse_pos: Vec2 = mouse_position().into();
             if PLAY_AREA_RECT.contains(mouse_pos) && !self.is_stalking_cursor {
                 self.is_stalking_cursor = true;
                 self.creature_movement = Box::new(CursorStalk::new(
-                    self.creature_movement.next_position(),
+                    self.creature_movement.next_location(),
                     self.creature()
                 ));
             }
@@ -114,11 +123,25 @@ impl GameState {
                 self.is_stalking_cursor = false;
                 let new_movement = get_creature_movement(
                     self.creature(),
-                    self.creature_movement.current_position()
+                    self.creature_movement.current_location()
                 );
 
                 self.creature_movement = new_movement;
             }
+        }
+    }
+    
+    /// Sets the creature movement to the dedicated `SicknessShakeMovement` movement when it is sick,
+    /// and disables it when the creature is cured.
+    fn toggle_sickness_movement(&mut self) {
+        if self.creature().is_sick() && !self.sickness_movement_playing {
+            self.creature_movement = Box::new(SicknessShakeMovement::new(self.creature()));
+            self.sickness_movement_playing = true;
+        }
+        
+        if !self.creature.is_sick() && self.sickness_movement_playing {
+            self.creature_movement = get_creature_movement(self.creature(), play_area_center());
+            self.sickness_movement_playing = false;
         }
     }
 }
