@@ -1,14 +1,15 @@
 use macroquad::prelude::*;
 use macroquad::file::load_file;
 use macroquad::input::mouse_position;
+use macroquad::rand::gen_range;
 use crate::animations::Animation;
 use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
-use crate::movements::{get_creature_movement, CreatureMovement, CursorStalk, SicknessShakeMovement};
+use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
 use crate::shapes::CreatureShapes;
 use crate::save_management::store_game_state;
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
-use crate::utils::time::get_now_millis;
+use crate::utils::{Location, time::get_now_millis};
 
 
 pub struct GameState {
@@ -37,8 +38,19 @@ impl GameState {
     }
 
     fn from_creature(creature: Creature) -> Self {
+        // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
+        // of its movement.
+        let base_location = if creature.growth_stage() == GrowthStage::Adult {
+            Location {
+                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - creature.shape().width()).round(),
+                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - creature.shape().height()).round(),
+            }
+        } else {
+            CREATURE_BASE_LOCATION
+        };
+        
         Self {
-            creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
+            creature_movement: get_creature_movement(&creature, base_location),
             prev_growth_stage: creature.growth_stage(),
             current_animation: None,
             is_stalking_cursor: false,
@@ -140,7 +152,11 @@ impl GameState {
         }
         
         if !self.creature.is_sick() && self.sickness_movement_playing {
-            self.creature_movement = get_creature_movement(self.creature(), play_area_center());
+            let mut center_location = play_area_center();
+            center_location.x -= (self.creature().shape().width() / 2.0).round();
+            center_location.y -= (self.creature().shape().height() / 2.0).round();
+            
+            self.creature_movement = get_creature_movement(self.creature(), center_location);
             self.sickness_movement_playing = false;
         }
     }

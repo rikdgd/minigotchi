@@ -169,7 +169,7 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
                 InteractionButton::Health(_) => {
                     let creature = game_state.creature_mut();
                     if !creature.is_asleep() && creature.is_sick() {
-                        creature.take_medicine();
+                        creature.heal();
                         game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
                     }
                 },

@@ -231,7 +231,7 @@ impl Creature {
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
-    pub fn take_medicine(&mut self) {
+    pub fn heal(&mut self) {
         // Only heal the creature successfully 66% of the time.
         if gen_range(0, 3) != 0 && self.growth_stage != GrowthStage::Egg {
             self.is_sick = false;
