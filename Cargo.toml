@@ -1,6 +1,6 @@
 [package]
 name = "minigotchi"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 authors = ["Rik de Goede <rik.dgd@gmail.com>"]
 description = "A very small tamagotchi for your desktop."
