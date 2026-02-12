@@ -144,19 +144,11 @@ impl Creature {
             self.die(update_time)
         }
 
-        let mut zero_stat_counter: u8 = 0;
         // Health can be ignored, since 0 health always results in death
-        for stat in [self.food, self.joy, self.energy] {
+        for stat in [self.food, self.joy, self.health] {
             if stat.value() == 0 {
-                zero_stat_counter += 1;
+                self.die(update_time)
             }
-        }
-        if zero_stat_counter >= 2 {
-            self.die(update_time);
-        }
-
-        if self.health.value() == 0 {
-            self.die(update_time);
         }
     }
 
