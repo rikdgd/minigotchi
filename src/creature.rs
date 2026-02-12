@@ -193,7 +193,7 @@ impl Creature {
     /// * `food` - The food item that should be fed to the creature, the amount of food points the
     ///   creature receives, is indicated by the `Food::points()` method.
     pub fn eat(&mut self, food: Food) {
-        if self.growth_stage == GrowthStage::Egg {
+        if self.growth_stage == GrowthStage::Egg || self.is_sick {
             return;
         }
 
@@ -202,6 +202,7 @@ impl Creature {
         // The creature has a 1/3 chance of getting sick when eating
         if gen_range(0, 3) == 0 {
             self.is_sick = true;
+            self.health.subtract(20);
         }
     }
 

@@ -150,7 +150,10 @@ fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState
 
                 InteractionButton::Food(_) => {
                     let creature = game_state.creature_mut();
-                    if !creature.is_asleep() && creature.food().value() != 100 {
+                    if !creature.is_asleep() 
+                        && creature.food().value() != 100 
+                        && !creature.is_sick() 
+                    {
                         let food = Food::new_random();
                         creature.eat(food);
                         game_state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
