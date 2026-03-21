@@ -138,8 +138,7 @@ impl Creature {
     /// * `update_time` - The time at which the creature's alive status should be updated. This time
     ///   is only used to calculate and display the creature's age on the death screen.
     fn update_alive_status(&mut self, update_time: i64) {
-        // Use u16 conversions to prevent overflows.
-        let stats_sum = self.food.value() as u16 + self.joy.value() as u16;
+        let stats_sum = self.food.value() + self.joy.value();
         if stats_sum < 15 {
             self.die(update_time)
         }
