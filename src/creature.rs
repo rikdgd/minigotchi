@@ -144,7 +144,6 @@ impl Creature {
             self.die(update_time)
         }
 
-        // Health can be ignored, since 0 health always results in death
         for stat in [self.food, self.joy, self.health] {
             if stat.value() == 0 {
                 self.die(update_time)
