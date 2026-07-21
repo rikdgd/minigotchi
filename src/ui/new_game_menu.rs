@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::ui::button::Button;
+use crate::ui::creature_selection::CreatureSelection;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 pub async fn render_new_game_menu() -> GameState {
@@ -13,13 +14,17 @@ pub async fn render_new_game_menu() -> GameState {
         ..Default::default()
     };
 
+    let message = "Enter name:";
+    let message_text_size = measure_text(message, None, 20, 1.0);
+
+    // This line renders the creature selection menu and returns the selected shape:
+    let selected_shape = CreatureSelection::default().render().await;
+
     loop {
         clear_background(BACKGROUND_COLOR);
 
         confirm_btn.render();
 
-        let message = "Enter name:";
-        let message_text_size = measure_text(message, None, 20, 1.0);
         draw_text(
             message,
             (SCREEN_WIDTH as f32 - message_text_size.width) / 2.0,
@@ -55,5 +60,5 @@ pub async fn render_new_game_menu() -> GameState {
         next_frame().await;
     }
     
-    GameState::new(&name_buffer)
+    GameState::new(&name_buffer, selected_shape)
 }

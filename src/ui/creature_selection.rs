@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::shapes::CreatureShapes;
 use crate::ui::button::Button;
+use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 
 /// The **CreatureSelection** struct manages the state of the creature selection screen
@@ -20,9 +21,11 @@ pub struct CreatureSelection {
 
 impl CreatureSelection {
     /// Renders and updates the state of the creature selection screen.
-    pub fn render(&mut self) -> CreatureShapes {
+    pub async fn render(&mut self) -> CreatureShapes {
         let creature_shape: CreatureShapes;
         loop {
+            clear_background(BACKGROUND_COLOR);
+
             self.next_btn.render();
             self.confirm_btn.render();
 
@@ -40,6 +43,8 @@ impl CreatureSelection {
                 creature_shape = shape;
                 break;
             }
+
+            next_frame().await
         }
 
         creature_shape
@@ -68,22 +73,30 @@ impl CreatureSelection {
             CreatureShapes::Sheep => CreatureShapes::Turtle,
         }
     }
+
+    fn next_button() -> Button {
+        let mut next_btn = Button::default();
+        next_btn.text = "next".to_string();
+        next_btn.pos = (10.0, 10.0).into();
+
+        next_btn
+    }
+
+    fn confirm_btn() -> Button {
+        let mut confirm_btn = Button::default();
+        confirm_btn.text = "confirm".to_string();
+        confirm_btn.pos = (20.0, 20.0).into();
+
+        confirm_btn
+    }
 }
 
 impl Default for CreatureSelection {
     fn default() -> Self {
-        let mut next_btn = Button::default();
-        next_btn.text = "next".to_string();
-        next_btn.pos = (100.0, 100.0).into();
-
-        let mut confirm_btn = Button::default();
-        confirm_btn.text = "confirm".to_string();
-        confirm_btn.pos = (100.0, 140.0).into();
-
         Self {
             selected_shape: CreatureShapes::Turtle,
-            next_btn,
-            confirm_btn,
+            next_btn: Self::next_button(),
+            confirm_btn: Self::confirm_btn(),
         }
     }
 }
