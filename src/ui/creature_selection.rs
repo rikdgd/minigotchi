@@ -3,6 +3,8 @@ use crate::shapes::CreatureShapes;
 use crate::ui::button::Button;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
+const CREATURE_ZOOM_FACTOR: f32 = 1.5;
+
 
 /// The **CreatureSelection** struct manages the state of the creature selection screen
 /// when creating a new save. Whenever it is drawn to the screen it will automatically update its
@@ -32,10 +34,16 @@ impl CreatureSelection {
             let creature_texture = self.selected_shape.get_texture();
             draw_texture_ex(
                 &creature_texture,
-                50.0,
-                50.0,
+                SCREEN_WIDTH as f32 / 2.0 - (creature_texture.width() * CREATURE_ZOOM_FACTOR) / 2.0,
+                (SCREEN_HEIGHT as f32 / 2.0 - (creature_texture.height() * CREATURE_ZOOM_FACTOR) / 2.0) - 35.0,
                 BLACK,
-                DrawTextureParams::default(),
+                DrawTextureParams {
+                    dest_size: Some(Vec2::new(
+                        creature_texture.width() * CREATURE_ZOOM_FACTOR,
+                        creature_texture.height() * CREATURE_ZOOM_FACTOR,
+                    )),
+                    ..Default::default()
+                },
             );
 
             // Update the menu's state and when the user picked a shape, break the render loop.
@@ -77,7 +85,10 @@ impl CreatureSelection {
     fn next_button() -> Button {
         let mut next_btn = Button::default();
         next_btn.text = "next".to_string();
-        next_btn.pos = (10.0, 10.0).into();
+        next_btn.pos = (
+            (SCREEN_WIDTH as f32 / 2.0) - next_btn.size.x / 2.0,
+            ((SCREEN_HEIGHT as f32 / 2.0) - next_btn.size.y / 2.0) + 20.0,
+        ).into();
 
         next_btn
     }
@@ -85,7 +96,10 @@ impl CreatureSelection {
     fn confirm_btn() -> Button {
         let mut confirm_btn = Button::default();
         confirm_btn.text = "confirm".to_string();
-        confirm_btn.pos = (20.0, 20.0).into();
+        confirm_btn.pos = (
+            (SCREEN_WIDTH as f32 / 2.0) - confirm_btn.size.x / 2.0,
+            ((SCREEN_HEIGHT as f32 / 2.0) - confirm_btn.size.y / 2.0) + 45.0,
+        ).into();
 
         confirm_btn
     }
