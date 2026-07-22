@@ -14,9 +14,9 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 /// ## Fields:
 /// * `name_buffer` - The name buffer is used to store the name entered by the user.
 /// * `selected_shape` - Holds the shape that was selected by the user using the `CreatureSelection`
-/// menu
+///   menu
 /// * `backspace_timer` - The backspace timer is used to debounce the backspace key, making it easier
-/// to edit the creature's name.
+///   to edit the creature's name.
 /// * `confirm_btn` - The button the user clicks to confirm game creation.
 /// 
 /// ## Methods:
@@ -92,7 +92,7 @@ impl NewGameMenu {
     
     fn update(&mut self) -> Option<GameState> {
         if self.confirm_btn.is_clicked() && !self.name_buffer.is_empty() {
-            return Some(self.try_create_game_state()?);
+            return self.try_create_game_state();
         }
 
         // Store user input into buffer
