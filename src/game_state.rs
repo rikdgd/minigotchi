@@ -22,9 +22,9 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn new(creature_name: &str) -> Self {
+    pub fn new(creature_name: &str, creature_shape: CreatureShapes) -> Self {
         let now = get_now_millis();
-        let creature = Creature::new(creature_name, CreatureShapes::new_random(), now);
+        let creature = Creature::new(creature_name, creature_shape, now);
         let prev_growth_stage = creature.growth_stage();
 
         Self {
