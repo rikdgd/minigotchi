@@ -3,8 +3,8 @@ use crate::shapes::CreatureShapes;
 use crate::ui::button::Button;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
-const CREATURE_ZOOM_FACTOR: f32 = 1.5;
 
+const CREATURE_ZOOM_FACTOR: f32 = 1.5;
 
 /// The **CreatureSelection** struct manages the state of the creature selection screen
 /// when creating a new save. Whenever it is drawn to the screen it will automatically update its
@@ -23,6 +23,10 @@ pub struct CreatureSelection {
 
 impl CreatureSelection {
     /// Renders and updates the state of the creature selection screen.
+    ///
+    /// ## Returns:
+    /// When the user has confirmed their choice of shape, this method will return a copy of
+    /// `self.selected_shape`.
     pub async fn render(&mut self) -> CreatureShapes {
         let creature_shape: CreatureShapes;
         loop {
