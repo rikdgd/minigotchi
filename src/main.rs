@@ -11,7 +11,7 @@ mod animations;
 use macroquad::prelude::*;
 use game_state::GameState;
 use save_management::get_save_file_path;
-use ui::{render_new_game_menu, render_death_screen};
+use ui::{NewGameMenu, render_death_screen};
 use ui::stat_display::stat_display;
 use ui::interaction_buttons::InteractionButton;
 use food::Food;
@@ -45,7 +45,7 @@ async fn main() {
                 state
             }
         },
-        Err(_) => render_new_game_menu().await,
+        Err(_) => NewGameMenu::default().render().await,
     };
 
     render_game(game_state).await;

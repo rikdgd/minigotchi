@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use crate::game_state::GameState;
-use crate::ui::{new_game_menu::render_new_game_menu, button::Button};
+use crate::ui::{new_game_menu::NewGameMenu, button::Button};
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 const FONT_SIZE: u16 = 16;
@@ -55,7 +55,7 @@ pub async fn render_death_screen(old_state: &GameState) -> GameState {
 
     // Also awaiting the next frame here ensures the new game menu is properly rendered.
     next_frame().await;
-    render_new_game_menu().await
+    NewGameMenu::default().render().await
 }
 
 fn get_death_text(state: &GameState) -> [String; 3] {
