@@ -6,6 +6,21 @@ use crate::ui::creature_selection::CreatureSelection;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 
+/// The **NewGameMenu** structure is used to render the new game menu where the user can select a
+/// creature and give it a name. To do this it first renders the `CreatureSelection` menu to allow
+/// the user to select a shape, and then the `NewGameMenu` asks the user for a name and creates a
+/// `GameState` instance.
+/// 
+/// ## Fields:
+/// * `name_buffer` - The name buffer is used to store the name entered by the user.
+/// * `selected_shape` - Holds the shape that was selected by the user using the `CreatureSelection`
+/// menu
+/// * `backspace_timer` - The backspace timer is used to debounce the backspace key, making it easier
+/// to edit the creature's name.
+/// * `confirm_btn` - The button the user clicks to confirm game creation.
+/// 
+/// ## Methods:
+/// * `render` - The render method renders the menu, and simultaniously updates the state.
 #[derive(Debug, Clone)]
 pub struct NewGameMenu {
     name_buffer: String,
@@ -17,6 +32,7 @@ pub struct NewGameMenu {
 impl NewGameMenu {
     const NAME_MESSAGE: &str = "Enter name:";
     
+    /// Renders the new game menu and updates it state.
     pub async fn render(&mut self) -> GameState {
         // First render the shape selection ui and get the user selected shape.
         let selected_shape = CreatureSelection::default().render().await;
