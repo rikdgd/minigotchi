@@ -21,6 +21,16 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 /// 
 /// ## Methods:
 /// * `render` - The render method renders the menu, and simultaniously updates the state.
+/// 
+/// ## Example:
+/// ```rust
+/// async fn example() {
+///     let menu: NewGameMenu = NewGameMenu::default();
+///     let state: GameState = menu.render().await;
+/// 
+///     // TODO: Use the new GameState to run the game
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub struct NewGameMenu {
     name_buffer: String,
