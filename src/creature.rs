@@ -138,25 +138,15 @@ impl Creature {
     /// * `update_time` - The time at which the creature's alive status should be updated. This time
     ///   is only used to calculate and display the creature's age on the death screen.
     fn update_alive_status(&mut self, update_time: i64) {
-        // Use u16 conversions to prevent overflows.
-        let stats_sum = self.food.value() as u16 + self.joy.value() as u16;
+        let stats_sum = self.food.value() + self.joy.value();
         if stats_sum < 15 {
             self.die(update_time)
         }
 
-        let mut zero_stat_counter: u8 = 0;
-        // Health can be ignored, since 0 health always results in death
-        for stat in [self.food, self.joy, self.energy] {
+        for stat in [self.food, self.joy, self.health] {
             if stat.value() == 0 {
-                zero_stat_counter += 1;
+                self.die(update_time)
             }
-        }
-        if zero_stat_counter >= 2 {
-            self.die(update_time);
-        }
-
-        if self.health.value() == 0 {
-            self.die(update_time);
         }
     }
 
@@ -193,7 +183,7 @@ impl Creature {
     /// * `food` - The food item that should be fed to the creature, the amount of food points the
     ///   creature receives, is indicated by the `Food::points()` method.
     pub fn eat(&mut self, food: Food) {
-        if self.growth_stage == GrowthStage::Egg {
+        if self.growth_stage == GrowthStage::Egg || self.is_sick {
             return;
         }
 
@@ -202,6 +192,7 @@ impl Creature {
         // The creature has a 1/3 chance of getting sick when eating
         if gen_range(0, 3) == 0 {
             self.is_sick = true;
+            self.health.subtract(20);
         }
     }
 
