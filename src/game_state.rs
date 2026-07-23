@@ -14,6 +14,7 @@ use crate::utils::{Location, time::get_now_millis};
 
 pub struct GameState {
     creature: Creature,
+    coins: u32,
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
@@ -30,6 +31,7 @@ impl GameState {
         Self {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
+            coins: 0,
             prev_growth_stage,
             current_animation: None,
             is_stalking_cursor: false,
@@ -51,6 +53,7 @@ impl GameState {
         
         Self {
             creature_movement: get_creature_movement(&creature, base_location),
+            coins: 0,
             prev_growth_stage: creature.growth_stage(),
             current_animation: None,
             is_stalking_cursor: false,
