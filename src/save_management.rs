@@ -11,6 +11,7 @@ use crate::creature::Creature;
 pub struct SaveState {
     pub creature: Creature,
     pub coins: u32,
+    pub last_coin_time: i64,
 }
 
 impl From<&GameState> for SaveState {
@@ -18,11 +19,12 @@ impl From<&GameState> for SaveState {
         Self {
             creature: value.creature().clone(),
             coins: value.coins(),
+            last_coin_time: value.last_coin_time(),
         }
     }
 }
 
-pub fn store_game_state(state: SaveState) -> std::io::Result<()> {
+pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
     let save = serde_json::to_string_pretty(&state)?;
 
     let mut file = OpenOptions::new()

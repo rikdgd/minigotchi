@@ -7,7 +7,7 @@ use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
 use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
 use crate::shapes::CreatureShapes;
-use crate::save_management::{SaveState, store_game_state};
+use crate::save_management::{SaveState, store_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
 
@@ -15,6 +15,7 @@ use crate::utils::{Location, time::get_now_millis};
 pub struct GameState {
     creature: Creature,
     coins: u32,
+    last_coin_time: i64,
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
@@ -32,6 +33,7 @@ impl GameState {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
             coins: 0,
+            last_coin_time: now,
             prev_growth_stage,
             current_animation: None,
             is_stalking_cursor: false,
@@ -52,8 +54,9 @@ impl GameState {
     pub fn update(&mut self) {
         let now = get_now_millis();
 
-        // Update the creature's state
+        // Update the game's state
         self.creature.update_state(now);
+        self.update_coins(now);
 
         // Set the animation to None when it has finished
         if let Some(animation) = &self.current_animation
@@ -74,6 +77,15 @@ impl GameState {
         self.toggle_sickness_movement();
     }
     
+    fn update_coins(&mut self, now: i64) {
+        const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
+        
+        while (now - self.last_coin_time) / DAY_MILLIS > 0 {
+            self.coins += 1;
+            self.last_coin_time += DAY_MILLIS;
+        }
+    }
+    
     pub fn creature(&self) -> &Creature {
         &self.creature
     }
@@ -84,6 +96,10 @@ impl GameState {
     
     pub fn coins(&self) -> u32 {
         self.coins
+    }
+    
+    pub fn last_coin_time(&self) -> i64 {
+        self.last_coin_time
     }
 
     /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
@@ -162,6 +178,7 @@ impl From<SaveState> for GameState {
         Self {
             creature_movement: get_creature_movement(&value.creature, base_location),
             coins: 0,
+            last_coin_time: value.last_coin_time,
             prev_growth_stage: value.creature.growth_stage(),
             current_animation: None,
             is_stalking_cursor: false,
@@ -174,6 +191,6 @@ impl From<SaveState> for GameState {
 impl Drop for GameState {
     fn drop(&mut self) {
         let state = &(*self);
-        store_game_state(state.into()).expect("Failed to save the game to disk");
+        store_save_state(state.into()).expect("Failed to save the game to disk");
     }
 }
