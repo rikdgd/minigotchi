@@ -194,3 +194,40 @@ impl Drop for GameState {
         store_save_state(state.into()).expect("Failed to save the game to disk");
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::game_state::GameState;
+    use crate::shapes::CreatureShapes;
+    
+    const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
+    
+    #[test]
+    fn test_coin_updates() {
+        
+        let mut days_1_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut days_2_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut hours_13_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut days_100_state = GameState::new("test", CreatureShapes::Sheep);
+        
+        
+        days_1_state.last_coin_time -= DAY_MILLIS;
+        days_1_state.update();
+        
+        days_2_state.last_coin_time -= ((DAY_MILLIS * 2) as f32 * 1.1) as i64; // Overshoot by 10%
+        days_2_state.update();
+        
+        hours_13_state.last_coin_time -= 1000 * 60 * 60 * 13;
+        hours_13_state.update();
+        
+        days_100_state.last_coin_time -= DAY_MILLIS * 100;
+        days_100_state.update();
+        
+        
+        assert_eq!(1, days_1_state.coins());
+        assert_eq!(2, days_2_state.coins());
+        assert_eq!(0, hours_13_state.coins());
+        assert_eq!(100, days_100_state.coins());
+    }
+}
