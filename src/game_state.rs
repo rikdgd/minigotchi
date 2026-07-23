@@ -177,7 +177,7 @@ impl From<SaveState> for GameState {
         
         Self {
             creature_movement: get_creature_movement(&value.creature, base_location),
-            coins: 0,
+            coins: value.coins,
             last_coin_time: value.last_coin_time,
             prev_growth_stage: value.creature.growth_stage(),
             current_animation: None,
@@ -205,7 +205,6 @@ mod tests {
     
     #[test]
     fn test_coin_updates() {
-        
         let mut days_1_state = GameState::new("test", CreatureShapes::Sheep);
         let mut days_2_state = GameState::new("test", CreatureShapes::Sheep);
         let mut hours_13_state = GameState::new("test", CreatureShapes::Sheep);

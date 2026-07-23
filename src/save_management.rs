@@ -47,3 +47,23 @@ pub fn get_save_file_path() -> String {
 
     data_file_path.to_str().unwrap().to_string()
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::game_state::GameState;
+    use crate::save_management::SaveState;
+    use crate::shapes::CreatureShapes;
+
+    #[test]
+    fn game_save_state_conversion() {
+        let original_state = GameState::new("test", CreatureShapes::Sheep);
+        let save_state: SaveState = (&original_state).into();
+        
+        let retrieved_state: GameState = save_state.into();
+        
+        assert_eq!(original_state.creature(), retrieved_state.creature());
+        assert_eq!(original_state.coins(), retrieved_state.coins());
+        assert_eq!(original_state.last_coin_time(), retrieved_state.last_coin_time());
+    }
+}
