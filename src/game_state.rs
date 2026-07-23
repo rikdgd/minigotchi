@@ -7,7 +7,7 @@ use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
 use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
 use crate::shapes::CreatureShapes;
-use crate::save_management::store_game_state;
+use crate::save_management::{SaveState, store_game_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
 
@@ -39,26 +39,26 @@ impl GameState {
         }
     }
 
-    fn from_creature(creature: Creature) -> Self {
+    fn from_save_state(state: SaveState) -> Self {
         // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
         // of its movement.
-        let base_location = if creature.growth_stage() == GrowthStage::Adult {
+        let base_location = if state.creature.growth_stage() == GrowthStage::Adult {
             Location {
-                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - creature.shape().width()).round(),
-                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - creature.shape().height()).round(),
+                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - state.creature.shape().width()).round(),
+                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - state.creature.shape().height()).round(),
             }
         } else {
             CREATURE_BASE_LOCATION
         };
         
         Self {
-            creature_movement: get_creature_movement(&creature, base_location),
+            creature_movement: get_creature_movement(&state.creature, base_location),
             coins: 0,
-            prev_growth_stage: creature.growth_stage(),
+            prev_growth_stage: state.creature.growth_stage(),
             current_animation: None,
             is_stalking_cursor: false,
-            sickness_movement_playing: creature.is_sick(),
-            creature,
+            sickness_movement_playing: state.creature.is_sick(),
+            creature: state.creature,
         }
     }
     
@@ -66,10 +66,10 @@ impl GameState {
         let file_bytes = load_file(path).await?;
         let content_string = String::from_utf8_lossy(&file_bytes);
 
-        let creature: Creature = serde_json::from_str(&content_string)
+        let state: SaveState = serde_json::from_str(&content_string)
             .expect("Failed to deserialize GameState from savefile");
 
-        Ok(Self::from_creature(creature))
+        Ok(Self::from_save_state(state))
     }
 
     pub fn update(&mut self) {
@@ -103,6 +103,10 @@ impl GameState {
     
     pub fn creature_mut(&mut self) -> &mut Creature {
         &mut self.creature
+    }
+    
+    pub fn coins(&self) -> u32 {
+        self.coins
     }
 
     /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
@@ -167,6 +171,7 @@ impl GameState {
 
 impl Drop for GameState {
     fn drop(&mut self) {
-        store_game_state(self).expect("Failed to save the game to disk");
+        let state = &(*self);
+        store_game_state(state.into()).expect("Failed to save the game to disk");
     }
 }

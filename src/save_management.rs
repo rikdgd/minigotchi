@@ -1,20 +1,38 @@
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::io::Write;
-use crate::game_state::GameState;
+use serde::{Deserialize, Serialize};
 
-pub fn store_game_state(state: &GameState) -> std::io::Result<()> {
-    let file_path = get_save_file_path();
-    let creature = serde_json::to_string_pretty(state.creature())?;
+use crate::game_state::GameState;
+use crate::creature::Creature;
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SaveState {
+    pub creature: Creature,
+    pub coins: u32,
+}
+
+impl From<&GameState> for SaveState {
+    fn from(value: &GameState) -> Self {
+        Self {
+            creature: value.creature().clone(),
+            coins: value.coins(),
+        }
+    }
+}
+
+pub fn store_game_state(state: SaveState) -> std::io::Result<()> {
+    let save = serde_json::to_string_pretty(&state)?;
 
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
         .create(true)
-        .open(file_path)?;
+        .open(get_save_file_path())?;
 
 
-    file.write_all(creature.as_bytes())?;
+    file.write_all(save.as_bytes())?;
     file.flush()?;
 
     Ok(())
