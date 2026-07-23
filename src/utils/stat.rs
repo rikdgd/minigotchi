@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A managed `u8` value that always remains in range `0..=100`
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Stat(u8);
 impl Stat {
     pub fn value(&self) -> u8 {

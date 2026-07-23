@@ -35,7 +35,7 @@ impl GrowthStage {
 
 /// This is the struct represents the creature/pet of the player. It mainly keeps track of state-update
 /// times, its status, its shape, and its growth stage.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Creature {
     name: String,
     food: Stat,
