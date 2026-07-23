@@ -38,29 +38,6 @@ impl GameState {
             sickness_movement_playing: false,
         }
     }
-
-    fn from_save_state(state: SaveState) -> Self {
-        // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
-        // of its movement.
-        let base_location = if state.creature.growth_stage() == GrowthStage::Adult {
-            Location {
-                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - state.creature.shape().width()).round(),
-                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - state.creature.shape().height()).round(),
-            }
-        } else {
-            CREATURE_BASE_LOCATION
-        };
-        
-        Self {
-            creature_movement: get_creature_movement(&state.creature, base_location),
-            coins: 0,
-            prev_growth_stage: state.creature.growth_stage(),
-            current_animation: None,
-            is_stalking_cursor: false,
-            sickness_movement_playing: state.creature.is_sick(),
-            creature: state.creature,
-        }
-    }
     
     pub async fn from_file(path: &str) -> Result<Self, macroquad::Error> {
         let file_bytes = load_file(path).await?;
@@ -69,7 +46,7 @@ impl GameState {
         let state: SaveState = serde_json::from_str(&content_string)
             .expect("Failed to deserialize GameState from savefile");
 
-        Ok(Self::from_save_state(state))
+        Ok(state.into())
     }
 
     pub fn update(&mut self) {
@@ -165,6 +142,31 @@ impl GameState {
             
             self.creature_movement = get_creature_movement(self.creature(), center_location);
             self.sickness_movement_playing = false;
+        }
+    }
+}
+
+impl From<SaveState> for GameState {
+    fn from(value: SaveState) -> Self {
+        // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
+        // of its movement.
+        let base_location = if value.creature.growth_stage() == GrowthStage::Adult {
+            Location {
+                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - value.creature.shape().width()).round(),
+                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - value.creature.shape().height()).round(),
+            }
+        } else {
+            CREATURE_BASE_LOCATION
+        };
+        
+        Self {
+            creature_movement: get_creature_movement(&value.creature, base_location),
+            coins: 0,
+            prev_growth_stage: value.creature.growth_stage(),
+            current_animation: None,
+            is_stalking_cursor: false,
+            sickness_movement_playing: value.creature.is_sick(),
+            creature: value.creature,
         }
     }
 }
