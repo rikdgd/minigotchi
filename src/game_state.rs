@@ -10,12 +10,14 @@ use crate::shapes::CreatureShapes;
 use crate::save_management::{SaveState, store_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
+use crate::items::inventory::Inventory;
 
 
 pub struct GameState {
     creature: Creature,
     coins: u32,
     last_coin_time: i64,
+    pub inventory: Inventory,
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
@@ -34,6 +36,7 @@ impl GameState {
             creature,
             coins: 0,
             last_coin_time: now,
+            inventory: Inventory::default(),
             prev_growth_stage,
             current_animation: None,
             is_stalking_cursor: false,
@@ -179,6 +182,7 @@ impl From<SaveState> for GameState {
             creature_movement: get_creature_movement(&value.creature, base_location),
             coins: value.coins,
             last_coin_time: value.last_coin_time,
+            inventory: value.inventory,
             prev_growth_stage: value.creature.growth_stage(),
             current_animation: None,
             is_stalking_cursor: false,

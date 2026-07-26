@@ -5,13 +5,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::game_state::GameState;
 use crate::creature::Creature;
-
+use crate::items::inventory::Inventory;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SaveState {
     pub creature: Creature,
     pub coins: u32,
     pub last_coin_time: i64,
+    pub inventory: Inventory,
 }
 
 impl From<&GameState> for SaveState {
@@ -20,6 +21,7 @@ impl From<&GameState> for SaveState {
             creature: value.creature().clone(),
             coins: value.coins(),
             last_coin_time: value.last_coin_time(),
+            inventory: value.inventory.clone(),
         }
     }
 }
