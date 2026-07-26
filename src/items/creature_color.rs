@@ -1,6 +1,7 @@
 use macroquad::color::Color;
 use serde::{Serialize, Deserialize};
 use crate::items::{BuyableItem, ItemType};
+use crate::items::inventory::Inventory;
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -31,5 +32,9 @@ impl BuyableItem for CreatureColor {
 
     fn item_type(&self) -> ItemType {
         ItemType::CreatureColor
+    }
+    
+    fn add_to_inventory(&self, inventory: &mut Inventory) {
+        inventory.creature_colors.push(*self);
     }
 }

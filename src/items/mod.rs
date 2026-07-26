@@ -1,3 +1,5 @@
+use crate::items::inventory::Inventory;
+
 pub mod creature_color;
 pub mod inventory;
 
@@ -12,4 +14,5 @@ pub enum ItemType {
 pub trait BuyableItem {
     fn price(&self) -> u32;
     fn item_type(&self) -> ItemType;
+    fn add_to_inventory(&self, inventory: &mut Inventory);
 }
