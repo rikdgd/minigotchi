@@ -7,6 +7,7 @@ mod ui;
 mod save_management;
 mod movements;
 mod animations;
+mod items;
 
 use macroquad::prelude::*;
 use game_state::GameState;
