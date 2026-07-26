@@ -1,18 +1,24 @@
 use macroquad::prelude::*;
-use crate::game_state::GameState;
+use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 
 
+/// The ShopPage struct is used to render the in-game shop menu. It manages the state of the ui
+/// and uses a mutable reference the GameState's inventory to process purchases.
+///
+/// ## Fields:
+/// * `inventory` - A mutable reference the GameState's *inventory* field.
+/// * `items` - A vector containing all items that are for sale in the shop.
 pub struct ShopPage<'a> {
-    game_state: &'a mut GameState,
+    inventory: &'a mut Inventory,
     items: Vec<ShopItem>,
 }
 
 impl<'a> ShopPage<'a> {
-    pub fn new(game_state: &'a mut GameState) -> Self {
+    pub fn new(inventory: &'a mut Inventory) -> Self {
         Self {
-            game_state,
+            inventory,
             items: vec![],
         }
     }
@@ -25,7 +31,7 @@ impl<'a> ShopPage<'a> {
         }
         
         next_frame().await;
-        // self.update();
+        // TODO: invoke 'self.update()'
     }
     
     fn update(&mut self) {
