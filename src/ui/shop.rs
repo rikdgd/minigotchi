@@ -1,17 +1,18 @@
 use macroquad::prelude::*;
+use crate::game_state::GameState;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
-use crate::utils::Location;
 
 
-#[derive(Debug, Clone)]
-pub struct ShopPage {
+pub struct ShopPage<'a> {
+    game_state: &'a mut GameState,
     items: Vec<ShopItem>,
 }
 
-impl ShopPage {
-    pub fn new() -> Self {
+impl<'a> ShopPage<'a> {
+    pub fn new(game_state: &'a mut GameState) -> Self {
         Self {
+            game_state,
             items: vec![],
         }
     }
@@ -28,17 +29,18 @@ impl ShopPage {
     }
     
     fn update(&mut self) {
+        // TODO: Handle item/button clicks
         todo!()
     }
     
     /// Returns the `Button` component used to toggle the shop page.
     pub fn shop_button() -> Button {
         const BTN_DIMENSION: f32 = 10.0;
-        let x_pos = SCREEN_WIDTH as f32 - BTN_DIMENSION * 2.0;
-        let y_pos = (SCREEN_HEIGHT / 2) as f32 - 6.0;
+        const X_POS: f32 = SCREEN_WIDTH as f32 - BTN_DIMENSION * 2.0;
+        const Y_POS: f32 = (SCREEN_HEIGHT / 2) as f32 - 6.0;
         
         Button {
-            pos: (x_pos, y_pos).into(),
+            pos: (X_POS, Y_POS).into(),
             size: (BTN_DIMENSION, BTN_DIMENSION).into(),
             text: "$".to_string(),
             fontsize: 16.0,

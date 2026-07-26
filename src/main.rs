@@ -22,6 +22,8 @@ use shapes::sleeping_icon;
 use movements::{CreatureMovement, EggHop};
 use animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 
+use ui::shop::ShopPage;
+
 pub const SCREEN_WIDTH: i32 = 200;
 pub const SCREEN_HEIGHT: i32 = 200;
 pub const CREATURE_BASE_LOCATION: Location = Location { x: 100.0, y: 50.0 };
@@ -55,6 +57,8 @@ async fn render_game(mut state: GameState) {
     // Set some state
     let buttons = InteractionButton::main_menu_buttons();
     let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(state.creature()).translate(-9.0, -16.0));
+    
+    let shop_btn = ShopPage::shop_button();
 
     // Enter the actual game loop
     loop {
@@ -98,6 +102,8 @@ async fn render_game(mut state: GameState) {
         }
         
         stat_display(state.creature());
+        shop_btn.render();
+        
 
         next_frame().await;
     }
@@ -127,15 +133,15 @@ fn draw_creature(state: &mut GameState) {
     };
 
     draw_texture_ex(
-            &creature_texture,
-            creature_location.x,
-            creature_location.y,
-            BLACK,
-            DrawTextureParams {
-                flip_x: state.creature_movement.mirror_sprite(),
-                ..Default::default()
-            }
-        );
+        &creature_texture,
+        creature_location.x,
+        creature_location.y,
+        BLACK,
+        DrawTextureParams {
+            flip_x: state.creature_movement.mirror_sprite(),
+            ..Default::default()
+        }
+    );
 }
 
 fn handle_button_click(buttons: &[InteractionButton], game_state: &mut GameState) {
