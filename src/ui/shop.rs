@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::items::inventory::Inventory;
+use crate::items::BuyableItem;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 
@@ -29,14 +30,20 @@ impl<'a> ShopPage<'a> {
         for item in &self.items {
             item.render();
         }
+
+        // TODO: Render toggle button to return to main screen
         
         next_frame().await;
         // TODO: invoke 'self.update()'
     }
     
     fn update(&mut self) {
-        // TODO: Handle item/button clicks
-        todo!()
+        for item in &self.items {
+            if item.is_clicked() {
+                item.item.try_buy(self.inventory).unwrap();
+                // TODO: Instead of unwrapping, display an error to the user
+            }
+        }
     }
     
     /// Returns the `Button` component used to toggle the shop page.
@@ -64,20 +71,17 @@ impl<'a> ShopPage<'a> {
 /// * `sprite` - The item's sprite that should be rendered in the shop
 /// * `price` - The amount of coins it costs to buy the item.
 /// * `y_pos` - The Y location on the screen where this ShopItem should be drawn.
-#[derive(Debug, Clone)]
 pub struct ShopItem {
-    name: String,
+    item: Box<dyn BuyableItem>,
     sprite: Texture2D,
-    price: u32,
     area: Rect,
 }
 
 impl ShopItem {
-    pub fn new(name: &str, sprite: Texture2D, price: u32, y_pos: f32) -> Self {
+    pub fn new(item: Box<dyn BuyableItem>, sprite: Texture2D, y_pos: f32) -> Self {
         Self {
-            name: name.to_string(),
+            item,
             sprite,
-            price,
             area: Rect::new(
                 10.0,
                 y_pos,
@@ -85,6 +89,10 @@ impl ShopItem {
                 20.0,
             ),
         }
+    }
+
+    pub fn is_clicked(&self) -> bool {
+        todo!()
     }
     
     pub fn render(&self) {
@@ -105,7 +113,7 @@ impl ShopItem {
         );
         
         draw_text(
-            &self.name,
+            self.item.name(),
             self.area.x + 10.0,
             self.area.y + 2.0,
             16.0,
@@ -113,7 +121,7 @@ impl ShopItem {
         );
         
         draw_text(
-            &format!("price: {}", self.price),
+            &format!("price: {}", self.item.price()),
             self.area.x + self.area.w - 10.0,
             self.area.y + 10.0,
             14.0,

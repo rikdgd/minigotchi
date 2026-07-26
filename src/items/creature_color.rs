@@ -22,6 +22,14 @@ impl CreatureColor {
 }
 
 impl BuyableItem for CreatureColor {
+    fn name(&self) -> &str {
+        match self {
+            CreatureColor::Red => "Red color",
+            CreatureColor::Green => "Green color",
+            CreatureColor::Blue => "Blue color",
+        }
+    }
+
     fn price(&self) -> u32 {
         match self {
             CreatureColor::Red => 5,
@@ -33,7 +41,7 @@ impl BuyableItem for CreatureColor {
     fn item_type(&self) -> ItemType {
         ItemType::CreatureColor
     }
-    
+
     fn add_to_inventory(&self, inventory: &mut Inventory) {
         inventory.creature_colors.push(*self);
     }
