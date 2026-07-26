@@ -63,13 +63,12 @@ impl<'a> ShopPage<'a> {
 }
 
 
-/// The `ShopItem` structure can be used to render the shop menu in the minigothci game.
+/// The `ShopItem` structure can be used to render the shop menu in the minigotchi game.
 /// It manages the state of the ui and is able to render itself to the screen.
 /// 
 /// ## Fields:
-/// * `name` - The name of the item that appears in the shop.
+/// * `item` - The `BuyableItem` instance that is sold via this ShopItem.
 /// * `sprite` - The item's sprite that should be rendered in the shop
-/// * `price` - The amount of coins it costs to buy the item.
 /// * `y_pos` - The Y location on the screen where this ShopItem should be drawn.
 pub struct ShopItem {
     item: Box<dyn BuyableItem>,
