@@ -15,7 +15,6 @@ use crate::items::inventory::Inventory;
 
 pub struct GameState {
     creature: Creature,
-    coins: u32,
     last_coin_time: i64,
     pub inventory: Inventory,
     pub prev_growth_stage: GrowthStage,
@@ -34,7 +33,6 @@ impl GameState {
         Self {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
-            coins: 0,
             last_coin_time: now,
             inventory: Inventory::default(),
             prev_growth_stage,
@@ -84,7 +82,7 @@ impl GameState {
         const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
         
         while (now - self.last_coin_time) / DAY_MILLIS > 0 {
-            self.coins += 1;
+            self.inventory.coins += 1;
             self.last_coin_time += DAY_MILLIS;
         }
     }
@@ -97,8 +95,8 @@ impl GameState {
         &mut self.creature
     }
     
-    pub fn coins(&self) -> u32 {
-        self.coins
+    pub fn inventory(&self) -> &Inventory {
+        &self.inventory
     }
     
     pub fn last_coin_time(&self) -> i64 {
@@ -180,7 +178,6 @@ impl From<SaveState> for GameState {
         
         Self {
             creature_movement: get_creature_movement(&value.creature, base_location),
-            coins: value.coins,
             last_coin_time: value.last_coin_time,
             inventory: value.inventory,
             prev_growth_stage: value.creature.growth_stage(),
@@ -228,9 +225,9 @@ mod tests {
         days_100_state.update();
         
         
-        assert_eq!(1, days_1_state.coins());
-        assert_eq!(2, days_2_state.coins());
-        assert_eq!(0, hours_13_state.coins());
-        assert_eq!(100, days_100_state.coins());
+        assert_eq!(1, days_1_state.inventory().coins);
+        assert_eq!(2, days_2_state.inventory().coins);
+        assert_eq!(0, hours_13_state.inventory().coins);
+        assert_eq!(100, days_100_state.inventory().coins);
     }
 }

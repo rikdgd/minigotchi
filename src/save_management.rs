@@ -10,7 +10,6 @@ use crate::items::inventory::Inventory;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SaveState {
     pub creature: Creature,
-    pub coins: u32,
     pub last_coin_time: i64,
     pub inventory: Inventory,
 }
@@ -19,7 +18,6 @@ impl From<&GameState> for SaveState {
     fn from(value: &GameState) -> Self {
         Self {
             creature: value.creature().clone(),
-            coins: value.coins(),
             last_coin_time: value.last_coin_time(),
             inventory: value.inventory.clone(),
         }
@@ -65,7 +63,6 @@ mod tests {
         let retrieved_state: GameState = save_state.into();
         
         assert_eq!(original_state.creature(), retrieved_state.creature());
-        assert_eq!(original_state.coins(), retrieved_state.coins());
         assert_eq!(original_state.last_coin_time(), retrieved_state.last_coin_time());
         assert_eq!(original_state.inventory, retrieved_state.inventory);
     }
