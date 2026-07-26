@@ -67,5 +67,6 @@ mod tests {
         assert_eq!(original_state.creature(), retrieved_state.creature());
         assert_eq!(original_state.coins(), retrieved_state.coins());
         assert_eq!(original_state.last_coin_time(), retrieved_state.last_coin_time());
+        assert_eq!(original_state.inventory, retrieved_state.inventory);
     }
 }
