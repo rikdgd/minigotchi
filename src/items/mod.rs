@@ -18,7 +18,7 @@ pub trait BuyableItem {
     fn add_to_inventory(&self, inventory: &mut Inventory);
 
     /// Attempt to buy this item using the given inventory.
-    ///
+    /// 
     /// ## Parameters:
     /// * `inventory` - A mutable reference to the current GameState's inventory. Used to complete
     ///   the transaction.
@@ -27,7 +27,7 @@ pub trait BuyableItem {
     /// This method returns an error when the given inventory does not contain enough **coins** to
     /// buy this `BuyableItem` instance.
     fn try_buy(&self, inventory: &mut Inventory) -> Result<(), &str> {
-        if !self.can_buy(inventory) {
+        if self.price() > inventory.coins {
             return Err("Not enough coins");
         }
 
@@ -35,10 +35,5 @@ pub trait BuyableItem {
         inventory.coins -= self.price();
 
         Ok(())
-    }
-
-    /// Returns `True` when the inventory has enough coins to buy this `BuyableItem`.
-    fn can_buy(&self, inventory: &Inventory) -> bool {
-        inventory.coins >= self.price()
     }
 }
