@@ -34,14 +34,14 @@ impl<'a> ShopPage<'a> {
         // TODO: Render toggle button to return to main screen
         
         next_frame().await;
-        // TODO: invoke 'self.update()'
+        self.update();
     }
     
     fn update(&mut self) {
         for item in &self.items {
             if item.is_clicked() {
                 item.item.try_buy(self.inventory).unwrap();
-                // TODO: Instead of unwrapping, display an error to the user
+                // TODO: Instead of unwrapping, display an error to the user on Err
             }
         }
     }
@@ -63,13 +63,13 @@ impl<'a> ShopPage<'a> {
 }
 
 
-/// The `ShopItem` structure can be used to render the shop menu in the minigotchi game.
-/// It manages the state of the ui and is able to render itself to the screen.
+/// The `ShopItem` structure can be used to render a buyable item in the shop menu.
+/// It manages its own state and can be rendered using the `render()` function.
 /// 
 /// ## Fields:
 /// * `item` - The `BuyableItem` instance that is sold via this ShopItem.
 /// * `sprite` - The item's sprite that should be rendered in the shop
-/// * `y_pos` - The Y location on the screen where this ShopItem should be drawn.
+/// * `area` - The hitbox/size of the item when rendered on screen.
 pub struct ShopItem {
     item: Box<dyn BuyableItem>,
     sprite: Texture2D,
@@ -91,6 +91,7 @@ impl ShopItem {
     }
 
     pub fn is_clicked(&self) -> bool {
+        // Look at the implementation of the 'Button' component.
         todo!()
     }
     
