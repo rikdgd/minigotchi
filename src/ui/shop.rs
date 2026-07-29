@@ -28,7 +28,7 @@ impl<'a> ShopPage<'a> {
         clear_background(crate::BACKGROUND_COLOR);
         
         for item in &self.items {
-            item.render();
+            item.draw();
         }
 
         // TODO: Render toggle button to return to main screen
@@ -40,8 +40,10 @@ impl<'a> ShopPage<'a> {
     fn update(&mut self) {
         for item in &self.items {
             if item.is_clicked() {
-                item.item.try_buy(self.inventory).unwrap();
-                // TODO: Instead of unwrapping, display an error to the user on Err
+                if let Err(msg) = item.item.try_buy(self.inventory) {
+                    // TODO: Notify the user that he doesn't have enough coins for this purchase
+                    println!("Error when buying item from shop: {msg}");
+                }
             }
         }
     }
@@ -91,11 +93,10 @@ impl ShopItem {
     }
 
     pub fn is_clicked(&self) -> bool {
-        // Look at the implementation of the 'Button' component.
-        todo!()
+        self.area.contains(mouse_position().into()) && is_mouse_button_pressed(MouseButton::Left)
     }
     
-    pub fn render(&self) {
+    pub fn draw(&self) {
         draw_rectangle(
             self.area.x,
             self.area.y,
