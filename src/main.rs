@@ -24,7 +24,7 @@ pub const BACKGROUND_COLOR: Color = Color::new(0.8, 0.8, 0.8, 1.0);
 #[macroquad::main(main_window_conf)]
 async fn main() {
     let mut runner = GameRunner::initiate().await;
-    runner.render_game().await;
+    runner.run_game().await;
 }
 
 fn main_window_conf() -> Conf {
