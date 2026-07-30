@@ -94,6 +94,7 @@ impl GameRunner {
             }
             
             self.handle_button_click();
+            self.handle_shop_button_click().await;
             
             stat_display(self.state.creature());
             
@@ -187,5 +188,14 @@ impl GameRunner {
                 }
             }
         }
+    }
+    
+    async fn handle_shop_button_click(&mut self) {
+        if !self.shop_button.is_clicked() {
+            return;
+        }
+        
+        let mut shop = ShopPage::new(&mut self.state.inventory);
+        shop.render().await;
     }
 }

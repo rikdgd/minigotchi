@@ -25,16 +25,22 @@ impl<'a> ShopPage<'a> {
     }
     
     pub async fn render(&mut self) {
-        clear_background(crate::BACKGROUND_COLOR);
-        
-        for item in &self.items {
-            item.draw();
-        }
+        loop {
+            clear_background(crate::BACKGROUND_COLOR);
 
-        // TODO: Render toggle button to return to main screen
-        
-        next_frame().await;
-        self.update();
+            for item in &self.items {
+                item.draw();
+            }
+
+            // TODO: Render toggle button to return to main screen
+
+            if is_key_pressed(KeyCode::Escape) {
+                break;
+            }
+
+            self.update();
+            next_frame().await;
+        }
     }
     
     fn update(&mut self) {
