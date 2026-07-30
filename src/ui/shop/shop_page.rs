@@ -48,7 +48,7 @@ impl<'a> ShopPage<'a> {
     fn update(&mut self) {
         for item in &self.items {
             if item.is_clicked() {
-                if let Err(msg) = item.item.try_buy(self.inventory) {
+                if let Err(msg) = self.inventory.try_buy_item(&item.item) {
                     // TODO: Notify the user that he doesn't have enough coins for this purchase
                     println!("Error when buying item from shop: {msg}");
                 }

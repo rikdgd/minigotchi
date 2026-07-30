@@ -91,12 +91,13 @@ impl ShopItem {
 }
 
 pub fn get_unowned_shop_items(inv: &Inventory) -> Vec<ShopItem> {
-    // TODO: Filter items based on owned items from inventory
-    default_shop_items().into()
+    let mut new_items = default_shop_items();
+    new_items.retain(|item| !inv.contains_item(&item.item));
+    new_items
 }
 
-fn default_shop_items() -> [ShopItem; 3] {
-    [
+fn default_shop_items() -> Vec<ShopItem> {
+    vec![
         ShopItem::new(
             Box::new(CreatureColor::Red),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),

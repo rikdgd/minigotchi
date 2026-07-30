@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 use crate::items::creature_color::CreatureColor;
-use crate::items::BuyableItem;
+use crate::items::{BuyableItem, ItemType};
 
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -11,9 +11,25 @@ pub struct Inventory {
 
 impl Inventory {
     pub fn try_buy_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
+        if self.contains_item(item) {
+            return Err("Cannot buy an item twice".into());
+        }
+        
         match item.try_buy(self) {
             Ok(_) => Ok(()),
             Err(msg) => Err(String::from(msg)),
+        }
+    }
+    
+    pub fn contains_item(&self, item: &Box<dyn BuyableItem>) -> bool {
+        match item.item_type() {
+            ItemType::CreatureColor => {
+                for color in &self.creature_colors {
+                    if color.name() == item.name() { return true }
+                }
+                false
+            }
+            _ => false
         }
     }
 }
