@@ -1,6 +1,5 @@
 use macroquad::prelude::*;
 
-// use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
@@ -72,7 +71,6 @@ impl GameRunner {
 
     pub async fn run_game(&mut self) {
         while self.is_running {
-            // TODO: Separate the loop logic and add a match statement here to render the correct screen
             self.state.update();
             
             // If the creature has died, render the death screen and set the new state
