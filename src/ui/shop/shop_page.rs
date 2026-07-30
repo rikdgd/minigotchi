@@ -4,6 +4,7 @@ use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
 use crate::ui::shop::ShopItem;
+use crate::ui::shop::shop_item::get_unowned_shop_items;
 
 
 /// The ShopPage struct is used to render the in-game shop menu. It manages the state of the ui
@@ -20,8 +21,8 @@ pub struct ShopPage<'a> {
 impl<'a> ShopPage<'a> {
     pub fn new(inventory: &'a mut Inventory) -> Self {
         Self {
+            items: get_unowned_shop_items(&(*inventory)),
             inventory,
-            items: vec![],
         }
     }
     
