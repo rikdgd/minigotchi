@@ -3,7 +3,7 @@ use macroquad::prelude::*;
 // use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
-use crate::ui::{NewGameMenu, render_death_screen};
+use crate::ui::{NewGameMenu, render_death_screen, button::Button};
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::food::Food;
@@ -15,11 +15,6 @@ use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAni
 use crate::{creature, ui, BACKGROUND_COLOR};
 use crate::ui::shop::ShopPage;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum GameMenu {
-    Main,
-    Shop,
-}
 
 /// The **GameRunner** structure can be used to run the Minigotchi game. It has ownership of the
 /// `GameState` instance used to run the game and makes sure the correct page/screen is rendered.
@@ -36,7 +31,11 @@ enum GameMenu {
 /// ```
 pub struct GameRunner {
     state: GameState,
-    current_menu: GameMenu,
+    is_running: bool,
+    
+    interaction_buttons: [InteractionButton; 4],
+    sleep_icon_movement: EggHop,
+    shop_button: Button,
 }
 
 impl GameRunner {
@@ -62,20 +61,17 @@ impl GameRunner {
         };
 
         Self {
+            interaction_buttons: InteractionButton::main_menu_buttons(),
+            sleep_icon_movement: EggHop::new(get_sleeping_location(game_state.creature()).translate(-9.0, -16.0)),
+            shop_button: ShopPage::shop_button(),
+
             state: game_state,
-            current_menu: GameMenu::Main,
+            is_running: true,
         }
     }
 
     pub async fn run_game(&mut self) {
-        // Set some state
-        let buttons = InteractionButton::main_menu_buttons();
-        let mut sleeping_icon_movement = EggHop::new(get_sleeping_location(self.state.creature()).translate(-9.0, -16.0));
-        
-        let shop_btn = ShopPage::shop_button();
-        
-        // Enter the actual game loop
-        loop {
+        while self.is_running {
             // TODO: Separate the loop logic and add a match statement here to render the correct screen
             self.state.update();
             
@@ -85,7 +81,7 @@ impl GameRunner {
             }
             
             clear_background(BACKGROUND_COLOR);
-            self.draw_main_ui(&mut sleeping_icon_movement, &buttons);
+            self.draw_main_ui();
             
             // If an animation is playing, render it
             if let Some(animation) = self.state.current_animation.as_mut()
@@ -94,16 +90,35 @@ impl GameRunner {
             }
             
             if is_key_pressed(KeyCode::Escape) {
-                break;
+                self.is_running = false;
             }
             
-            self.handle_button_click(&buttons);
+            self.handle_button_click();
             
             stat_display(self.state.creature());
-            shop_btn.render();
             
             next_frame().await;
         }
+    }
+
+    fn draw_main_ui(&mut self) {
+        draw_play_area(self.state.creature());
+        self.draw_creature();
+        
+        // Draw the "Zz" texture when sleeping
+        if self.state.creature().is_asleep() {
+            let location = self.sleep_icon_movement.next_location();
+            draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
+        }
+        
+        // Draw the creatures name and age
+        ui::draw_creature_name(&self.state);
+        ui::draw_age_display(&self.state);
+        
+        for button in &self.interaction_buttons {
+            button.get_button().render();
+        }
+        self.shop_button.render();
     }
 
     fn draw_creature(&mut self) {
@@ -111,14 +126,14 @@ impl GameRunner {
         if self.state.current_animation.is_some() {
             return;
         }
-        
+
         let creature_texture = self.state.creature().shape();
         let creature_location = if self.state.creature().is_asleep() {
             get_sleeping_location(self.state.creature())
         } else {
             self.state.creature_movement.next_location()
         };
-        
+
         draw_texture_ex(
             &creature_texture,
             creature_location.x,
@@ -131,31 +146,12 @@ impl GameRunner {
         );
     }
 
-    fn draw_main_ui(&mut self, sleeping_icon_movement: &mut EggHop, buttons: &[InteractionButton]) {
-        draw_play_area(self.state.creature());
-        self.draw_creature();
-        
-        // Draw the "Zz" texture when sleeping
-        if self.state.creature().is_asleep() {
-            let location = sleeping_icon_movement.next_location();
-            draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
-        }
-        
-        // Draw the creatures name and age
-        ui::draw_creature_name(&self.state);
-        ui::draw_age_display(&self.state);
-        
-        for button in buttons {
-            button.get_button().render();
-        }
-    }
-
-    fn handle_button_click(&mut self, buttons: &[InteractionButton]) {
+    fn handle_button_click(&mut self) {
         if self.state.current_animation.is_some() {
             return;
         }
         
-        for button in buttons {
+        for button in &self.interaction_buttons {
             if button.get_button().is_clicked() {
                 match button {
                     InteractionButton::Energy(_) => self.state.creature_mut().toggle_sleep(),
