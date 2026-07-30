@@ -30,7 +30,6 @@ use crate::ui::shop::ShopPage;
 /// ```
 pub struct GameRunner {
     state: GameState,
-    is_running: bool,
     
     interaction_buttons: [InteractionButton; 4],
     sleep_icon_movement: EggHop,
@@ -40,7 +39,8 @@ pub struct GameRunner {
 impl GameRunner {
     /// Creates a new `GameRunner` instance. To do so it first checks if a save file is available,
     /// as well as if the save is still valid. If it isn't it will display the correct game menu
-    /// to let the user create a `GameState`.
+    /// to let the user create a `GameState`. This GameState can then be used to create a new
+    /// GameRunner.
     pub async fn initiate() -> Self {
         // Seed the random number generator
         rand::srand(miniquad::date::now() as u64);
@@ -65,12 +65,11 @@ impl GameRunner {
             shop_button: ShopPage::shop_button(),
 
             state: game_state,
-            is_running: true,
         }
     }
 
     pub async fn run_game(&mut self) {
-        while self.is_running {
+        loop {
             self.state.update();
             
             // If the creature has died, render the death screen and set the new state
@@ -87,14 +86,12 @@ impl GameRunner {
                 animation.render();
             }
             
+            // Handle user inputs:
             if is_key_pressed(KeyCode::Escape) {
-                self.is_running = false;
+                break;
             }
-            
             self.handle_button_click();
             self.handle_shop_button_click().await;
-            
-            stat_display(self.state.creature());
             
             next_frame().await;
         }
@@ -103,6 +100,7 @@ impl GameRunner {
     fn draw_main_ui(&mut self) {
         draw_play_area(self.state.creature());
         self.draw_creature();
+        stat_display(self.state.creature());
         
         // Draw the "Zz" texture when sleeping
         if self.state.creature().is_asleep() {
