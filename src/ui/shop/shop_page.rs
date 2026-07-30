@@ -49,7 +49,7 @@ impl<'a> ShopPage<'a> {
         for item in &self.items {
             if item.is_clicked() {
                 if let Err(msg) = self.inventory.try_buy_item(&item.item) {
-                    // TODO: Notify the user that he doesn't have enough coins for this purchase
+                    // TODO: Notify the user about the occurred error
                     println!("Error when buying item from shop: {msg}");
                 }
             }

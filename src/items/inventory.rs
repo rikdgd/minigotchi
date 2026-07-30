@@ -10,6 +10,15 @@ pub struct Inventory {
 }
 
 impl Inventory {
+    /// Attempts to buy a `BuyableItem` instance, accounting for its price and if it is already
+    /// owned or not.
+    /// 
+    /// ## Parameters:
+    /// * `item` - The item that should be bought.
+    /// 
+    /// ## Returns:
+    /// The function returns an Err value when the given `Inventory` already contains this item,
+    /// or when not enough coins are present.
     pub fn try_buy_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
         if self.contains_item(item) {
             return Err("Cannot buy an item twice".into());
@@ -62,5 +71,36 @@ mod tests {
         
         // The 'try_buy_item' method should return an Err value:
         inventory.try_buy_item(&test_item).unwrap_err();
+    }
+    
+    #[test]
+    fn contains_item() {
+        let green = CreatureColor::Green;
+        let red = CreatureColor::Red;
+        let green_boxed: Box<dyn BuyableItem> = Box::new(green);
+        let red_boxed: Box<dyn BuyableItem> = Box::new(red);
+        
+        let mut inventory = Inventory::default();
+        
+        
+        inventory.creature_colors.push(green);
+        
+        assert!(inventory.contains_item(&green_boxed));
+        assert!(!inventory.contains_item(&red_boxed));
+    }
+    
+    #[test]
+    fn try_buy_owned_item() {
+        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Green);
+        let mut inventory = Inventory::default();
+        inventory.coins = 100;
+        
+        inventory.try_buy_item(&test_item).expect("Failed to buy initial item");
+        
+        // Attempting to buy it again should fail:
+        inventory.try_buy_item(&test_item).unwrap_err();
+        
+        assert_eq!(100 - test_item.price(), inventory.coins);
+        assert_eq!(1, inventory.creature_colors.len());
     }
 }
