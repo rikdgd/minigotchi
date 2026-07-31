@@ -1,9 +1,7 @@
 use macroquad::prelude::*;
 
 use crate::items::BuyableItem;
-use crate::{include_texture, SCREEN_WIDTH};
-use crate::items::inventory::Inventory;
-use crate::items::creature_color::CreatureColor;
+use crate::SCREEN_WIDTH;
 
 
 // The sprites for items in the shop are always 15x15 pixels
@@ -56,8 +54,10 @@ impl ShopItem {
     }
 
     pub fn draw(&self) {
-        let rect_color = if self.owned {
+        let bg_color = if self.owned {
             Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
+        } else if self.area.contains(mouse_position().into()) {
+            Color { r: 0.5, g: 0.5, b: 0.5, a: 1.0 }
         } else {
             Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
         };
@@ -66,7 +66,7 @@ impl ShopItem {
             self.area.y,
             self.area.w,
             self.area.h,
-            rect_color,
+            bg_color,
         );
 
         draw_texture_ex(
