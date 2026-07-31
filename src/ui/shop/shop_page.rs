@@ -15,6 +15,12 @@ use crate::ui::shop::ShopItem;
 /// ## Fields:
 /// * `inventory` - A mutable reference the GameState's *inventory* field.
 /// * `items` - A vector containing all items that are for sale in the shop.
+/// * `error_message` - The error message that was received from a failed transaction. Gets set back
+///   to `None` after 2 seconds have passed.
+/// * `last_error_millis` - The last system time in milliseconds on which an error has occurred during
+///   a transaction. Used determine when an error message should be rendered.
+/// * `start_render_millis` - The system time in milliseconds when the shop page started rendering.
+///   used to prevent *(accidental)* purchases in the first **0.5 seconds**.
 pub struct ShopPage<'a> {
     inventory: &'a mut Inventory,
     items: Vec<ShopItem>,
