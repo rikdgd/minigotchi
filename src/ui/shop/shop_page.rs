@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 
+use crate::utils::time::get_now_millis;
 use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -16,6 +17,7 @@ use crate::ui::shop::shop_item::get_unowned_shop_items;
 pub struct ShopPage<'a> {
     inventory: &'a mut Inventory,
     items: Vec<ShopItem>,
+    start_render_millis: i64,
 }
 
 impl<'a> ShopPage<'a> {
@@ -23,10 +25,12 @@ impl<'a> ShopPage<'a> {
         Self {
             items: get_unowned_shop_items(&(*inventory)),
             inventory,
+            start_render_millis: 0,
         }
     }
     
     pub async fn render(&mut self) {
+        self.start_render_millis = get_now_millis();
         loop {
             clear_background(crate::BACKGROUND_COLOR);
 
@@ -46,6 +50,10 @@ impl<'a> ShopPage<'a> {
     }
     
     fn update(&mut self) {
+        if get_now_millis() - self.start_render_millis < 500 {
+            return;
+        }
+        
         for item in &self.items {
             if item.is_clicked() {
                 if let Err(msg) = self.inventory.try_buy_item(&item.item) {
