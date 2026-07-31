@@ -21,7 +21,7 @@ impl Inventory {
     /// or when not enough coins are present.
     pub fn try_buy_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
         if self.contains_item(item) {
-            return Err("Cannot buy an item twice".into());
+            return Err("Already owned".into());
         }
         
         match item.try_buy(self) {

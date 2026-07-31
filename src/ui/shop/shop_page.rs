@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 
 use crate::utils::time::get_now_millis;
+use crate::utils::Location;
 use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -17,6 +18,8 @@ use crate::ui::shop::shop_item::get_unowned_shop_items;
 pub struct ShopPage<'a> {
     inventory: &'a mut Inventory,
     items: Vec<ShopItem>,
+    error_message: Option<String>,
+    last_error_millis: i64,
     start_render_millis: i64,
 }
 
@@ -25,6 +28,8 @@ impl<'a> ShopPage<'a> {
         Self {
             items: get_unowned_shop_items(&(*inventory)),
             inventory,
+            error_message: None,
+            last_error_millis: 0,
             start_render_millis: 0,
         }
     }
@@ -39,6 +44,8 @@ impl<'a> ShopPage<'a> {
             }
 
             // TODO: Render toggle button to return to main screen
+            
+            self.render_error_message();
 
             if is_key_pressed(KeyCode::Escape) {
                 break;
@@ -49,16 +56,49 @@ impl<'a> ShopPage<'a> {
         }
     }
     
+    /// Renders an error message when one occurred in the last 2 seconds. When 2 seconds have passed,
+    /// this method automatically sets `self.error_message` to `None`.
+    fn render_error_message(&mut self) {
+        if get_now_millis() - self.last_error_millis > 2000 {
+            self.error_message = None;
+            return;
+        }
+        
+        if let Some(msg) = &self.error_message {
+            let dimensions = measure_text(msg, None, 18, 1.0);
+            let text_location = Location {
+                x: (SCREEN_WIDTH / 2) as f32 - dimensions.width / 2.0,
+                y: (SCREEN_HEIGHT / 2) as f32 - dimensions.height / 2.0,
+            };
+            draw_rectangle(
+                text_location.x - 10.0,
+                text_location.y - dimensions.height - 8.0,
+                dimensions.width + 20.0,
+                dimensions.height + 20.0,
+                Color { r: 0.75, g: 0.7, b: 0.7, a: 1.0},
+            );
+            draw_text(
+                msg,
+                text_location.x,
+                text_location.y,
+                18.0,
+                RED,
+            );
+        }
+    }
+    
     fn update(&mut self) {
-        if get_now_millis() - self.start_render_millis < 500 {
+        let now = get_now_millis();
+        if now - self.start_render_millis < 500 {
             return;
         }
         
         for item in &self.items {
             if item.is_clicked() {
                 if let Err(msg) = self.inventory.try_buy_item(&item.item) {
-                    // TODO: Notify the user about the occurred error
-                    println!("Error when buying item from shop: {msg}");
+                    println!("Error when buying item from shop: '{msg}'");
+                    self.error_message = Some(msg);
+                    self.last_error_millis = now;
                 }
             }
         }
