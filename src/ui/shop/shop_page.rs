@@ -4,9 +4,9 @@ use crate::utils::time::get_now_millis;
 use crate::utils::Location;
 use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
-use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::{SCREEN_WIDTH, SCREEN_HEIGHT, include_texture};
+use crate::items::creature_color::CreatureColor;
 use crate::ui::shop::ShopItem;
-use crate::ui::shop::shop_item::get_unowned_shop_items;
 
 
 /// The ShopPage struct is used to render the in-game shop menu. It manages the state of the ui
@@ -26,7 +26,7 @@ pub struct ShopPage<'a> {
 impl<'a> ShopPage<'a> {
     pub fn new(inventory: &'a mut Inventory) -> Self {
         Self {
-            items: get_unowned_shop_items(&(*inventory)),
+            items: get_all_shop_items(inventory),
             inventory,
             error_message: None,
             last_error_millis: 0,
@@ -118,4 +118,32 @@ impl<'a> ShopPage<'a> {
             ..Default::default()
         }
     }
+}
+
+fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
+    let mut items = vec![
+        ShopItem::new(
+            Box::new(CreatureColor::Red),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            0,
+        ),
+        ShopItem::new(
+            Box::new(CreatureColor::Green),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            1,
+        ),
+        ShopItem::new(
+            Box::new(CreatureColor::Blue),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            2,
+        ),
+    ];
+    
+    for item in &mut items {
+        if inv.contains_item(&item.item) {
+            item.owned = true;
+        }
+    }
+    
+    items
 }

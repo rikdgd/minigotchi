@@ -19,6 +19,7 @@ const ITEM_SPRITE_DIMENSION: f32 = 15.0;
 pub struct ShopItem {
     pub item: Box<dyn BuyableItem>,
     pub sprite: Texture2D,
+    pub owned: bool,
     area: Rect,
 }
 
@@ -40,6 +41,7 @@ impl ShopItem {
         Self {
             item,
             sprite,
+            owned: false,   // This will get set correctly by the 'ShopPage'
             area: Rect::new(
                 Self::X_LOCATION,
                 item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 10.0,
@@ -54,12 +56,17 @@ impl ShopItem {
     }
 
     pub fn draw(&self) {
+        let rect_color = if self.owned {
+            Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
+        } else {
+            Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
+        };
         draw_rectangle(
             self.area.x,
             self.area.y,
             self.area.w,
             self.area.h,
-            Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
+            rect_color,
         );
 
         draw_texture_ex(
@@ -78,7 +85,11 @@ impl ShopItem {
             BLACK,
         );
 
-        let price_txt = format!("{}$", self.item.price());
+        let price_txt = if self.owned {
+            "--".to_string()
+        } else {
+            format!("{}$", self.item.price())
+        };
         let price_dimensions = measure_text(&price_txt, None, Self::PRICE_FONT_SIZE as u16, 1.0);
         draw_text(
             &price_txt,
@@ -88,30 +99,4 @@ impl ShopItem {
             Color { r: 0.2, g: 0.2, b: 0.2, a: 1.0 },
         );
     }
-}
-
-pub fn get_unowned_shop_items(inv: &Inventory) -> Vec<ShopItem> {
-    let mut new_items = default_shop_items();
-    new_items.retain(|item| !inv.contains_item(&item.item));
-    new_items
-}
-
-fn default_shop_items() -> Vec<ShopItem> {
-    vec![
-        ShopItem::new(
-            Box::new(CreatureColor::Red),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            0,
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Green),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            1,
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Blue),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            2,
-        ),
-    ]
 }
