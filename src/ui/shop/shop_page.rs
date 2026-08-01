@@ -128,15 +128,14 @@ impl<'a> ShopPage<'a> {
     
     /// Returns the `Button` component used to toggle the shop page.
     pub fn shop_button() -> Button {
-        const BTN_DIMENSION: f32 = 10.0;
-        const X_POS: f32 = SCREEN_WIDTH as f32 - BTN_DIMENSION * 2.0;
-        const Y_POS: f32 = (SCREEN_HEIGHT / 2) as f32 - 6.0;
-        
         Button {
-            pos: (X_POS, Y_POS).into(),
-            size: (BTN_DIMENSION, BTN_DIMENSION).into(),
-            text: "$".to_string(),
-            fontsize: 16.0,
+            pos: Vec2::new(
+                SCREEN_WIDTH as f32 - 35.0,
+                (SCREEN_HEIGHT / 2) as f32 - 6.0
+            ),
+            size: Vec2::new(25.0, 12.0),
+            text: "Shop".to_string(),
+            fontsize: 11.0,
             ..Default::default()
         }
     }
