@@ -54,20 +54,7 @@ impl ShopItem {
     }
 
     pub fn draw(&self) {
-        let bg_color = if self.owned {
-            Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
-        } else if self.area.contains(mouse_position().into()) {
-            Color { r: 0.5, g: 0.5, b: 0.5, a: 1.0 }
-        } else {
-            Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
-        };
-        draw_rectangle(
-            self.area.x,
-            self.area.y,
-            self.area.w,
-            self.area.h,
-            bg_color,
-        );
+        self.draw_background();
 
         draw_texture_ex(
             &self.sprite,
@@ -85,15 +72,48 @@ impl ShopItem {
             BLACK,
         );
 
+        self.draw_price();
+    }
+    
+    fn draw_background(&self) {
+        let mut bg_color = if self.owned {
+            Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
+        } else {
+            Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
+        };
+        
+        if self.area.contains(mouse_position().into()) {
+            bg_color.r -= 0.1;
+            bg_color.g -= 0.1;
+            bg_color.b -= 0.1;
+        }
+        
+        draw_rectangle(
+            self.area.x,
+            self.area.y,
+            self.area.w,
+            self.area.h,
+            bg_color,
+        );
+    }
+    
+    fn draw_price(&self) {
         let price_txt = if self.owned {
             "--".to_string()
         } else {
             format!("{}$", self.item.price())
         };
-        let price_dimensions = measure_text(&price_txt, None, Self::PRICE_FONT_SIZE as u16, 1.0);
+        
+        let txt_width = measure_text(
+            &price_txt, 
+            None, 
+            Self::PRICE_FONT_SIZE as u16, 
+            1.0
+        ).width;
+        
         draw_text(
             &price_txt,
-            self.area.x + self.area.w - price_dimensions.width - 8.0,
+            self.area.x + self.area.w - txt_width - 8.0,
             (self.area.y + (self.area.h + Self::PRICE_FONT_SIZE / 2.0) / 2.0).round(),
             Self::PRICE_FONT_SIZE,
             Color { r: 0.2, g: 0.2, b: 0.2, a: 1.0 },
