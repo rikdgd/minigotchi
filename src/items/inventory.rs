@@ -7,6 +7,7 @@ use crate::items::{BuyableItem, ItemType};
 pub struct Inventory {
     pub coins: u32,
     pub creature_colors: Vec<CreatureColor>,
+    pub equipped_color: Option<CreatureColor>
 }
 
 impl Inventory {
@@ -39,6 +40,13 @@ impl Inventory {
                 false
             }
             _ => false
+        }
+    }
+    
+    pub fn try_equip_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
+        match item.try_equip(self) {
+            Ok(_) => Ok(()),
+            Err(msg) => Err(msg.to_string()),
         }
     }
 }
@@ -102,5 +110,23 @@ mod tests {
         
         assert_eq!(100 - test_item.price(), inventory.coins);
         assert_eq!(1, inventory.creature_colors.len());
+    }
+    
+    #[test]
+    fn try_equip_item() {
+        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Blue);
+        let mut inventory = Inventory::default();
+        inventory.coins = 1000;
+
+        // Item not owned so should return error:
+        inventory.try_equip_item(&test_item).unwrap_err();
+        
+        inventory.creature_colors.push(CreatureColor::Green);
+        // Item still not owned, so expect an error:
+        inventory.try_equip_item(&test_item).unwrap_err();
+        
+        inventory.try_buy_item(&test_item).unwrap();
+        // Now we own the blue color, so expect an Ok
+        inventory.try_equip_item(&test_item).unwrap();
     }
 }

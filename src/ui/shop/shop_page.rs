@@ -117,10 +117,21 @@ impl<'a> ShopPage<'a> {
         
         for item in &self.items {
             if item.is_clicked() {
-                if let Err(msg) = self.inventory.try_buy_item(&item.item) {
-                    println!("Error when buying item from shop: '{msg}'");
-                    self.error_message = Some(msg);
-                    self.last_error_millis = now;
+                match item.owned {
+                    true => {
+                        if let Err(msg) = self.inventory.try_equip_item(&item.item) {
+                            println!("Failed to equip item: {msg}");
+                            self.error_message = Some(msg);
+                            self.last_error_millis = now;
+                        }
+                    },
+                    false => {
+                        if let Err(msg) = self.inventory.try_buy_item(&item.item) {
+                            println!("Error when buying item from shop: '{msg}'");
+                            self.error_message = Some(msg);
+                            self.last_error_millis = now;
+                        }
+                    }
                 }
             }
         }
