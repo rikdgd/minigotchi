@@ -42,7 +42,7 @@ impl ShopItem {
             owned: false,   // This will get set correctly by the 'ShopPage'
             area: Rect::new(
                 Self::X_LOCATION,
-                item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 10.0,
+                item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0,
                 Self::ITEM_WIDTH,
                 Self::ITEM_HEIGHT,
             ),

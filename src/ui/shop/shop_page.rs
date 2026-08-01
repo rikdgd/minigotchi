@@ -50,7 +50,7 @@ impl<'a> ShopPage<'a> {
             }
 
             // TODO: Render toggle button to return to main screen
-            
+            self.render_coin_count();
             self.render_error_message();
 
             if is_key_pressed(KeyCode::Escape) {
@@ -60,6 +60,20 @@ impl<'a> ShopPage<'a> {
             self.update();
             next_frame().await;
         }
+    }
+    
+    fn render_coin_count(&self) {
+        const FONT_SIZE: u16 = 14;
+        let text = format!("Coins: {}", self.inventory.coins);
+        let txt_size = measure_text(&text, None, FONT_SIZE, 1.0);
+        
+        draw_text(
+            &text,
+            (SCREEN_WIDTH as f32 - txt_size.width) / 2.0,
+            txt_size.height + 7.0,
+            FONT_SIZE as f32,
+            Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0 },
+        );
     }
     
     /// Renders an error message when one occurred in the last 2 seconds. When 2 seconds have passed,
