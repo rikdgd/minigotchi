@@ -126,7 +126,8 @@ impl<'a> ShopPage<'a> {
         }
     }
     
-    /// Returns the `Button` component used to toggle the shop page.
+    /// Returns the `Button` component used to enter the shop page. Note that this Button component
+    /// **does not** actually do anything on its own and is merely useful for its pre-set styling.
     pub fn shop_button() -> Button {
         Button {
             pos: Vec2::new(
