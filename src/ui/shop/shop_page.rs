@@ -27,6 +27,7 @@ pub struct ShopPage<'a> {
     error_message: Option<String>,
     last_error_millis: i64,
     start_render_millis: i64,
+    return_button: Button,
 }
 
 impl<'a> ShopPage<'a> {
@@ -37,6 +38,7 @@ impl<'a> ShopPage<'a> {
             error_message: None,
             last_error_millis: 0,
             start_render_millis: 0,
+            return_button: Self::return_button(),
         }
     }
     
@@ -49,11 +51,11 @@ impl<'a> ShopPage<'a> {
                 item.draw();
             }
 
-            // TODO: Render toggle button to return to main screen
+            self.return_button.render();
             self.render_coin_count();
             self.render_error_message();
 
-            if is_key_pressed(KeyCode::Escape) {
+            if is_key_pressed(KeyCode::Escape) || self.return_button.is_clicked() {
                 break;
             }
 
@@ -135,6 +137,18 @@ impl<'a> ShopPage<'a> {
             size: (BTN_DIMENSION, BTN_DIMENSION).into(),
             text: "$".to_string(),
             fontsize: 16.0,
+            ..Default::default()
+        }
+    }
+    
+    fn return_button() -> Button {
+        Button {
+            text: "return".to_string(),
+            pos: Vec2::new(
+                (SCREEN_WIDTH as f32 - 40.0) / 2.0,
+                SCREEN_HEIGHT as f32 - 20.0,
+            ),
+            size: Vec2::new(40.0, 15.0),
             ..Default::default()
         }
     }
