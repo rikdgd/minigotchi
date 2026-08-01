@@ -45,4 +45,13 @@ impl BuyableItem for CreatureColor {
     fn add_to_inventory(&self, inventory: &mut Inventory) {
         inventory.creature_colors.push(*self);
     }
+    
+    fn try_equip(&self, inventory: &mut Inventory) -> Result<(), &str> {
+        if !inventory.creature_colors.contains(self) {
+            return Err("Not owned");
+        }
+        
+        inventory.equipped_color = Some(*self);
+        Ok(())
+    }
 }

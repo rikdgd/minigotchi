@@ -16,6 +16,8 @@ pub trait BuyableItem {
     fn price(&self) -> u32;
     fn item_type(&self) -> ItemType;
     fn add_to_inventory(&self, inventory: &mut Inventory);
+    fn try_equip(&self, inventory: &mut Inventory) -> Result<(), &str>;
+    
 
     /// Attempt to buy this item using the given inventory.
     /// 
