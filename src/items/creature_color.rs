@@ -14,9 +14,9 @@ pub enum CreatureColor {
 impl CreatureColor {
     pub fn get_color(&self) -> Color {
         match self {
-            CreatureColor::Red => Color::new(0.9, 0.0, 0.0, 1.0),
-            CreatureColor::Green => Color::new(0.0, 0.9, 0.0, 1.0),
-            CreatureColor::Blue => Color::new(0.0, 0.0, 0.9, 1.0),
+            CreatureColor::Red => Color::new(0.6, 0.0, 0.0, 1.0),
+            CreatureColor::Green => Color::new(0.0, 0.6, 0.0, 1.0),
+            CreatureColor::Blue => Color::new(0.0, 0.0, 0.6, 1.0),
         }
     }
 }
