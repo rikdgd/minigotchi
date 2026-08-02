@@ -3,11 +3,11 @@ use crate::items::creature_color::CreatureColor;
 use crate::items::{BuyableItem, ItemType};
 
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Inventory {
     pub coins: u32,
     pub creature_colors: Vec<CreatureColor>,
-    pub equipped_color: Option<CreatureColor>
+    pub equipped_color: CreatureColor
 }
 
 impl Inventory {
@@ -51,6 +51,16 @@ impl Inventory {
     }
 }
 
+impl Default for Inventory {
+    fn default() -> Self {
+        Self {
+            coins: 0,
+            creature_colors: vec![CreatureColor::Black],
+            equipped_color: CreatureColor::Black,
+        }
+    }
+}
+
 
 
 #[cfg(test)]
@@ -63,6 +73,7 @@ mod tests {
     fn try_buy_affordable_item() {
         let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Red);
         let mut inventory = Inventory::default();
+        inventory.creature_colors = vec![];
         inventory.coins = test_item.price() * 2;
         
         inventory.try_buy_item(&test_item).expect("Failed to buy item, even with enough coins.");
@@ -101,6 +112,7 @@ mod tests {
     fn try_buy_owned_item() {
         let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Green);
         let mut inventory = Inventory::default();
+        inventory.creature_colors = vec![];
         inventory.coins = 100;
         
         inventory.try_buy_item(&test_item).expect("Failed to buy initial item");

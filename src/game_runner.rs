@@ -131,16 +131,11 @@ impl GameRunner {
             self.state.creature_movement.next_location()
         };
         
-        let color = match self.state.inventory.equipped_color {
-            Some(c) => c.get_color(),
-            None => BLACK,
-        };
-
         draw_texture_ex(
             &creature_texture,
             creature_location.x,
             creature_location.y,
-            color,
+            self.state.inventory.equipped_color.get_color(),
             DrawTextureParams {
                 flip_x: self.state.creature_movement.mirror_sprite(),
                 ..Default::default()

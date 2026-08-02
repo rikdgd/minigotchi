@@ -172,19 +172,24 @@ impl<'a> ShopPage<'a> {
 fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
     let mut items = vec![
         ShopItem::new(
-            Box::new(CreatureColor::Red),
+            Box::new(CreatureColor::Black),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
             0,
         ),
         ShopItem::new(
-            Box::new(CreatureColor::Green),
+            Box::new(CreatureColor::Red),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
             1,
         ),
         ShopItem::new(
-            Box::new(CreatureColor::Blue),
+            Box::new(CreatureColor::Green),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
             2,
+        ),
+        ShopItem::new(
+            Box::new(CreatureColor::Blue),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            3,
         ),
     ];
     

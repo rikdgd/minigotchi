@@ -6,6 +6,7 @@ use crate::items::inventory::Inventory;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum CreatureColor {
+    Black,
     Red,
     Green,
     Blue,
@@ -14,6 +15,7 @@ pub enum CreatureColor {
 impl CreatureColor {
     pub fn get_color(&self) -> Color {
         match self {
+            CreatureColor::Black => Color::new(0.0, 0.0, 0.0, 1.0),
             CreatureColor::Red => Color::new(0.6, 0.0, 0.0, 1.0),
             CreatureColor::Green => Color::new(0.0, 0.6, 0.0, 1.0),
             CreatureColor::Blue => Color::new(0.0, 0.0, 0.6, 1.0),
@@ -24,6 +26,7 @@ impl CreatureColor {
 impl BuyableItem for CreatureColor {
     fn name(&self) -> &str {
         match self {
+            CreatureColor::Black => "Black color",
             CreatureColor::Red => "Red color",
             CreatureColor::Green => "Green color",
             CreatureColor::Blue => "Blue color",
@@ -32,6 +35,7 @@ impl BuyableItem for CreatureColor {
 
     fn price(&self) -> u32 {
         match self {
+            CreatureColor::Black => 0,
             CreatureColor::Red => 5,
             CreatureColor::Green => 5,
             CreatureColor::Blue => 5,
@@ -51,11 +55,11 @@ impl BuyableItem for CreatureColor {
             return Err("Not owned");
         }
         
-        inventory.equipped_color = Some(*self);
+        inventory.equipped_color = *self;
         Ok(())
     }
     
     fn is_equipped(&self, inventory: &Inventory) -> bool {
-        inventory.equipped_color == Some(*self)
+        inventory.equipped_color == *self
     }
 }
