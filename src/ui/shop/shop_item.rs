@@ -1,7 +1,7 @@
 use macroquad::prelude::*;
 
 use crate::items::BuyableItem;
-use crate::SCREEN_WIDTH;
+use crate::{include_texture, SCREEN_WIDTH};
 
 
 // The sprites for items in the shop are always 15x15 pixels
@@ -28,6 +28,7 @@ impl ShopItem {
     const X_LOCATION: f32 = 10.0;
     const ITEM_NAME_FONT_SIZE: f32 = 16.0;
     const PRICE_FONT_SIZE: f32 = 14.0;
+    const CHECKBOX_SPRITE_DIMENSION: f32 = 10.0;
     
     /// Returns a new `ShopItem` instance.
     /// 
@@ -74,7 +75,10 @@ impl ShopItem {
             BLACK,
         );
 
-        self.draw_price();
+        match self.owned {
+            true => self.draw_equipped_checkbox(),
+            false => self.draw_price(),
+        }
     }
     
     fn draw_background(&self) {
@@ -100,16 +104,7 @@ impl ShopItem {
     }
     
     fn draw_price(&self) {
-        let price_txt = if self.owned {
-            if self.equipped {
-                "active".to_string()
-            } else {
-                "--".to_string()
-            }
-        } else {
-            format!("{}$", self.item.price())
-        };
-        
+        let price_txt = format!("{}$", self.item.price());
         let txt_width = measure_text(
             &price_txt, 
             None, 
@@ -123,6 +118,21 @@ impl ShopItem {
             (self.area.y + (self.area.h + Self::PRICE_FONT_SIZE / 2.0) / 2.0).round(),
             Self::PRICE_FONT_SIZE,
             Color { r: 0.2, g: 0.2, b: 0.2, a: 1.0 },
+        );
+    }
+    
+    fn draw_equipped_checkbox(&self) {
+        let texture = match self.equipped {
+            true => include_texture!("../../../resources/shop/checkbox_checked.png"),
+            false => include_texture!("../../../resources/shop/checkbox_unchecked.png"),
+        };
+
+        draw_texture_ex(
+            &texture,
+            self.area.x + self.area.w - 15.0 - 8.0,
+            (self.area.y + (self.area.h - Self::CHECKBOX_SPRITE_DIMENSION) / 2.0).round(),
+            Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0},
+            DrawTextureParams::default(),
         );
     }
 }
