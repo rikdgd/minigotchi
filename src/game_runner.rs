@@ -105,7 +105,7 @@ impl GameRunner {
         // Draw the "Zz" texture when sleeping
         if self.state.creature().is_asleep() {
             let location = self.sleep_icon_movement.next_location();
-            draw_texture(&sleeping_icon(), location.x, location.y, WHITE);
+            draw_texture(&sleeping_icon(), location.x, location.y, BLACK);
         }
         
         // Draw the creatures name and age

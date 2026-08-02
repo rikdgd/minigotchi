@@ -22,22 +22,22 @@ pub fn stat_display(creature: &Creature) {
     };
     
     // food
-    draw_texture(&StatIcon::Food.get_texture(), icon_x, y_pos, RENDER_COLOR);
+    draw_texture(&StatIcon::Food.get_texture(), icon_x, y_pos, BLACK);
     draw_rectangle(rectangle_x, y_pos, bar_length(creature.food()), 10.0, RENDER_COLOR);
 
     // joy
     y_pos += Y_SPACING;
-    draw_texture(&StatIcon::Joy.get_texture(), icon_x, y_pos, RENDER_COLOR);
+    draw_texture(&StatIcon::Joy.get_texture(), icon_x, y_pos, BLACK);
     draw_rectangle(rectangle_x, y_pos, bar_length(creature.joy()), 10.0, RENDER_COLOR);
     
     // energy
     y_pos += Y_SPACING;
-    draw_texture(&StatIcon::Energy.get_texture(), icon_x, y_pos, RENDER_COLOR);
+    draw_texture(&StatIcon::Energy.get_texture(), icon_x, y_pos, BLACK);
     draw_rectangle(rectangle_x, y_pos, bar_length(creature.energy()), 10.0, RENDER_COLOR);
 
     // health
     y_pos += Y_SPACING;
-    draw_texture(&StatIcon::Health.get_texture(), icon_x, y_pos, RENDER_COLOR);
+    draw_texture(&StatIcon::Health.get_texture(), icon_x, y_pos, BLACK);
     draw_rectangle(rectangle_x, y_pos, bar_length(creature.health()), 10.0, RENDER_COLOR);
 }
 
