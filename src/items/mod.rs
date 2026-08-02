@@ -17,6 +17,7 @@ pub trait BuyableItem {
     fn item_type(&self) -> ItemType;
     fn add_to_inventory(&self, inventory: &mut Inventory);
     fn try_equip(&self, inventory: &mut Inventory) -> Result<(), &str>;
+    fn is_equipped(&self, inventory: &Inventory) -> bool;
     
 
     /// Attempt to buy this item using the given inventory.

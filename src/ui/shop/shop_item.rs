@@ -18,6 +18,7 @@ pub struct ShopItem {
     pub item: Box<dyn BuyableItem>,
     pub sprite: Texture2D,
     pub owned: bool,
+    pub equipped: bool,
     area: Rect,
 }
 
@@ -39,7 +40,8 @@ impl ShopItem {
         Self {
             item,
             sprite,
-            owned: false,   // This will get set correctly by the 'ShopPage'
+            owned: false,   // 'owned' and 'equipped' will get set correctly by the 'ShopPage'
+            equipped: false,
             area: Rect::new(
                 Self::X_LOCATION,
                 item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0,
@@ -99,7 +101,11 @@ impl ShopItem {
     
     fn draw_price(&self) {
         let price_txt = if self.owned {
-            "--".to_string()
+            if self.equipped {
+                "active".to_string()
+            } else {
+                "--".to_string()
+            }
         } else {
             format!("{}$", self.item.price())
         };

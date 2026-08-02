@@ -115,7 +115,7 @@ impl<'a> ShopPage<'a> {
             return;
         }
         
-        for item in &self.items {
+        for item in &mut self.items {
             if item.is_clicked() {
                 match item.owned {
                     true => {
@@ -130,10 +130,14 @@ impl<'a> ShopPage<'a> {
                             println!("Error when buying item from shop: '{msg}'");
                             self.error_message = Some(msg);
                             self.last_error_millis = now;
+                        } else {
+                            item.owned = true;
                         }
                     }
                 }
             }
+            
+            item.equipped = item.item.is_equipped(self.inventory);
         }
     }
     
@@ -187,6 +191,10 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
     for item in &mut items {
         if inv.contains_item(&item.item) {
             item.owned = true;
+            
+            if item.item.is_equipped(inv) {
+                item.equipped = true;
+            }
         }
     }
     

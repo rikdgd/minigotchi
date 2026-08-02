@@ -54,4 +54,8 @@ impl BuyableItem for CreatureColor {
         inventory.equipped_color = Some(*self);
         Ok(())
     }
+    
+    fn is_equipped(&self, inventory: &Inventory) -> bool {
+        inventory.equipped_color == Some(*self)
+    }
 }
