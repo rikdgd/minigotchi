@@ -12,7 +12,7 @@ macro_rules! include_texture {
 
 const NUM_SHAPES: u8 = 7;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum CreatureShapes {
     Turtle,
     Snail,

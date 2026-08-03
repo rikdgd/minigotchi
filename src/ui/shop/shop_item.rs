@@ -1,0 +1,138 @@
+use macroquad::prelude::*;
+
+use crate::items::BuyableItem;
+use crate::{include_texture, SCREEN_WIDTH};
+
+
+// The sprites for items in the shop are always 15x15 pixels
+const ITEM_SPRITE_DIMENSION: f32 = 15.0;
+
+/// The `ShopItem` structure can be used to render a buyable item in the shop menu.
+/// It manages its own state and can be rendered using the `render()` function.
+///
+/// ## Fields:
+/// * `item` - The `BuyableItem` instance that is sold via this ShopItem.
+/// * `sprite` - The item's sprite that should be rendered in the shop
+/// * `area` - The hitbox/size of the item when rendered on screen.
+pub struct ShopItem {
+    pub item: Box<dyn BuyableItem>,
+    pub sprite: Texture2D,
+    pub owned: bool,
+    pub equipped: bool,
+    area: Rect,
+}
+
+impl ShopItem {
+    const ITEM_WIDTH: f32 = (SCREEN_WIDTH as f32 * 0.9).round();
+    const ITEM_HEIGHT: f32 = 30.0;
+    const X_LOCATION: f32 = 10.0;
+    const ITEM_NAME_FONT_SIZE: f32 = 16.0;
+    const PRICE_FONT_SIZE: f32 = 14.0;
+    const CHECKBOX_SPRITE_DIMENSION: f32 = 10.0;
+    
+    /// Returns a new `ShopItem` instance.
+    /// 
+    /// ## Parameters:
+    /// * `item` - The item that can be bought using the new ShopItem.
+    /// * `sprite` - The sprite that should be rendered in the new ShopItem.
+    /// * `item_index` - The index for this item in the list of all shop items. This is used
+    ///   to determine at what height the ShopItem should be rendered.
+    pub fn new(item: Box<dyn BuyableItem>, sprite: Texture2D, item_index: u32) -> Self {
+        Self {
+            item,
+            sprite,
+            owned: false,   // 'owned' and 'equipped' will get set correctly by the 'ShopPage'
+            equipped: false,
+            area: Rect::new(
+                Self::X_LOCATION,
+                item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0,
+                Self::ITEM_WIDTH,
+                Self::ITEM_HEIGHT,
+            ),
+        }
+    }
+
+    pub fn is_clicked(&self) -> bool {
+        self.area.contains(mouse_position().into()) && is_mouse_button_pressed(MouseButton::Left)
+    }
+
+    pub fn draw(&self) {
+        self.draw_background();
+
+        draw_texture_ex(
+            &self.sprite,
+            self.area.x + 8.0,
+            (self.area.y + (self.area.h - ITEM_SPRITE_DIMENSION) / 2.0).round(),
+            BLACK,
+            DrawTextureParams::default(),
+        );
+
+        draw_text(
+            self.item.name(),
+            self.area.x + 16.0 + ITEM_SPRITE_DIMENSION,
+            self.area.y + (self.area.h + Self::ITEM_NAME_FONT_SIZE / 2.0) / 2.0,
+            Self::ITEM_NAME_FONT_SIZE,
+            BLACK,
+        );
+
+        match self.owned {
+            true => self.draw_equipped_checkbox(),
+            false => self.draw_price(),
+        }
+    }
+    
+    fn draw_background(&self) {
+        let mut bg_color = if self.owned {
+            Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
+        } else {
+            Color { r: 0.6, g: 0.6, b: 0.6, a: 1.0 }
+        };
+        
+        if self.area.contains(mouse_position().into()) {
+            bg_color.r -= 0.1;
+            bg_color.g -= 0.1;
+            bg_color.b -= 0.1;
+        }
+        
+        draw_rectangle(
+            self.area.x,
+            self.area.y,
+            self.area.w,
+            self.area.h,
+            bg_color,
+        );
+    }
+    
+    fn draw_price(&self) {
+        let price_txt = format!("{}$", self.item.price());
+        let txt_width = measure_text(
+            &price_txt, 
+            None, 
+            Self::PRICE_FONT_SIZE as u16, 
+            1.0
+        ).width;
+        
+        draw_text(
+            &price_txt,
+            self.area.x + self.area.w - txt_width - 8.0,
+            (self.area.y + (self.area.h + Self::PRICE_FONT_SIZE / 2.0) / 2.0).round(),
+            Self::PRICE_FONT_SIZE,
+            Color { r: 0.2, g: 0.2, b: 0.2, a: 1.0 },
+        );
+    }
+    
+    fn draw_equipped_checkbox(&self) {
+        let texture = match self.equipped {
+            true => include_texture!("../../../resources/shop/checkbox_checked.png"),
+            false => include_texture!("../../../resources/shop/checkbox_unchecked.png"),
+        };
+
+        draw_texture_ex(
+            &texture,
+            self.area.x + self.area.w - 15.0 - 8.0,
+            (self.area.y + (self.area.h - Self::CHECKBOX_SPRITE_DIMENSION) / 2.0).round(),
+            Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0},
+            DrawTextureParams::default(),
+        );
+    }
+}

@@ -7,13 +7,16 @@ use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
 use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
 use crate::shapes::CreatureShapes;
-use crate::save_management::store_game_state;
+use crate::save_management::{SaveState, store_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
+use crate::items::inventory::Inventory;
 
 
 pub struct GameState {
     creature: Creature,
+    last_coin_time: i64,
+    pub inventory: Inventory,
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
     pub current_animation: Option<Box<dyn Animation>>,
@@ -30,32 +33,12 @@ impl GameState {
         Self {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
+            last_coin_time: now,
+            inventory: Inventory::default(),
             prev_growth_stage,
             current_animation: None,
             is_stalking_cursor: false,
             sickness_movement_playing: false,
-        }
-    }
-
-    fn from_creature(creature: Creature) -> Self {
-        // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
-        // of its movement.
-        let base_location = if creature.growth_stage() == GrowthStage::Adult {
-            Location {
-                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - creature.shape().width()).round(),
-                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - creature.shape().height()).round(),
-            }
-        } else {
-            CREATURE_BASE_LOCATION
-        };
-        
-        Self {
-            creature_movement: get_creature_movement(&creature, base_location),
-            prev_growth_stage: creature.growth_stage(),
-            current_animation: None,
-            is_stalking_cursor: false,
-            sickness_movement_playing: creature.is_sick(),
-            creature,
         }
     }
     
@@ -63,17 +46,18 @@ impl GameState {
         let file_bytes = load_file(path).await?;
         let content_string = String::from_utf8_lossy(&file_bytes);
 
-        let creature: Creature = serde_json::from_str(&content_string)
+        let state: SaveState = serde_json::from_str(&content_string)
             .expect("Failed to deserialize GameState from savefile");
 
-        Ok(Self::from_creature(creature))
+        Ok(state.into())
     }
 
     pub fn update(&mut self) {
         let now = get_now_millis();
 
-        // Update the creature's state
+        // Update the game's state
         self.creature.update_state(now);
+        self.update_coins(now);
 
         // Set the animation to None when it has finished
         if let Some(animation) = &self.current_animation
@@ -94,12 +78,29 @@ impl GameState {
         self.toggle_sickness_movement();
     }
     
+    fn update_coins(&mut self, now: i64) {
+        const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
+        
+        while (now - self.last_coin_time) / DAY_MILLIS > 0 {
+            self.inventory.coins += 1;
+            self.last_coin_time += DAY_MILLIS;
+        }
+    }
+    
     pub fn creature(&self) -> &Creature {
         &self.creature
     }
     
     pub fn creature_mut(&mut self) -> &mut Creature {
         &mut self.creature
+    }
+    
+    pub fn inventory(&self) -> &Inventory {
+        &self.inventory
+    }
+    
+    pub fn last_coin_time(&self) -> i64 {
+        self.last_coin_time
     }
 
     /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
@@ -162,8 +163,71 @@ impl GameState {
     }
 }
 
+impl From<SaveState> for GameState {
+    fn from(value: SaveState) -> Self {
+        // When the game is freshly loaded from a file and the creature is adult, randomize the starting location
+        // of its movement.
+        let base_location = if value.creature.growth_stage() == GrowthStage::Adult {
+            Location {
+                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - value.creature.shape().width()).round(),
+                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - value.creature.shape().height()).round(),
+            }
+        } else {
+            CREATURE_BASE_LOCATION
+        };
+        
+        Self {
+            creature_movement: get_creature_movement(&value.creature, base_location),
+            last_coin_time: value.last_coin_time,
+            inventory: value.inventory,
+            prev_growth_stage: value.creature.growth_stage(),
+            current_animation: None,
+            is_stalking_cursor: false,
+            sickness_movement_playing: value.creature.is_sick(),
+            creature: value.creature,
+        }
+    }
+}
+
 impl Drop for GameState {
     fn drop(&mut self) {
-        store_game_state(self).expect("Failed to save the game to disk");
+        let state = &(*self);
+        store_save_state(state.into()).expect("Failed to save the game to disk");
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use crate::game_state::GameState;
+    use crate::shapes::CreatureShapes;
+    
+    const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
+    
+    #[test]
+    fn test_coin_updates() {
+        let mut days_1_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut days_2_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut hours_13_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut days_100_state = GameState::new("test", CreatureShapes::Sheep);
+        
+        
+        days_1_state.last_coin_time -= DAY_MILLIS;
+        days_1_state.update();
+        
+        days_2_state.last_coin_time -= ((DAY_MILLIS * 2) as f32 * 1.1) as i64; // Overshoot by 10%
+        days_2_state.update();
+        
+        hours_13_state.last_coin_time -= 1000 * 60 * 60 * 13;
+        hours_13_state.update();
+        
+        days_100_state.last_coin_time -= DAY_MILLIS * 100;
+        days_100_state.update();
+        
+        
+        assert_eq!(1, days_1_state.inventory().coins);
+        assert_eq!(2, days_2_state.inventory().coins);
+        assert_eq!(0, hours_13_state.inventory().coins);
+        assert_eq!(100, days_100_state.inventory().coins);
     }
 }
