@@ -95,10 +95,6 @@ impl GameState {
         &mut self.creature
     }
     
-    pub fn inventory(&self) -> &Inventory {
-        &self.inventory
-    }
-    
     pub fn last_coin_time(&self) -> i64 {
         self.last_coin_time
     }
@@ -225,9 +221,9 @@ mod tests {
         days_100_state.update();
         
         
-        assert_eq!(1, days_1_state.inventory().coins);
-        assert_eq!(2, days_2_state.inventory().coins);
-        assert_eq!(0, hours_13_state.inventory().coins);
-        assert_eq!(100, days_100_state.inventory().coins);
+        assert_eq!(1, days_1_state.inventory.coins);
+        assert_eq!(2, days_2_state.inventory.coins);
+        assert_eq!(0, hours_13_state.inventory.coins);
+        assert_eq!(100, days_100_state.inventory.coins);
     }
 }

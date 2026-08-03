@@ -5,9 +5,7 @@ pub mod inventory;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ItemType {
-    Background,
     CreatureColor,
-    Ball,
 }
 
 

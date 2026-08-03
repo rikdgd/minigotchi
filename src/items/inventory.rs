@@ -39,7 +39,6 @@ impl Inventory {
                 }
                 false
             }
-            _ => false
         }
     }
     
