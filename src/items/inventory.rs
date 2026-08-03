@@ -20,7 +20,7 @@ impl Inventory {
     /// ## Returns:
     /// The function returns an Err value when the given `Inventory` already contains this item,
     /// or when not enough coins are present.
-    pub fn try_buy_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
+    pub fn try_buy_item(&mut self, item: &dyn BuyableItem) -> Result<(), String> {
         if self.contains_item(item) {
             return Err("Already owned".into());
         }
@@ -31,7 +31,7 @@ impl Inventory {
         }
     }
     
-    pub fn contains_item(&self, item: &Box<dyn BuyableItem>) -> bool {
+    pub fn contains_item(&self, item: &dyn BuyableItem) -> bool {
         match item.item_type() {
             ItemType::CreatureColor => {
                 for color in &self.creature_colors {
@@ -42,7 +42,7 @@ impl Inventory {
         }
     }
     
-    pub fn try_equip_item(&mut self, item: &Box<dyn BuyableItem>) -> Result<(), String> {
+    pub fn try_equip_item(&mut self, item: &dyn BuyableItem) -> Result<(), String> {
         match item.try_equip(self) {
             Ok(_) => Ok(()),
             Err(msg) => Err(msg.to_string()),
@@ -70,7 +70,7 @@ mod tests {
     
     #[test]
     fn try_buy_affordable_item() {
-        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Red);
+        let test_item = CreatureColor::Red;
         let mut inventory = Inventory::default();
         inventory.creature_colors = vec![];
         inventory.coins = test_item.price() * 2;
@@ -83,7 +83,7 @@ mod tests {
     
     #[test]
     fn try_buy_not_affordable_item() {
-        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Red);
+        let test_item = CreatureColor::Red;
         let mut inventory = Inventory::default();
         inventory.coins = test_item.price() - 1;
         
@@ -95,21 +95,19 @@ mod tests {
     fn contains_item() {
         let green = CreatureColor::Green;
         let red = CreatureColor::Red;
-        let green_boxed: Box<dyn BuyableItem> = Box::new(green);
-        let red_boxed: Box<dyn BuyableItem> = Box::new(red);
         
         let mut inventory = Inventory::default();
         
         
         inventory.creature_colors.push(green);
         
-        assert!(inventory.contains_item(&green_boxed));
-        assert!(!inventory.contains_item(&red_boxed));
+        assert!(inventory.contains_item(&green));
+        assert!(!inventory.contains_item(&red));
     }
     
     #[test]
     fn try_buy_owned_item() {
-        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Green);
+        let test_item = CreatureColor::Green;
         let mut inventory = Inventory::default();
         inventory.creature_colors = vec![];
         inventory.coins = 100;
@@ -125,7 +123,7 @@ mod tests {
     
     #[test]
     fn try_equip_item() {
-        let test_item: Box<dyn BuyableItem> = Box::new(CreatureColor::Blue);
+        let test_item = CreatureColor::Blue;
         let mut inventory = Inventory::default();
         inventory.coins = 1000;
 

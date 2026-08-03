@@ -119,14 +119,14 @@ impl<'a> ShopPage<'a> {
             if item.is_clicked() {
                 match item.owned {
                     true => {
-                        if let Err(msg) = self.inventory.try_equip_item(&item.item) {
+                        if let Err(msg) = self.inventory.try_equip_item(&(*item.item)) {
                             println!("Failed to equip item: {msg}");
                             self.error_message = Some(msg);
                             self.last_error_millis = now;
                         }
                     },
                     false => {
-                        if let Err(msg) = self.inventory.try_buy_item(&item.item) {
+                        if let Err(msg) = self.inventory.try_buy_item(&(*item.item)) {
                             println!("Error when buying item from shop: '{msg}'");
                             self.error_message = Some(msg);
                             self.last_error_millis = now;
@@ -194,7 +194,7 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
     ];
     
     for item in &mut items {
-        if inv.contains_item(&item.item) {
+        if inv.contains_item(&(*item.item)) {
             item.owned = true;
             
             if item.item.is_equipped(inv) {
