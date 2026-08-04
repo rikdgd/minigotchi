@@ -139,6 +139,31 @@ impl<'a> ShopPage<'a> {
             
             item.equipped = item.item.is_equipped(self.inventory);
         }
+        
+        self.update_scrolling();
+    }
+    
+    fn update_scrolling(&mut self) {
+        let (_wheel_x, wheel_y) = mouse_wheel();
+        
+        if wheel_y < 0.0 {
+            self.scroll_shop_items(ScrollDirection::Down);
+        }
+        
+        if wheel_y > 0.0 {
+            self.scroll_shop_items(ScrollDirection::Up);
+        }
+    }
+    
+    fn scroll_shop_items(&mut self, direction: ScrollDirection) {
+        let y_move = match direction {
+            ScrollDirection::Down => -7.0,
+            ScrollDirection::Up => 7.0,
+        };
+        
+        for item in &mut self.items {
+            item.move_y(y_move);
+        }
     }
     
     /// Returns the `Button` component used to enter the shop page. Note that this Button component
@@ -219,4 +244,10 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
     }
     
     items
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum ScrollDirection {
+    Up,
+    Down,
 }

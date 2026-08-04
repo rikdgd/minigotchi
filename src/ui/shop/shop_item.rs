@@ -81,6 +81,10 @@ impl ShopItem {
         }
     }
     
+    pub fn move_y(&mut self, y_move: f32) {
+        self.area.y += y_move;
+    }
+    
     fn draw_background(&self) {
         let mut bg_color = if self.owned {
             Color { r: 0.4, g: 0.4, b: 0.4, a: 1.0 }
