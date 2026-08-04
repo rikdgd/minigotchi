@@ -72,6 +72,15 @@ impl<'a> ShopPage<'a> {
         let text = format!("Coins: {}", self.inventory.coins);
         let txt_size = measure_text(&text, None, FONT_SIZE, 1.0);
         
+        // Draw a background to keep visible while scrolling
+        draw_rectangle(
+            0.0,
+            0.0,
+            SCREEN_WIDTH as f32,
+            txt_size.height + 14.0,
+            crate::BACKGROUND_COLOR,
+        );
+        
         draw_text(
             &text,
             (SCREEN_WIDTH as f32 - txt_size.width) / 2.0,
