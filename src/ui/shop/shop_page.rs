@@ -114,7 +114,7 @@ impl<'a> ShopPage<'a> {
     
     fn update(&mut self) {
         let now = get_now_millis();
-        if now - self.start_render_millis < 500 {
+        if now - self.start_render_millis < 100 {
             return;
         }
         
