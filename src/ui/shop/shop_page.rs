@@ -21,6 +21,7 @@ use crate::ui::shop::ShopItem;
 ///   a transaction. Used determine when an error message should be rendered.
 /// * `start_render_millis` - The system time in milliseconds when the shop page started rendering.
 ///   used to prevent *(accidental)* purchases in the first **0.5 seconds**.
+/// * `return_button` - This is the button component used to exit the Shop page.
 pub struct ShopPage<'a> {
     inventory: &'a mut Inventory,
     items: Vec<ShopItem>,
@@ -28,6 +29,7 @@ pub struct ShopPage<'a> {
     last_error_millis: i64,
     start_render_millis: i64,
     return_button: Button,
+    current_scroll: f32,
 }
 
 impl<'a> ShopPage<'a> {
@@ -39,6 +41,7 @@ impl<'a> ShopPage<'a> {
             last_error_millis: 0,
             start_render_millis: 0,
             return_button: Self::return_button(),
+            current_scroll: 0.0,
         }
     }
     
@@ -161,6 +164,11 @@ impl<'a> ShopPage<'a> {
             ScrollDirection::Up => 7.0,
         };
         
+        if self.current_scroll + y_move > 0.0 {
+            return;
+        }
+        
+        self.current_scroll += y_move;
         for item in &mut self.items {
             item.move_y(y_move);
         }
