@@ -99,7 +99,9 @@ impl GameRunner {
 
     fn draw_main_ui(&mut self) {
         draw_play_area(self.state.creature());
+        self.state.inventory.equipped_background.render();
         self.draw_creature();
+        
         stat_display(self.state.creature());
         
         // Draw the "Zz" texture when sleeping
