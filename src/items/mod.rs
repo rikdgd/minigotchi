@@ -2,10 +2,12 @@ use crate::items::inventory::Inventory;
 
 pub mod creature_color;
 pub mod inventory;
+pub mod game_background;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ItemType {
     CreatureColor,
+    Background,
 }
 
 

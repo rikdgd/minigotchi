@@ -6,6 +6,7 @@ use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
 use crate::{SCREEN_WIDTH, SCREEN_HEIGHT, include_texture};
 use crate::items::creature_color::CreatureColor;
+use crate::items::game_background::GameBackground;
 use crate::ui::shop::ShopItem;
 
 
@@ -247,6 +248,11 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
             Box::new(CreatureColor::Cyan),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
             6,
+        ),
+        ShopItem::new(
+            Box::new(GameBackground::Plain),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            7,
         ),
     ];
     
