@@ -1,13 +1,15 @@
 use serde::{Serialize, Deserialize};
 use crate::items::creature_color::CreatureColor;
 use crate::items::{BuyableItem, ItemType};
-
+use crate::items::game_background::GameBackground;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Inventory {
     pub coins: u32,
     pub creature_colors: Vec<CreatureColor>,
-    pub equipped_color: CreatureColor
+    pub equipped_color: CreatureColor,
+    pub backgrounds: Vec<GameBackground>,
+    pub equipped_background: GameBackground,
 }
 
 impl Inventory {
@@ -38,6 +40,12 @@ impl Inventory {
                     if color.name() == item.name() { return true }
                 }
                 false
+            },
+            ItemType::Background => {
+                for bg in &self.backgrounds {
+                    if bg.name() == item.name() { return true }
+                }
+                false
             }
         }
     }
@@ -56,6 +64,8 @@ impl Default for Inventory {
             coins: 0,
             creature_colors: vec![CreatureColor::Black],
             equipped_color: CreatureColor::Black,
+            backgrounds: vec![GameBackground::Plain],
+            equipped_background: GameBackground::Plain,
         }
     }
 }
