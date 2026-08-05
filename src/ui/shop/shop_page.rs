@@ -254,6 +254,11 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
             7,
         ),
+        ShopItem::new(
+            Box::new(GameBackground::Shrooms),
+            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            8,
+        ),
     ];
     
     for item in &mut items {
