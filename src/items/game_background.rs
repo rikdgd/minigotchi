@@ -10,6 +10,7 @@ use crate::include_texture;
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum GameBackground {
     Plain,
+    Fields,
     Shrooms,
     Cave,
     Space,
@@ -19,6 +20,7 @@ impl GameBackground {
     pub fn render(&self) {
         let bg_texture: Option<Texture2D> = match self {
             GameBackground::Plain => None,
+            GameBackground::Fields => Some(include_texture!("../../resources/game_backgrounds/fields.png")),
             GameBackground::Shrooms => Some(include_texture!("../../resources/game_backgrounds/shrooms.png")),
             GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
@@ -40,6 +42,7 @@ impl BuyableItem for GameBackground {
     fn name(&self) -> &str {
         match self {
             GameBackground::Plain => "Plain BG",
+            GameBackground::Fields => "Fields BG",
             GameBackground::Shrooms => "Shrooms BG",
             GameBackground::Cave => "Cave BG",
             GameBackground::Space => "Space BG",
@@ -49,6 +52,7 @@ impl BuyableItem for GameBackground {
     fn price(&self) -> u32 {
         match self {
             GameBackground::Plain => 0,
+            GameBackground::Fields => 5,
             GameBackground::Shrooms => 7,
             GameBackground::Cave => 7,
             GameBackground::Space => 10,
