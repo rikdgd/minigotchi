@@ -11,6 +11,7 @@ use crate::include_texture;
 pub enum GameBackground {
     Plain,
     Shrooms,
+    Cave,
     Space,
 }
 
@@ -19,6 +20,7 @@ impl GameBackground {
         let bg_texture: Option<Texture2D> = match self {
             GameBackground::Plain => None,
             GameBackground::Shrooms => Some(include_texture!("../../resources/game_backgrounds/shrooms.png")),
+            GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
         };
         
@@ -39,7 +41,8 @@ impl BuyableItem for GameBackground {
         match self {
             GameBackground::Plain => "Plain BG",
             GameBackground::Shrooms => "Shrooms BG",
-            GameBackground::Space => "Space BG"
+            GameBackground::Cave => "Cave BG",
+            GameBackground::Space => "Space BG",
         }
     }
 
@@ -47,6 +50,7 @@ impl BuyableItem for GameBackground {
         match self {
             GameBackground::Plain => 0,
             GameBackground::Shrooms => 7,
+            GameBackground::Cave => 7,
             GameBackground::Space => 10,
         }
     }
