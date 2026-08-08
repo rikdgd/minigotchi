@@ -12,6 +12,7 @@ use crate::shapes::sleeping_icon;
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 use crate::{creature, ui, BACKGROUND_COLOR};
+use crate::creature::GrowthStage;
 use crate::ui::shop::ShopPage;
 
 
@@ -146,7 +147,9 @@ impl GameRunner {
     }
 
     fn handle_button_click(&mut self) {
-        if self.state.current_animation.is_some() {
+        if self.state.current_animation.is_some()
+            || self.state.creature().growth_stage() == GrowthStage::Egg
+        {
             return;
         }
         
