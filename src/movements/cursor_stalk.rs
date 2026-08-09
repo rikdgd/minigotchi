@@ -24,8 +24,8 @@ impl CursorStalk {
             current_location: start_location,
             last_x_movement: 0.0,
             shape_dimensions: Dimensions {
-                width: creature.shape().width(),
-                height: creature.shape().height(),
+                width: creature.texture().width(),
+                height: creature.texture().height(),
             },
             timer: 0.0,
         }

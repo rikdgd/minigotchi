@@ -267,7 +267,11 @@ impl Creature {
         self.time_of_death
     }
     
-    pub fn shape(&self) -> Texture2D {
+    pub fn shape(&self) -> CreatureShapes {
+        self.shape
+    }
+    
+    pub fn texture(&self) -> Texture2D {
         match self.growth_stage {
             GrowthStage::Egg => egg_shape(),
             GrowthStage::Baby => baby_shape(),

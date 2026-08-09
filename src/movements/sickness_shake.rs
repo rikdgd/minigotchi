@@ -18,8 +18,8 @@ impl SicknessShakeMovement {
         Self {
             current_location: play_area_center(),
             creature_shape_dimensions: Dimensions {
-                width: creature.shape().width(),
-                height: creature.shape().height(),
+                width: creature.texture().width(),
+                height: creature.texture().height(),
             },
             is_shaking: false,
             shake_toggle: false,

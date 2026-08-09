@@ -36,6 +36,21 @@ impl CreatureShapes {
         }
     }
     
+    /// Returns the sprite that can be used as a *'backdrop'* for the given creature shape. The
+    /// backdrop can be drawn behind the texture received from the `CreatureShapes::get_texture` method
+    /// to prevent any background pixels being visible through the creature's sprite.
+    pub fn get_backdrop(&self) -> Texture2D {
+        match self {
+            CreatureShapes::Turtle => include_texture!("../resources/turtle_backdrop.png"),
+            CreatureShapes::Snail => include_texture!("../resources/snail_backdrop.png"),
+            CreatureShapes::Fish => include_texture!("../resources/fish_backdrop.png"),
+            CreatureShapes::Mouse => include_texture!("../resources/mouse_backdrop.png"),
+            CreatureShapes::Frog => include_texture!("../resources/frog_backdrop.png"),
+            CreatureShapes::Squid => include_texture!("../resources/squid_backdrop.png"),
+            CreatureShapes::Sheep => include_texture!("../resources/sheep_backdrop.png"),
+        }
+    }
+    
     pub fn new_random() -> Self {
         match gen_range(0, NUM_SHAPES) {
             0 => Self::Turtle,

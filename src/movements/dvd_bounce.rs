@@ -17,7 +17,7 @@ pub struct DvdBounce {
 
 impl DvdBounce {
     pub fn new(creature: &Creature) -> Self {
-        let shape = creature.shape();
+        let shape = creature.texture();
         Self {
             timer: 0.0,
             creature_location: Location { x: 50.0, y: 50.0 },

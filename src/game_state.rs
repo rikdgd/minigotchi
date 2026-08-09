@@ -150,8 +150,8 @@ impl GameState {
         
         if !self.creature.is_sick() && self.sickness_movement_playing {
             let mut center_location = play_area_center();
-            center_location.x -= (self.creature().shape().width() / 2.0).round();
-            center_location.y -= (self.creature().shape().height() / 2.0).round();
+            center_location.x -= (self.creature().texture().width() / 2.0).round();
+            center_location.y -= (self.creature().texture().height() / 2.0).round();
             
             self.creature_movement = get_creature_movement(self.creature(), center_location);
             self.sickness_movement_playing = false;
@@ -165,8 +165,8 @@ impl From<SaveState> for GameState {
         // of its movement.
         let base_location = if value.creature.growth_stage() == GrowthStage::Adult {
             Location {
-                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - value.creature.shape().width()).round(),
-                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - value.creature.shape().height()).round(),
+                x: gen_range(PLAY_AREA_RECT.left(), PLAY_AREA_RECT.right() - value.creature.texture().width()).round(),
+                y: gen_range(PLAY_AREA_RECT.top(), PLAY_AREA_RECT.bottom() - value.creature.texture().height()).round(),
             }
         } else {
             CREATURE_BASE_LOCATION

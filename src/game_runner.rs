@@ -14,6 +14,8 @@ use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAni
 use crate::{creature, ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
 use crate::ui::shop::ShopPage;
+use crate::utils::Location;
+use crate::ui::play_area::play_area_background_color;
 
 
 /// The **GameRunner** structure can be used to run the Minigotchi game. It has ownership of the
@@ -127,18 +129,37 @@ impl GameRunner {
             return;
         }
 
-        let creature_texture = self.state.creature().shape();
+        let creature_texture = self.state.creature().texture();
         let creature_location = if self.state.creature().is_asleep() {
             get_sleeping_location(self.state.creature())
         } else {
             self.state.creature_movement.next_location()
         };
         
+        self.draw_creature_backdrop(creature_location);
         draw_texture_ex(
             &creature_texture,
             creature_location.x,
             creature_location.y,
             self.state.inventory.equipped_color.get_color(),
+            DrawTextureParams {
+                flip_x: self.state.creature_movement.mirror_sprite(),
+                ..Default::default()
+            }
+        );
+    }
+    
+    fn draw_creature_backdrop(&self, draw_loc: Location) {
+        if self.state.creature().growth_stage() != GrowthStage::Adult {
+            return;
+        }
+        
+        let backdrop = self.state.creature().shape().get_backdrop();
+        draw_texture_ex(
+            &backdrop,
+            draw_loc.x,
+            draw_loc.y,
+            play_area_background_color(self.state.creature().is_asleep()),
             DrawTextureParams {
                 flip_x: self.state.creature_movement.mirror_sprite(),
                 ..Default::default()
