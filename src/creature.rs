@@ -42,10 +42,10 @@ pub struct Creature {
     joy: Stat,
     energy: Stat,
     health: Stat,
-    last_time_lower_food: i64,
-    last_time_lower_joy: i64,
-    last_time_lower_energy: i64,
-    last_time_lower_health: i64,
+    previous_food_update: i64,
+    previous_joy_update: i64,
+    previous_energy_update: i64,
+    previous_health_update: i64,
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
@@ -63,10 +63,10 @@ impl Creature {
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
-            last_time_lower_food: now_millis,
-            last_time_lower_joy: now_millis,
-            last_time_lower_energy: now_millis,
-            last_time_lower_health: now_millis,
+            previous_food_update: now_millis,
+            previous_joy_update: now_millis,
+            previous_energy_update: now_millis,
+            previous_health_update: now_millis,
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
@@ -97,38 +97,38 @@ impl Creature {
     fn update_stats(&mut self, now_millis: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now_millis - self.last_time_lower_food >= FOOD_OFFSET_MILLIS && self.alive{
+        while now_millis - self.previous_food_update >= FOOD_OFFSET_MILLIS && self.alive{
             self.food.subtract(1);
-            self.last_time_lower_food += FOOD_OFFSET_MILLIS;
+            self.previous_food_update += FOOD_OFFSET_MILLIS;
 
-            self.update_alive_status(self.last_time_lower_food);
+            self.update_alive_status(self.previous_food_update);
         }
 
-        while now_millis - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_energy_update >= ENERGY_OFFSET_MILLIS && self.alive {
             if self.is_asleep() {
                 self.energy.add(1);
             }
 
-            self.last_time_lower_energy += ENERGY_OFFSET_MILLIS;
-            self.update_alive_status(self.last_time_lower_energy);
+            self.previous_energy_update += ENERGY_OFFSET_MILLIS;
+            self.update_alive_status(self.previous_energy_update);
         }
 
-        while now_millis - self.last_time_lower_joy >= JOY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_joy_update >= JOY_OFFSET_MILLIS && self.alive {
             self.joy.subtract(1);
-            self.last_time_lower_joy += JOY_OFFSET_MILLIS;
+            self.previous_joy_update += JOY_OFFSET_MILLIS;
 
-            self.update_alive_status(self.last_time_lower_joy);
+            self.update_alive_status(self.previous_joy_update);
         }
 
-        while now_millis - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_health_update >= HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
                 self.health.subtract(20);
             } else {
                 self.health.add(1);
             }
 
-            self.last_time_lower_health += HEALTH_OFFSET_MILLIS;
-            self.update_alive_status(self.last_time_lower_health);
+            self.previous_health_update += HEALTH_OFFSET_MILLIS;
+            self.update_alive_status(self.previous_health_update);
         }
     }
 
@@ -186,13 +186,16 @@ impl Creature {
         if self.growth_stage == GrowthStage::Egg || self.is_sick {
             return;
         }
+        let now = get_now_millis();
 
         self.food.add(food.points());
+        self.previous_food_update = now;
 
         // The creature has a 1/3 chance of getting sick when eating
         if gen_range(0, 3) == 0 {
             self.is_sick = true;
             self.health.subtract(20);
+            self.previous_health_update = now;
         }
     }
 
@@ -218,6 +221,7 @@ impl Creature {
         }
 
         self.joy.add(30);
+        self.previous_joy_update = get_now_millis();
         self.energy.subtract(PLAYING_ENERGY_COST);
     }
 
@@ -226,6 +230,7 @@ impl Creature {
         // Only heal the creature successfully 66% of the time.
         if gen_range(0, 3) != 0 && self.growth_stage != GrowthStage::Egg {
             self.is_sick = false;
+            self.previous_health_update = get_now_millis();
         }
     }
     
@@ -261,7 +266,9 @@ impl Creature {
         self.is_sick
     }
 
-    pub fn time_created(&self) -> i64 { self.time_created }
+    pub fn time_created(&self) -> i64 { 
+        self.time_created
+    }
     
     pub fn time_of_death(&self) -> Option<i64> {
         self.time_of_death
