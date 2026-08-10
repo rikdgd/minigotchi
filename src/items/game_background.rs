@@ -13,6 +13,7 @@ pub enum GameBackground {
     Fields,
     Shrooms,
     Cave,
+    Ocean,
     Space,
 }
 
@@ -23,6 +24,7 @@ impl GameBackground {
             GameBackground::Fields => Some(include_texture!("../../resources/game_backgrounds/fields.png")),
             GameBackground::Shrooms => Some(include_texture!("../../resources/game_backgrounds/shrooms.png")),
             GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
+            GameBackground::Ocean => Some(include_texture!("../../resources/game_backgrounds/ocean.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
         };
         
@@ -45,6 +47,7 @@ impl BuyableItem for GameBackground {
             GameBackground::Fields => "Fields BG",
             GameBackground::Shrooms => "Shrooms BG",
             GameBackground::Cave => "Cave BG",
+            GameBackground::Ocean => "Ocean BG",
             GameBackground::Space => "Space BG",
         }
     }
@@ -55,6 +58,7 @@ impl BuyableItem for GameBackground {
             GameBackground::Fields => 7,
             GameBackground::Shrooms => 7,
             GameBackground::Cave => 10,
+            GameBackground::Ocean => 10,
             GameBackground::Space => 10,
         }
     }

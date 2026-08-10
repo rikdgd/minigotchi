@@ -270,9 +270,14 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
             10,
         ),
         ShopItem::new(
-            Box::new(GameBackground::Space),
+            Box::new(GameBackground::Ocean),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
             11,
+        ),
+        ShopItem::new(
+            Box::new(GameBackground::Space),
+            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            12,
         ),
     ];
     
