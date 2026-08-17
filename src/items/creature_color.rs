@@ -1,7 +1,9 @@
+use std::f32::consts::PI;
 use macroquad::prelude::*;
 use serde::{Serialize, Deserialize};
 use crate::items::{BuyableItem, ItemType};
 use crate::items::inventory::Inventory;
+use crate::utils::time::get_now_millis;
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -13,6 +15,7 @@ pub enum CreatureColor {
     Pink,
     Yellow,
     Cyan,
+    Rainbow,
 }
 
 impl CreatureColor {
@@ -25,7 +28,22 @@ impl CreatureColor {
             CreatureColor::Pink => Color::new(0.8, 0.0, 0.8, 1.0),
             CreatureColor::Yellow => Color::new(0.9, 0.9, 0.0, 1.0),
             CreatureColor::Cyan => Color::new(0.0, 0.9, 0.9, 1.0),
+            CreatureColor::Rainbow => Self::get_rainbow_color(),
         }
+    }
+    
+    fn get_rainbow_color() -> Color {
+        let x = (get_now_millis() % 1000_1000 / 100) as f32 * 0.25;
+
+        let r = Self::rainbow_sinus(x);
+        let g = Self::rainbow_sinus(x + PI * ( 2.0 / 3.0 ));
+        let b = Self::rainbow_sinus(x + PI * ( 4.0 / 3.0 ));
+        
+        Color { r, g, b, a: 1.0 }
+    }
+    
+    fn rainbow_sinus(x: f32) -> f32 {
+        f32::sin(x) * 0.5 + 0.5
     }
 }
 
@@ -39,6 +57,7 @@ impl BuyableItem for CreatureColor {
             CreatureColor::Pink => "Pink color",
             CreatureColor::Yellow => "Yellow color",
             CreatureColor::Cyan => "Cyan color",
+            CreatureColor::Rainbow => "Rainbow color",
         }
     }
 
@@ -51,6 +70,7 @@ impl BuyableItem for CreatureColor {
             CreatureColor::Pink => 5,
             CreatureColor::Yellow => 5,
             CreatureColor::Cyan => 5,
+            CreatureColor::Rainbow => 10,
         }
     }
 
