@@ -4,10 +4,11 @@ use crate::utils::time::get_now_millis;
 use crate::utils::Location;
 use crate::items::inventory::Inventory;
 use crate::ui::button::Button;
-use crate::{SCREEN_WIDTH, SCREEN_HEIGHT, include_texture};
-use crate::items::creature_color::CreatureColor;
-use crate::items::game_background::GameBackground;
-use crate::ui::shop::ShopItem;
+use crate::{SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::ui::shop::{
+    ShopItem, 
+    shop_item_generation::generate_shop_items,
+};
 
 
 /// The ShopPage struct is used to render the in-game shop menu. It manages the state of the ui
@@ -36,7 +37,7 @@ pub struct ShopPage<'a> {
 impl<'a> ShopPage<'a> {
     pub fn new(inventory: &'a mut Inventory) -> Self {
         Self {
-            items: get_all_shop_items(inventory),
+            items: generate_shop_items(inventory),
             inventory,
             error_message: None,
             last_error_millis: 0,
@@ -226,82 +227,7 @@ impl<'a> ShopPage<'a> {
     }
 }
 
-fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
-    let mut items = vec![
-        ShopItem::new(
-            Box::new(CreatureColor::Black),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Red),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Green),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Blue),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Pink),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Yellow),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Cyan),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(CreatureColor::Rainbow),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Plain),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Fields),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Shrooms),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Cave),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Ocean),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-        ShopItem::new(
-            Box::new(GameBackground::Space),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-        ),
-    ];
-    
-    for i in 0..items.len() {
-        items[i].set_index(i as u32);
-    }
-    
-    for item in &mut items {
-        if inv.contains_item(&(*item.item)) {
-            item.owned = true;
-            
-            if item.item.is_equipped(inv) {
-                item.equipped = true;
-            }
-        }
-    }
-    
-    items
-}
+
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum ScrollDirection {
