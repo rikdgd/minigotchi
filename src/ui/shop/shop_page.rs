@@ -55,7 +55,7 @@ impl<'a> ShopPage<'a> {
                 item.draw();
             }
 
-            self.return_button.render();
+            self.render_return_button();
             self.render_coin_count();
             self.render_error_message();
 
@@ -89,6 +89,20 @@ impl<'a> ShopPage<'a> {
             FONT_SIZE as f32,
             Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0 },
         );
+    }
+    
+    fn render_return_button(&self) {
+        const RECT_HEIGHT: f32 = 25.0;
+        
+        draw_rectangle(
+            0.0, 
+            SCREEN_HEIGHT as f32 - RECT_HEIGHT,
+            SCREEN_HEIGHT as f32,
+            RECT_HEIGHT,
+            crate::BACKGROUND_COLOR,
+        );
+        
+        self.return_button.render();
     }
     
     /// Renders an error message when one occurred in the last 2 seconds. When 2 seconds have passed,
