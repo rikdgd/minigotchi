@@ -6,7 +6,7 @@ use serde::{Serialize, Deserialize};
 #[macro_export]
 macro_rules! include_texture {
     ($sprite_path:expr) => {
-        Texture2D::from_file_with_format(include_bytes!($sprite_path), None)
+        macroquad::texture::Texture2D::from_file_with_format(include_bytes!($sprite_path), None)
     };
 }
 

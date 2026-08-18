@@ -1,5 +1,5 @@
 use crate::include_texture;
-use super::ShopItem;
+use crate::ui::shop::ShopItem;
 use crate::items::{
     inventory::Inventory,
     creature_color::CreatureColor,
