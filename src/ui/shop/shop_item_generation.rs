@@ -11,12 +11,12 @@ use crate::items::{
 /// 
 /// ## Parameters:
 /// * `inventory` - A reference to the player's inventory. This is used to set the
-/// state of each individual `ShopItem`.
+///   state of each individual `ShopItem`.
 pub fn generate_shop_items(inventory: &Inventory) -> Vec<ShopItem> {
     let mut items = get_all_items();
     
-    for i in 0..items.len() {
-        items[i].set_index(i as u32);
+    for (i, item) in items.iter_mut().enumerate() {
+        item.set_index(i as u32);
     }
     
     for item in &mut items {
