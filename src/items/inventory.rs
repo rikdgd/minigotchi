@@ -62,8 +62,10 @@ impl Default for Inventory {
     fn default() -> Self {
         Self {
             coins: 0,
+            
             creature_colors: vec![CreatureColor::Black],
             equipped_color: CreatureColor::Black,
+            
             backgrounds: vec![GameBackground::Plain],
             equipped_background: GameBackground::Plain,
         }
