@@ -52,7 +52,7 @@ impl<'a> ShopPage<'a> {
             clear_background(crate::BACKGROUND_COLOR);
 
             for item in &self.items {
-                item.draw();
+                item.draw().expect("Failed to render ShopItem");
             }
 
             self.render_return_button();
@@ -231,74 +231,64 @@ fn get_all_shop_items(inv: &Inventory) -> Vec<ShopItem> {
         ShopItem::new(
             Box::new(CreatureColor::Black),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            0,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Red),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            1,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Green),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            2,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Blue),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            3,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Pink),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            4,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Yellow),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            5,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Cyan),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            6,
         ),
         ShopItem::new(
             Box::new(CreatureColor::Rainbow),
             include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
-            7
         ),
         ShopItem::new(
             Box::new(GameBackground::Plain),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            8,
         ),
         ShopItem::new(
             Box::new(GameBackground::Fields),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            9,
         ),
         ShopItem::new(
             Box::new(GameBackground::Shrooms),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            10,
         ),
         ShopItem::new(
             Box::new(GameBackground::Cave),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            11,
         ),
         ShopItem::new(
             Box::new(GameBackground::Ocean),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            12,
         ),
         ShopItem::new(
             Box::new(GameBackground::Space),
             include_texture!("../../../resources/shop/item_sprites/background_item.png"),
-            13,
         ),
     ];
+    
+    for i in 0..items.len() {
+        items[i].set_index(i as u32);
+    }
     
     for item in &mut items {
         if inv.contains_item(&(*item.item)) {

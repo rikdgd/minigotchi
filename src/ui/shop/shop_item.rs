@@ -19,6 +19,7 @@ pub struct ShopItem {
     pub sprite: Texture2D,
     pub owned: bool,
     pub equipped: bool,
+    index: Option<u32>,
     area: Rect,
 }
 
@@ -37,26 +38,36 @@ impl ShopItem {
     /// * `sprite` - The sprite that should be rendered in the new ShopItem.
     /// * `item_index` - The index for this item in the list of all shop items. This is used
     ///   to determine at what height the ShopItem should be rendered.
-    pub fn new(item: Box<dyn BuyableItem>, sprite: Texture2D, item_index: u32) -> Self {
+    pub fn new(item: Box<dyn BuyableItem>, sprite: Texture2D) -> Self {
         Self {
             item,
             sprite,
             owned: false,   // 'owned' and 'equipped' will get set correctly by the 'ShopPage'
             equipped: false,
+            index: None,
             area: Rect::new(
                 Self::X_LOCATION,
-                item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0,
+                0.0,
                 Self::ITEM_WIDTH,
                 Self::ITEM_HEIGHT,
             ),
         }
+    }
+    
+    pub fn set_index(&mut self, index: u32) {
+        self.index = Some(index);
+        self.area.y = Self::get_draw_height(index);
     }
 
     pub fn is_clicked(&self) -> bool {
         self.area.contains(mouse_position().into()) && is_mouse_button_pressed(MouseButton::Left)
     }
 
-    pub fn draw(&self) {
+    pub fn draw(&self) -> Result<(), &str> {
+        if self.index.is_none() {
+            return Err("ShopItem index is 'None'");
+        }
+        
         self.draw_background();
 
         draw_texture_ex(
@@ -79,6 +90,8 @@ impl ShopItem {
             true => self.draw_equipped_checkbox(),
             false => self.draw_price(),
         }
+        
+        Ok(())
     }
     
     pub fn move_y(&mut self, y_move: f32) {
@@ -138,5 +151,14 @@ impl ShopItem {
             Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0},
             DrawTextureParams::default(),
         );
+    }
+    
+    /// Returns the **Y location** on the screen where a `ShopItem` should be drawn given its
+    /// index in the list of all shop items.
+    /// 
+    /// ## Parameters:
+    /// * `item_index` - The index the given `ShopItem` instance has in the list of all ShopItems in the ShopPage.
+    fn get_draw_height(item_index: u32) -> f32 {
+        item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0
     }
 }
