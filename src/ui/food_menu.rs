@@ -27,7 +27,7 @@ impl FoodMenu {
     }
     
     /// Renders the food selection menu and returns the food selected by the user for feeding.
-    /// The selected food can also be `None` when the user exists the food menu via the *'return
+    /// The selected food can also be `None` when the user exits the food menu via the *'return
     /// button'*.
     pub async fn render(&mut self) -> Option<Food> {
         while self.running {
