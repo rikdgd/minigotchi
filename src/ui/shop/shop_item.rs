@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use std::rc::Rc;
 
 use crate::items::BuyableItem;
 use crate::{include_texture, SCREEN_WIDTH};
@@ -16,7 +17,7 @@ const ITEM_SPRITE_DIMENSION: f32 = 15.0;
 /// * `area` - The hitbox/size of the item when rendered on screen.
 pub struct ShopItem {
     pub item: Box<dyn BuyableItem>,
-    pub sprite: Texture2D,
+    pub sprite: Rc<Texture2D>,
     pub owned: bool,
     pub equipped: bool,
     index: Option<u32>,
@@ -38,7 +39,7 @@ impl ShopItem {
     /// * `sprite` - The sprite that should be rendered in the new ShopItem.
     /// * `item_index` - The index for this item in the list of all shop items. This is used
     ///   to determine at what height the ShopItem should be rendered.
-    pub fn new(item: Box<dyn BuyableItem>, sprite: Texture2D) -> Self {
+    pub fn new(item: Box<dyn BuyableItem>, sprite: Rc<Texture2D>) -> Self {
         Self {
             item,
             sprite,

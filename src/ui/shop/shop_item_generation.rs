@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use crate::include_texture;
 use crate::ui::shop::ShopItem;
 use crate::items::{
@@ -35,62 +36,65 @@ pub fn generate_shop_items(inventory: &Inventory) -> Vec<ShopItem> {
 /// Generates a vector containing all the `ShopItem` instances that should be rendered in the `ShopPage`.
 /// The ordering in this vector is **the same** order the items will have when displayed on the screen.
 fn get_all_items() -> Vec<ShopItem> {
+    let color_sprite = Rc::new(include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"));
+    let background_sprite = Rc::new(include_texture!("../../../resources/shop/item_sprites/background_item.png"));
+    
     vec![
         ShopItem::new(
             Box::new(CreatureColor::Black),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Red),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Green),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Blue),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Pink),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Yellow),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Cyan),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(CreatureColor::Rainbow),
-            include_texture!("../../../resources/shop/item_sprites/creature_color_item.png"),
+            Rc::clone(&color_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Plain),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Fields),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Shrooms),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Cave),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Ocean),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Space),
-            include_texture!("../../../resources/shop/item_sprites/background_item.png"),
+            Rc::clone(&background_sprite),
         ),
     ]
 }
