@@ -1,7 +1,3 @@
-use macroquad::prelude::*;
-
-const FOOD_COUNT: u8 = 3;
-
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Food {
     Soup,
@@ -17,12 +13,12 @@ impl Food {
             Food::Burger => 40,
         }
     }
-
-    pub fn new_random() -> Self {
-        match rand::gen_range(0, FOOD_COUNT) {
-            0 => Food::Soup,
-            1 => Food::Cookie,
-            _ => Food::Burger,
+    
+    pub fn name(&self) -> &str {
+        match self {
+            Food::Soup => "Soup",
+            Food::Cookie => "Cookie",
+            Food::Burger => "Burger",
         }
     }
 }
