@@ -1,9 +1,8 @@
-use macroquad::color::Color;
-use macroquad::math::Rect;
-use macroquad::prelude::{draw_rectangle, measure_text};
+use macroquad::prelude::*;
 use crate::food::Food;
 use crate::ui::food_menu::ITEM_CONTAINER_AREA;
 use crate::utils::Dimensions;
+
 
 #[derive(Debug, Clone, Copy)]
 pub struct FoodMenuItem {
@@ -12,7 +11,7 @@ pub struct FoodMenuItem {
 }
 
 impl FoodMenuItem {
-    const DIMENSIONS: Dimensions = Dimensions { width: 130.0, height: 50.0 };
+    pub const DIMENSIONS: Dimensions = Dimensions { width: 130.0, height: 30.0 };
 
     pub fn new(food: Food, draw_height: f32) -> Self {
         Self {
@@ -47,4 +46,20 @@ impl FoodMenuItem {
         // todo!()
         false
     }
+}
+
+pub fn gen_all_food_items() -> [FoodMenuItem; 3] {
+    let mut items = [
+        FoodMenuItem::new(Food::Soup, 0.0),
+        FoodMenuItem::new(Food::Cookie, 0.0),
+        FoodMenuItem::new(Food::Burger, 0.0),
+    ];
+    
+    let base_height = ITEM_CONTAINER_AREA.y + 10.0;
+    
+    for (i, item) in items.iter_mut().enumerate() {
+        item.area.y = i as f32 * (FoodMenuItem::DIMENSIONS.height + 5.0) + base_height;
+    }
+    
+    items
 }

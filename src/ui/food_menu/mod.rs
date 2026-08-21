@@ -6,7 +6,7 @@ use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
 
 pub use food_menu::FoodMenu;
-pub use food_menu_item::FoodMenuItem;
+use food_menu_item::{FoodMenuItem, gen_all_food_items};
 
 pub const ITEM_CONTAINER_AREA: Rect = Rect {
     x: (SCREEN_WIDTH as f32 - 150.0) / 2.0,

@@ -2,7 +2,7 @@ use macroquad::prelude::*;
 use crate::food::Food;
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::ui::button::Button;
-use crate::ui::food_menu::{FoodMenuItem, ITEM_CONTAINER_AREA};
+use crate::ui::food_menu::{FoodMenuItem, gen_all_food_items, ITEM_CONTAINER_AREA};
 
 
 #[derive(Debug, Clone)]
@@ -19,11 +19,7 @@ impl FoodMenu {
         Self {
             selected_food: None,
             running: true,
-            menu_items: [
-                FoodMenuItem::new(Food::Soup, 10.0),
-                FoodMenuItem::new(Food::Cookie, 20.0),
-                FoodMenuItem::new(Food::Burger, 30.0),
-            ],
+            menu_items: gen_all_food_items(),
             return_btn: Button {
                 text: "return".to_string(),
                 pos: Vec2::new(
