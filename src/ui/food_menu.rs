@@ -4,6 +4,13 @@ use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::ui::button::Button;
 use crate::utils::Dimensions;
 
+const ITEM_CONTAINER_AREA: Rect = Rect { 
+    x: (SCREEN_WIDTH as f32 - 150.0) / 2.0,
+    y: (SCREEN_HEIGHT as f32 - 120.0) / 2.0,
+    w: 150.0,
+    h: 120.0,
+};
+
 #[derive(Debug, Clone)]
 pub struct FoodMenu {
     selected_food: Option<Food>,
@@ -12,7 +19,6 @@ pub struct FoodMenu {
     return_btn: Button,
 }
 impl FoodMenu {
-    const BACKDROP_DIMENSIONS: Dimensions = Dimensions { width: 150.0, height: 120.0 };
     const MESSAGE: &str = "Select food";
     
     pub fn new() -> Self {
@@ -52,16 +58,17 @@ impl FoodMenu {
                 BLACK,
             );
             
+            // Draw the item container
             draw_rectangle(
-                (SCREEN_WIDTH as f32 - Self::BACKDROP_DIMENSIONS.width) / 2.0,
-                (SCREEN_HEIGHT as f32 - Self::BACKDROP_DIMENSIONS.height) / 2.0,
-                Self::BACKDROP_DIMENSIONS.width,
-                Self::BACKDROP_DIMENSIONS.height,
+                ITEM_CONTAINER_AREA.x,
+                ITEM_CONTAINER_AREA.y,
+                ITEM_CONTAINER_AREA.w,
+                ITEM_CONTAINER_AREA.h,
                 Color { r: 0.75, g: 0.75, b: 0.75, a: 1.0 },
             );
             
             for item in self.menu_items {
-                item.render();
+                item.draw();
             }
             
             self.return_btn.render();
@@ -93,14 +100,13 @@ struct FoodMenuItem {
 }
 
 impl FoodMenuItem {
-    const NAME_FONT_SIZE: f32 = 16.0;
-    const DIMENSIONS: Dimensions = Dimensions { width: 100.0, height: 30.0 };
+    const DIMENSIONS: Dimensions = Dimensions { width: 130.0, height: 50.0 };
     
     pub fn new(food: Food, draw_height: f32) -> Self {
         Self {
             food,
             area: Rect::new(
-                10.0,
+                (ITEM_CONTAINER_AREA.w - Self::DIMENSIONS.width) / 2.0 + ITEM_CONTAINER_AREA.x,
                 draw_height,
                 Self::DIMENSIONS.width,
                 Self::DIMENSIONS.height,
@@ -108,15 +114,21 @@ impl FoodMenuItem {
         }
     }
     
-    pub fn render(&self) {
+    pub fn draw(&self) {
         let name_dimensions = measure_text(
             self.food.name(),
             None,
-            Self::NAME_FONT_SIZE as u16,
+            16,
             1.0,
         );
         
-        // todo!()
+        draw_rectangle(
+            self.area.x,
+            self.area.y,
+            self.area.w,
+            self.area.h,
+            Color { r: 0.65, g: 0.65, b: 0.65, a: 1.0 },
+        );
     }
     
     pub fn is_clicked(&self) -> bool {
