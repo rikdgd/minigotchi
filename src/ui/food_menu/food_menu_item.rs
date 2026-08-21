@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::food::Food;
+use crate::include_texture;
 use crate::ui::food_menu::ITEM_CONTAINER_AREA;
 use crate::utils::Dimensions;
 
@@ -26,25 +27,66 @@ impl FoodMenuItem {
     }
 
     pub fn draw(&self) {
-        let name_dimensions = measure_text(
-            self.food.name(),
-            None,
-            16,
-            1.0,
-        );
-
+        let container_color = if self.is_hovered() {
+            Color { r: 0.55, g: 0.55, b: 0.55, a: 1.0 }
+        } else {
+            Color { r: 0.65, g: 0.65, b: 0.65, a: 1.0 }
+        };
         draw_rectangle(
             self.area.x,
             self.area.y,
             self.area.w,
             self.area.h,
-            Color { r: 0.65, g: 0.65, b: 0.65, a: 1.0 },
+            container_color,
         );
+        
+        self.draw_sprite();
+        self.draw_name();
     }
 
     pub fn is_clicked(&self) -> bool {
-        // todo!()
-        false
+        self.is_hovered() && is_mouse_button_pressed(MouseButton::Left)
+    }
+    
+    fn is_hovered(&self) -> bool {
+        self.area.contains(mouse_position().into())
+    }
+    
+    fn draw_name(&self) {
+        let txt_size = measure_text(
+            self.food.name(),
+            None,
+            16,
+            1.0,
+        );
+        
+        draw_text(
+            self.food.name(),
+            self.area.x + (self.area.w - txt_size.width) / 2.0,
+            (self.area.y + txt_size.height + (self.area.h - txt_size.height) / 2.0).round(),
+            16.0,
+            BLACK,
+        );
+    }
+    
+    fn draw_sprite(&self) {
+        let sprite_size = Vec2::new(20.0, 20.0);
+        let sprite = match self.food {
+            Food::Soup => include_texture!("../../../resources/animations/eating/soup0.png"),
+            Food::Cookie => include_texture!("../../../resources/animations/eating/cookie0.png"),
+            Food::Burger => include_texture!("../../../resources/animations/eating/burger0.png"),
+        };
+        
+        draw_texture_ex(
+            &sprite,
+            self.area.x + 5.0,
+            (self.area.y + (self.area.h - sprite_size.y) / 2.0).round(),
+            BLACK,
+            DrawTextureParams {
+                dest_size: Some(sprite_size),
+                ..Default::default()
+            },
+        );
     }
 }
 
