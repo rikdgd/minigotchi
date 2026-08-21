@@ -13,6 +13,7 @@ pub struct FoodMenu {
 }
 impl FoodMenu {
     const BACKDROP_DIMENSIONS: Dimensions = Dimensions { width: 150.0, height: 120.0 };
+    const MESSAGE: &str = "Select food";
     
     pub fn new() -> Self {
         Self {
@@ -38,8 +39,18 @@ impl FoodMenu {
     /// The selected food can also be `None` when the user exits the food menu via the *'return
     /// button'*.
     pub async fn render(&mut self) -> Option<Food> {
+        let msg_dimensions = measure_text(Self::MESSAGE, None, 20, 1.0);
+        
         while self.running {
             clear_background(crate::BACKGROUND_COLOR);
+            
+            draw_text(
+                Self::MESSAGE,
+                (SCREEN_WIDTH as f32 - msg_dimensions.width) / 2.0,
+                msg_dimensions.height + 15.0,
+                20.0,
+                BLACK,
+            );
             
             draw_rectangle(
                 (SCREEN_WIDTH as f32 - Self::BACKDROP_DIMENSIONS.width) / 2.0,
@@ -105,10 +116,11 @@ impl FoodMenuItem {
             1.0,
         );
         
-        todo!()
+        // todo!()
     }
     
     pub fn is_clicked(&self) -> bool {
-        todo!()
+        // todo!()
+        false
     }
 }
