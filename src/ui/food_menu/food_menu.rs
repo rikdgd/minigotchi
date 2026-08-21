@@ -2,9 +2,30 @@ use macroquad::prelude::*;
 use crate::food::Food;
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::ui::button::Button;
-use crate::ui::food_menu::{FoodMenuItem, gen_all_food_items, ITEM_CONTAINER_AREA};
+use crate::ui::food_menu::{FoodMenuItem, ITEM_CONTAINER_AREA};
 
 
+/// The **FoodMenu** struct is used to render a UI used to feed the creature.
+/// 
+/// ## Fields:
+/// * `selected_food` - The food the user has selected to feed their creature.
+/// * `running` - The running field is used to keep the render loop running. Setting it to false
+///   stops the render loop. `true` by default.
+/// * `menu_items` - These are the *button* UI elements the user can click to select a type of food.
+/// * `return_btn` - A button UI component used to exit the **FoodMenu**.
+/// 
+/// ## Example:
+/// ```rust
+/// async fn example() {
+///     // Render the food menu and receive the selected food:
+///     let mut menu = FoodMenu::new();
+///     let selected_food = menu.render().await;
+/// 
+///     if let Some(food) = selected_food {
+///         // Feed the creature here
+///     }
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub struct FoodMenu {
     selected_food: Option<Food>,
@@ -81,4 +102,23 @@ impl FoodMenu {
             self.running = false;
         }
     }
+}
+
+/// Generates and returns all the **FoodMenuItems** that should be displayed in the **FoodMenu**.
+/// This function makes sure all items have the correct location on the screen, and that the correct
+/// food items are present and in the right order.
+fn gen_all_food_items() -> [FoodMenuItem; 3] {
+    let mut items = [
+        FoodMenuItem::new(Food::Soup),
+        FoodMenuItem::new(Food::Cookie),
+        FoodMenuItem::new(Food::Burger),
+    ];
+
+    let base_height = ITEM_CONTAINER_AREA.y + 10.0;
+
+    for (i, item) in items.iter_mut().enumerate() {
+        item.area.y = i as f32 * (FoodMenuItem::DIMENSIONS.height + 5.0) + base_height;
+    }
+
+    items
 }

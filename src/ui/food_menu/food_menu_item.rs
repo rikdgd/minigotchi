@@ -5,21 +5,30 @@ use crate::ui::food_menu::ITEM_CONTAINER_AREA;
 use crate::utils::Dimensions;
 
 
+/// The **FoodMenuItem** struct is a UI component used by the `FoodMenu` component. It can be clicked
+/// by the user to select the food they want to feed their creature.
+/// 
+/// `FoodMenuItem` instances **should not** be constructed by hand. They are instead created by the
+/// `minigotchi::ui::food_menu::food_menu_item::gen_all_food_items` function.
+/// 
+/// ## Fields:
+/// * `food` - The **Food** that this specific item represents.
+/// * `area` - The area of the menu item, used for rendering and click/hover detection.
 #[derive(Debug, Clone, Copy)]
 pub struct FoodMenuItem {
     pub food: Food,
-    area: Rect,
+    pub area: Rect,
 }
 
 impl FoodMenuItem {
     pub const DIMENSIONS: Dimensions = Dimensions { width: 130.0, height: 30.0 };
 
-    pub fn new(food: Food, draw_height: f32) -> Self {
+    pub fn new(food: Food) -> Self {
         Self {
             food,
             area: Rect::new(
                 (ITEM_CONTAINER_AREA.w - Self::DIMENSIONS.width) / 2.0 + ITEM_CONTAINER_AREA.x,
-                draw_height,
+                0.0,
                 Self::DIMENSIONS.width,
                 Self::DIMENSIONS.height,
             ),
@@ -88,20 +97,4 @@ impl FoodMenuItem {
             },
         );
     }
-}
-
-pub fn gen_all_food_items() -> [FoodMenuItem; 3] {
-    let mut items = [
-        FoodMenuItem::new(Food::Soup, 0.0),
-        FoodMenuItem::new(Food::Cookie, 0.0),
-        FoodMenuItem::new(Food::Burger, 0.0),
-    ];
-    
-    let base_height = ITEM_CONTAINER_AREA.y + 10.0;
-    
-    for (i, item) in items.iter_mut().enumerate() {
-        item.area.y = i as f32 * (FoodMenuItem::DIMENSIONS.height + 5.0) + base_height;
-    }
-    
-    items
 }
