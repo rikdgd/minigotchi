@@ -2,7 +2,8 @@ use macroquad::prelude::*;
 
 use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
-use crate::ui::{NewGameMenu, render_death_screen, button::Button, food_menu::FoodMenu};
+use crate::ui::{NewGameMenu, render_death_screen, button::Button};
+use crate::ui::interaction_menu::{InteractionMenu, interaction_menu::gen_all_food_items};
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
@@ -184,7 +185,7 @@ impl GameRunner {
                             && creature.food().value() != 100
                             && !creature.is_sick()
                         {
-                            let mut menu = FoodMenu::new();
+                            let mut menu = InteractionMenu::new(gen_all_food_items());
                             if let Some(food) = menu.render().await {
                                 creature.eat(food);
                                 self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
