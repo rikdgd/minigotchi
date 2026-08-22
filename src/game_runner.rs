@@ -2,10 +2,9 @@ use macroquad::prelude::*;
 
 use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
-use crate::ui::{NewGameMenu, render_death_screen, button::Button};
+use crate::ui::{NewGameMenu, render_death_screen, button::Button, food_menu::FoodMenu};
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
-use crate::food::Food;
 use crate::movements::get_sleeping_location;
 use crate::ui::play_area::draw_play_area;
 use crate::shapes::sleeping_icon;
@@ -93,7 +92,7 @@ impl GameRunner {
             if is_key_pressed(KeyCode::Escape) {
                 break;
             }
-            self.handle_button_click();
+            self.handle_button_click().await;
             self.handle_shop_button_click().await;
             
             next_frame().await;
@@ -167,7 +166,7 @@ impl GameRunner {
         );
     }
 
-    fn handle_button_click(&mut self) {
+    async fn handle_button_click(&mut self) {
         if self.state.current_animation.is_some()
             || self.state.creature().growth_stage() == GrowthStage::Egg
         {
@@ -185,9 +184,11 @@ impl GameRunner {
                             && creature.food().value() != 100
                             && !creature.is_sick()
                         {
-                            let food = Food::new_random();
-                            creature.eat(food);
-                            self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                            let mut menu = FoodMenu::new();
+                            if let Some(food) = menu.render().await {
+                                creature.eat(food);
+                                self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                            }
                         }
                     },
                     InteractionButton::Joy(_) => {
