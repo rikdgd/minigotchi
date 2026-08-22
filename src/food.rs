@@ -18,14 +18,6 @@ impl Food {
             Food::Burger => 40,
         }
     }
-    
-    pub fn name(&self) -> &str {
-        match self {
-            Food::Soup => "Soup",
-            Food::Cookie => "Cookie",
-            Food::Burger => "Burger",
-        }
-    }
 }
 
 impl CreatureInteraction for Food {
