@@ -18,4 +18,5 @@ pub const ITEM_CONTAINER_AREA: Rect = Rect {
 pub trait CreatureInteraction: Clone + Copy {
     fn name(&self) -> &str;
     fn sprite(&self) -> Texture2D;
+    fn menu_title() -> String;
 }

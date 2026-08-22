@@ -28,8 +28,6 @@ impl<T> InteractionMenu<T>
 where
     T: CreatureInteraction
 {
-    const MESSAGE: &str = "Select food";
-
     pub fn new(menu_items: [InteractionMenuItem<T>; 3]) -> Self {
         Self {
             selected_interaction: None,
@@ -50,13 +48,13 @@ where
     /// The selected food can also be `None` when the user exits the food menu via the *'return
     /// button'*.
     pub async fn render(&mut self) -> Option<T> {
-        let msg_dimensions = measure_text(Self::MESSAGE, None, 20, 1.0);
+        let msg_dimensions = measure_text(&T::menu_title(), None, 20, 1.0);
 
         while self.running {
             clear_background(crate::BACKGROUND_COLOR);
 
             draw_text(
-                Self::MESSAGE,
+                &T::menu_title(),
                 (SCREEN_WIDTH as f32 - msg_dimensions.width) / 2.0,
                 msg_dimensions.height + 15.0,
                 20.0,

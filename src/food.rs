@@ -44,4 +44,8 @@ impl CreatureInteraction for Food {
             Food::Burger => include_texture!("../resources/animations/eating/burger0.png"),
         }
     }
+    
+    fn menu_title() -> String {
+        "Select food".to_string()
+    }
 }

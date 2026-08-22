@@ -12,7 +12,7 @@ use crate::utils::Dimensions;
 #[derive(Debug, Clone, Copy)]
 pub struct InteractionMenuItem<T>
 where
-T: CreatureInteraction
+    T: CreatureInteraction
 {
     pub interaction: T,
     pub area: Rect,
