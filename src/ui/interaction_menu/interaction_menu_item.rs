@@ -1,31 +1,32 @@
 use macroquad::prelude::*;
-use crate::food::Food;
-use crate::include_texture;
-use crate::ui::food_menu::ITEM_CONTAINER_AREA;
+use crate::ui::interaction_menu::{CreatureInteraction, ITEM_CONTAINER_AREA};
 use crate::utils::Dimensions;
 
 
-/// The **FoodMenuItem** struct is a UI component used by the `FoodMenu` component. It can be clicked
-/// by the user to select the food they want to feed their creature.
-/// 
-/// `FoodMenuItem` instances **should not** be constructed by hand. They are instead created by the
-/// `minigotchi::ui::food_menu::food_menu_item::gen_all_food_items` function.
+/// The **InteractionMenuItem** struct is a UI component used by the `InteractionMenu` component.
+/// It can be clicked by the user to select the interaction they want to perform on their creature.
 /// 
 /// ## Fields:
-/// * `food` - The **Food** that this specific item represents.
+/// * `interaction` - The **Interaction** that this specific item represents.
 /// * `area` - The area of the menu item, used for rendering and click/hover detection.
 #[derive(Debug, Clone, Copy)]
-pub struct FoodMenuItem {
-    pub food: Food,
+pub struct InteractionMenuItem<T>
+where
+T: CreatureInteraction
+{
+    pub interaction: T,
     pub area: Rect,
 }
 
-impl FoodMenuItem {
+impl<T> InteractionMenuItem<T>
+where
+    T: CreatureInteraction
+{
     pub const DIMENSIONS: Dimensions = Dimensions { width: 130.0, height: 30.0 };
 
-    pub fn new(food: Food) -> Self {
+    pub fn new(interaction: T) -> Self {
         Self {
-            food,
+            interaction,
             area: Rect::new(
                 (ITEM_CONTAINER_AREA.w - Self::DIMENSIONS.width) / 2.0 + ITEM_CONTAINER_AREA.x,
                 0.0,
@@ -63,14 +64,14 @@ impl FoodMenuItem {
     
     fn draw_name(&self) {
         let txt_size = measure_text(
-            self.food.name(),
+            self.interaction.name(),
             None,
             16,
             1.0,
         );
         
         draw_text(
-            self.food.name(),
+            self.interaction.name(),
             self.area.x + (self.area.w - txt_size.width) / 2.0,
             (self.area.y + txt_size.height + (self.area.h - txt_size.height) / 2.0).round(),
             16.0,
@@ -80,14 +81,8 @@ impl FoodMenuItem {
     
     fn draw_sprite(&self) {
         let sprite_size = Vec2::new(20.0, 20.0);
-        let sprite = match self.food {
-            Food::Soup => include_texture!("../../../resources/animations/eating/soup0.png"),
-            Food::Cookie => include_texture!("../../../resources/animations/eating/cookie0.png"),
-            Food::Burger => include_texture!("../../../resources/animations/eating/burger0.png"),
-        };
-        
         draw_texture_ex(
-            &sprite,
+            &self.interaction.sprite(),
             self.area.x + 5.0,
             (self.area.y + (self.area.h - sprite_size.y) / 2.0).round(),
             BLACK,

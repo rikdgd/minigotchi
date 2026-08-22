@@ -7,7 +7,7 @@ mod death_screen;
 mod age_display;
 mod creature_selection;
 pub mod shop;
-pub mod food_menu;
+pub mod interaction_menu;
 
 pub use new_game_menu::*;
 pub use death_screen::render_death_screen;
