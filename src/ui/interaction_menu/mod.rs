@@ -1,4 +1,5 @@
 pub mod interaction_menu;
+pub mod menu_item_generation;
 mod interaction_menu_item;
 
 use macroquad::prelude::*;

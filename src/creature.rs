@@ -1,6 +1,7 @@
 use macroquad::texture::Texture2D;
 use macroquad::rand::gen_range;
 use crate::food::Food;
+use crate::creature_game::CreatureGame;
 use serde::{Deserialize, Serialize};
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
@@ -215,12 +216,12 @@ impl Creature {
 
     /// Interaction used to *"play"* with the creature in order to increase its `joy` stat. This also
     /// adds more time to its `health_decrease_time_left` field, and decreases its `energy` by 20.
-    pub fn play(&mut self) {
+    pub fn play(&mut self, game: CreatureGame) {
         if self.growth_stage == GrowthStage::Egg || self.energy.value() < PLAYING_ENERGY_COST {
             return;
         }
 
-        self.joy.add(30);
+        self.joy.add(game.points());
         self.previous_joy_update = get_now_millis();
         self.energy.subtract(PLAYING_ENERGY_COST);
     }

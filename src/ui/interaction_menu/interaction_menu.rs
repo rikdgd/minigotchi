@@ -1,5 +1,4 @@
 use macroquad::prelude::*;
-use crate::food::Food;
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::ui::button::Button;
 use crate::ui::interaction_menu::{InteractionMenuItem, ITEM_CONTAINER_AREA, CreatureInteraction};
@@ -96,22 +95,4 @@ where
     }
 }
 
-/// Generates and returns all the **InteractionMenuItem** that should be displayed in the
-/// **InteractionMenu** when feeding the creature. This function makes sure all items have the
-/// correct location on the screen, and that the correct food items are present and in the right
-/// order.
-pub fn gen_all_food_items() -> [InteractionMenuItem<Food>; 3] {
-    let mut items = [
-        InteractionMenuItem::new(Food::Soup),
-        InteractionMenuItem::new(Food::Cookie),
-        InteractionMenuItem::new(Food::Burger),
-    ];
 
-    let base_height = ITEM_CONTAINER_AREA.y + 10.0;
-
-    for (i, item) in items.iter_mut().enumerate() {
-        item.area.y = i as f32 * (InteractionMenuItem::<Food>::DIMENSIONS.height + 5.0) + base_height;
-    }
-
-    items
-}

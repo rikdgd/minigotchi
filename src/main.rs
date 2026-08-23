@@ -1,5 +1,6 @@
 mod creature;
 mod food;
+mod creature_game;
 mod shapes;
 mod utils;
 mod game_state;
