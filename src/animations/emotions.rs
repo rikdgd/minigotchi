@@ -22,7 +22,12 @@ impl Animation for EmotionAnimation {
         let draw_location = self.frame_draw_location();
         
         self.draw_background();
-        // TODO: Draw the current frame texture
+        draw_texture(
+            &self.frames[self.current_frame % 2],
+            draw_location.x,
+            draw_location.y,
+            BLACK,
+        );
         
         self.update_state();
     }
