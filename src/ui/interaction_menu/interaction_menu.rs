@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::utils::time::get_now_millis;
 use crate::ui::button::Button;
 use crate::ui::interaction_menu::{InteractionMenuItem, ITEM_CONTAINER_AREA, CreatureInteraction};
 
@@ -22,6 +23,7 @@ where
     running: bool,
     menu_items: [InteractionMenuItem<T>; 3],
     return_btn: Button,
+    start_render_millis: i64,
 }
 impl<T> InteractionMenu<T> 
 where
@@ -40,6 +42,7 @@ where
                 ),
                 ..Default::default()
             },
+            start_render_millis: 0,
         }
     }
 
@@ -47,6 +50,7 @@ where
     /// The selected food can also be `None` when the user exits the food menu via the *'return
     /// button'*.
     pub async fn render(&mut self) -> Option<T> {
+        self.start_render_millis = get_now_millis();
         let msg_dimensions = measure_text(&T::menu_title(), None, 20, 1.0);
 
         while self.running {
@@ -83,6 +87,12 @@ where
     }
 
     fn update(&mut self) {
+        // Don't do anything the first 0.5 seconds to prevent
+        // immediately clicking the 'return' button
+        if get_now_millis() - self.start_render_millis < 200 {
+            return;
+        }
+        
         for item in self.menu_items {
             if item.is_clicked() {
                 self.selected_interaction = Some(item.interaction);
