@@ -3,6 +3,7 @@ use crate::{BACKGROUND_COLOR, SCREEN_HEIGHT, SCREEN_WIDTH};
 use crate::utils::Location;
 
 pub mod creature_actions;
+mod emotions;
 
 /// An animation that can be rendered on the screen.
 pub trait Animation {
