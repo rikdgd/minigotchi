@@ -18,6 +18,14 @@ impl CreatureGame {
             CreatureGame::Frisbee => 30,
         }
     }
+    
+    pub fn energy_cost(&self) -> u8 {
+        match self {
+            CreatureGame::Drawing => 15,
+            CreatureGame::Basketball => 20,
+            CreatureGame::Frisbee => 25,
+        }
+    }
 }
 
 impl CreatureInteraction for CreatureGame {

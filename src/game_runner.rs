@@ -195,14 +195,16 @@ impl GameRunner {
                     },
                     InteractionButton::Joy(_) => {
                         let creature = self.state.creature_mut();
-                        if !creature.is_asleep()
-                            && creature.joy().value() != 100
-                            && creature.energy().value() >= creature::PLAYING_ENERGY_COST
-                        {
+                        if !creature.is_asleep() && creature.joy().value() != 100 {
                             let mut menu = InteractionMenu::new(gen_all_game_items());
                             if let Some(game) = menu.render().await {
-                                creature.play(game);
-                                self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
+                                if game.energy_cost() <= creature.energy().value() {
+                                    creature.play(game);
+                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
+                                } else {
+                                    // TODO: Display a simple animation
+                                    println!("Not enought energy to play selected game");
+                                }
                             }
                         }
                     },

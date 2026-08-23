@@ -217,13 +217,16 @@ impl Creature {
     /// Interaction used to *"play"* with the creature in order to increase its `joy` stat. This also
     /// adds more time to its `health_decrease_time_left` field, and decreases its `energy` by 20.
     pub fn play(&mut self, game: CreatureGame) {
-        if self.growth_stage == GrowthStage::Egg || self.energy.value() < PLAYING_ENERGY_COST {
+        if self.growth_stage == GrowthStage::Egg || 
+            self.energy.value() < game.energy_cost() ||
+            self.joy.value() == 100
+        {
             return;
         }
 
         self.joy.add(game.points());
         self.previous_joy_update = get_now_millis();
-        self.energy.subtract(PLAYING_ENERGY_COST);
+        self.energy.subtract(game.energy_cost());
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
