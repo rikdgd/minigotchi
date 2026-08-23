@@ -2,6 +2,7 @@ use macroquad::prelude::*;
 use super::{Animation, PopupAnimation};
 use crate::include_texture;
 use crate::food::Food;
+use crate::utils::Dimensions;
 
 /// An enum used with the `CreatureActionAnimation` struct to tell it which animation to render. 
 /// There are multiple different animations that can be rendered, mapped to the following values:
@@ -22,7 +23,7 @@ pub struct CreatureActionAnimation {
     frame_timer: f32,
     playing: bool,
     frames: [Texture2D; 4],
-    dimensions: [f32; 2],
+    dimensions: Dimensions,
 }
 
 impl Animation for CreatureActionAnimation {
@@ -40,7 +41,7 @@ impl Animation for CreatureActionAnimation {
         self.update_state();
     }
 
-    fn dimensions(&self) -> [f32; 2] {
+    fn dimensions(&self) -> Dimensions {
         self.dimensions
     }
 
@@ -54,10 +55,10 @@ impl PopupAnimation for CreatureActionAnimation {}
 impl CreatureActionAnimation {
     pub fn new(action_type: ActionAnimationType) -> Self {
         let frames = Self::get_frames(action_type);
-        let dimensions = [
-            frames[0].width(),
-            frames[0].height(),
-        ];
+        let dimensions = Dimensions { 
+            width: frames[0].width(),
+            height: frames[0].height(),
+        };
 
         Self {
             current_frame: 0,

@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::animations::{Animation, PopupAnimation};
+use crate::utils::Dimensions;
 
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -26,8 +27,11 @@ impl Animation for EmotionAnimation {
         self.update_state();
     }
 
-    fn dimensions(&self) -> [f32; 2] {
-        [self.frames[0].width(), self.frames[0].height()]
+    fn dimensions(&self) -> Dimensions {
+        Dimensions {
+            width: self.frames[0].width(),
+            height: self.frames[0].height(),
+        }
     }
 
     fn playing(&self) -> bool {
