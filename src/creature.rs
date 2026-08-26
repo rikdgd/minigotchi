@@ -11,7 +11,6 @@ const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
 const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
 const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
 const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
-pub const PLAYING_ENERGY_COST: u8 = 20;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {

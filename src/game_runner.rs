@@ -12,7 +12,7 @@ use crate::ui::play_area::draw_play_area;
 use crate::shapes::sleeping_icon;
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
-use crate::{creature, ui, BACKGROUND_COLOR};
+use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
 use crate::ui::shop::ShopPage;
 use crate::utils::Location;
