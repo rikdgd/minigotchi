@@ -9,6 +9,7 @@ pub enum EmotionAnimationType {
     Happy,
     Sad,
     Tired,
+    Love,
 }
 
 #[derive(Debug, Clone)]
@@ -56,6 +57,10 @@ impl EmotionAnimation {
                 include_texture!("../../resources/animations/emotions/tired0.png"),
                 include_texture!("../../resources/animations/emotions/tired1.png"),
             ],
+            EmotionAnimationType::Love => [
+                include_texture!("../../resources/animations/emotions/love0.png"),
+                include_texture!("../../resources/animations/emotions/love1.png"),
+            ]
         }
     }
 }
