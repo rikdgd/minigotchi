@@ -10,6 +10,7 @@ mod movements;
 mod animations;
 mod items;
 mod game_runner;
+mod creature_personality;
 
 use macroquad::prelude::*;
 use game_runner::GameRunner;
