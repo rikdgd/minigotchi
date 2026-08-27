@@ -12,6 +12,7 @@ use crate::ui::play_area::draw_play_area;
 use crate::shapes::sleeping_icon;
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
+use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
 use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
 use crate::ui::shop::ShopPage;
@@ -202,8 +203,9 @@ impl GameRunner {
                                     creature.play(game);
                                     self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
                                 } else {
-                                    // TODO: Display a simple animation
-                                    println!("Not enought energy to play selected game");
+                                    // Display a short animation to let the player know the interaction
+                                    // was unsuccessful.
+                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
                                 }
                             }
                         }

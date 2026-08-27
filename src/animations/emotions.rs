@@ -36,7 +36,7 @@ impl EmotionAnimation {
 
         self.frame_timer += get_frame_time();
         
-        if self.current_frame >= 10 {
+        if self.current_frame >= 4 {
             self.playing = false;
         }
     }
@@ -47,7 +47,10 @@ impl EmotionAnimation {
                 include_texture!("../../resources/animations/emotions/happy0.png"),
                 include_texture!("../../resources/animations/emotions/happy1.png"),
             ],
-            EmotionAnimationType::Sad => todo!(),
+            EmotionAnimationType::Sad => [
+                include_texture!("../../resources/animations/emotions/sad0.png"),
+                include_texture!("../../resources/animations/emotions/sad1.png"),
+            ],
         }
     }
 }
