@@ -201,7 +201,7 @@ impl GameRunner {
                             if let Some(game) = menu.render().await {
                                 if game.energy_cost() <= creature.energy().value() {
                                     creature.play(game);
-                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
+                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
                                 } else {
                                     // Display a short animation to let the player know the interaction
                                     // was unsuccessful.

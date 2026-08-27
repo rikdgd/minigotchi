@@ -2,6 +2,7 @@ use macroquad::prelude::*;
 use super::{Animation, PopupAnimation};
 use crate::include_texture;
 use crate::food::Food;
+use crate::creature_game::CreatureGame;
 use crate::utils::Dimensions;
 
 /// An enum used with the `CreatureActionAnimation` struct to tell it which animation to render. 
@@ -11,8 +12,8 @@ use crate::utils::Dimensions;
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ActionAnimationType {
     Eating(Food),
+    Play(CreatureGame),
     Health,
-    Play,
 }
 
 /// The `PopupAnimation` that is used to display animations for *actions* the user can take to take
@@ -114,12 +115,23 @@ impl CreatureActionAnimation {
                 include_texture!("../../resources/animations/health/syringe3.png"),
             ],
             
-            ActionAnimationType::Play => [
-                include_texture!("../../resources/animations/playing/basketball0.png"),
-                include_texture!("../../resources/animations/playing/basketball1.png"),
-                include_texture!("../../resources/animations/playing/basketball2.png"),
-                include_texture!("../../resources/animations/playing/basketball3.png"),
-            ]
+            ActionAnimationType::Play(game) => {
+                match game {
+                    CreatureGame::Drawing => [
+                        include_texture!("../../resources/animations/playing/drawing0.png"),
+                        include_texture!("../../resources/animations/playing/drawing1.png"),
+                        include_texture!("../../resources/animations/playing/drawing2.png"),
+                        include_texture!("../../resources/animations/playing/drawing3.png"),
+                    ],
+                    CreatureGame::Basketball => [
+                        include_texture!("../../resources/animations/playing/basketball0.png"),
+                        include_texture!("../../resources/animations/playing/basketball1.png"),
+                        include_texture!("../../resources/animations/playing/basketball2.png"),
+                        include_texture!("../../resources/animations/playing/basketball3.png"),
+                    ],
+                    CreatureGame::Frisbee => todo!(),
+                }
+            }
         }
     }
 }

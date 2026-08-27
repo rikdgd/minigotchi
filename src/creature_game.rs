@@ -38,6 +38,7 @@ impl CreatureInteraction for CreatureGame {
     }
 
     fn sprite(&self) -> Texture2D {
+        // TODO: Get texture based on self
         include_texture!("../resources/animations/playing/basketball0.png")
     }
 
