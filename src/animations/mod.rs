@@ -7,10 +7,11 @@ mod emotions;
 
 /// An animation that can be rendered on the screen.
 pub trait Animation {
-    /// Calling this method should render the appropriate frame of the animation.
+    /// Calling this method renders the appropriate frame of the animation, and updates the
+    /// animation's state.
     fn render(&mut self);
 
-    /// Returns the animations dimensions as `[x, y]`
+    /// Returns the animation's dimensions in pixels.
     fn dimensions(&self) -> Dimensions;
 
     /// Returns `true` if the animation is still playing, `false` otherwise.

@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::animations::{Animation, PopupAnimation};
+use crate::include_texture;
 use crate::utils::Dimensions;
 
 
@@ -16,35 +17,6 @@ pub struct EmotionAnimation {
     frame_timer: f32,
     playing: bool,
 }
-
-impl Animation for EmotionAnimation {
-    fn render(&mut self) {
-        let draw_location = self.frame_draw_location();
-        
-        self.draw_background();
-        draw_texture(
-            &self.frames[self.current_frame % 2],
-            draw_location.x,
-            draw_location.y,
-            BLACK,
-        );
-        
-        self.update_state();
-    }
-
-    fn dimensions(&self) -> Dimensions {
-        Dimensions {
-            width: self.frames[0].width(),
-            height: self.frames[0].height(),
-        }
-    }
-
-    fn playing(&self) -> bool {
-        self.playing
-    }
-}
-
-impl PopupAnimation for EmotionAnimation {}
 
 impl EmotionAnimation {
     pub fn new(animation_type: EmotionAnimationType) -> Self {
@@ -70,6 +42,41 @@ impl EmotionAnimation {
     }
     
     fn get_frames(animation_type: EmotionAnimationType) -> [Texture2D; 2] {
-        todo!()
+        match animation_type {
+            EmotionAnimationType::Happy => [
+                include_texture!("../../resources/animations/emotions/happy0.png"),
+                include_texture!("../../resources/animations/emotions/happy1.png"),
+            ],
+            EmotionAnimationType::Sad => todo!(),
+        }
     }
 }
+
+impl Animation for EmotionAnimation {
+    fn render(&mut self) {
+        let draw_location = self.frame_draw_location();
+
+        self.draw_background();
+        draw_texture(
+            &self.frames[self.current_frame % 2],
+            draw_location.x,
+            draw_location.y,
+            BLACK,
+        );
+
+        self.update_state();
+    }
+
+    fn dimensions(&self) -> Dimensions {
+        Dimensions {
+            width: self.frames[0].width(),
+            height: self.frames[0].height(),
+        }
+    }
+
+    fn playing(&self) -> bool {
+        self.playing
+    }
+}
+
+impl PopupAnimation for EmotionAnimation {}
