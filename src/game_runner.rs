@@ -3,7 +3,8 @@ use macroquad::prelude::*;
 use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
-use crate::ui::interaction_menu::{InteractionMenu, interaction_menu::gen_all_food_items};
+use crate::ui::interaction_menu::InteractionMenu;
+use crate::ui::interaction_menu::menu_item_generation::{gen_all_food_items, gen_all_game_items};
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
@@ -11,7 +12,8 @@ use crate::ui::play_area::draw_play_area;
 use crate::shapes::sleeping_icon;
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
-use crate::{creature, ui, BACKGROUND_COLOR};
+use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
+use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
 use crate::ui::shop::ShopPage;
 use crate::utils::Location;
@@ -194,12 +196,18 @@ impl GameRunner {
                     },
                     InteractionButton::Joy(_) => {
                         let creature = self.state.creature_mut();
-                        if !creature.is_asleep()
-                            && creature.joy().value() != 100
-                            && creature.energy().value() >= creature::PLAYING_ENERGY_COST
-                        {
-                            creature.play();
-                            self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play));
+                        if !creature.is_asleep() && creature.joy().value() != 100 {
+                            let mut menu = InteractionMenu::new(gen_all_game_items());
+                            if let Some(game) = menu.render().await {
+                                if game.energy_cost() <= creature.energy().value() {
+                                    creature.play(game);
+                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+                                } else {
+                                    // Display a short animation to let the player know the interaction
+                                    // was unsuccessful.
+                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
+                                }
+                            }
                         }
                     },
                     InteractionButton::Health(_) => {

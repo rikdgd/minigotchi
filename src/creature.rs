@@ -1,6 +1,7 @@
 use macroquad::texture::Texture2D;
 use macroquad::rand::gen_range;
 use crate::food::Food;
+use crate::creature_game::CreatureGame;
 use serde::{Deserialize, Serialize};
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
@@ -10,7 +11,6 @@ const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
 const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
 const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
 const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
-pub const PLAYING_ENERGY_COST: u8 = 20;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -215,14 +215,17 @@ impl Creature {
 
     /// Interaction used to *"play"* with the creature in order to increase its `joy` stat. This also
     /// adds more time to its `health_decrease_time_left` field, and decreases its `energy` by 20.
-    pub fn play(&mut self) {
-        if self.growth_stage == GrowthStage::Egg || self.energy.value() < PLAYING_ENERGY_COST {
+    pub fn play(&mut self, game: CreatureGame) {
+        if self.growth_stage == GrowthStage::Egg || 
+            self.energy.value() < game.energy_cost() ||
+            self.joy.value() == 100
+        {
             return;
         }
 
-        self.joy.add(30);
+        self.joy.add(game.points());
         self.previous_joy_update = get_now_millis();
-        self.energy.subtract(PLAYING_ENERGY_COST);
+        self.energy.subtract(game.energy_cost());
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.

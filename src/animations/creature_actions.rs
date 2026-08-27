@@ -2,6 +2,8 @@ use macroquad::prelude::*;
 use super::{Animation, PopupAnimation};
 use crate::include_texture;
 use crate::food::Food;
+use crate::creature_game::CreatureGame;
+use crate::utils::Dimensions;
 
 /// An enum used with the `CreatureActionAnimation` struct to tell it which animation to render. 
 /// There are multiple different animations that can be rendered, mapped to the following values:
@@ -10,8 +12,8 @@ use crate::food::Food;
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ActionAnimationType {
     Eating(Food),
+    Play(CreatureGame),
     Health,
-    Play,
 }
 
 /// The `PopupAnimation` that is used to display animations for *actions* the user can take to take
@@ -22,7 +24,7 @@ pub struct CreatureActionAnimation {
     frame_timer: f32,
     playing: bool,
     frames: [Texture2D; 4],
-    dimensions: [f32; 2],
+    dimensions: Dimensions,
 }
 
 impl Animation for CreatureActionAnimation {
@@ -40,7 +42,7 @@ impl Animation for CreatureActionAnimation {
         self.update_state();
     }
 
-    fn dimensions(&self) -> [f32; 2] {
+    fn dimensions(&self) -> Dimensions {
         self.dimensions
     }
 
@@ -54,10 +56,10 @@ impl PopupAnimation for CreatureActionAnimation {}
 impl CreatureActionAnimation {
     pub fn new(action_type: ActionAnimationType) -> Self {
         let frames = Self::get_frames(action_type);
-        let dimensions = [
-            frames[0].width(),
-            frames[0].height(),
-        ];
+        let dimensions = Dimensions { 
+            width: frames[0].width(),
+            height: frames[0].height(),
+        };
 
         Self {
             current_frame: 0,
@@ -106,19 +108,35 @@ impl CreatureActionAnimation {
                 }
             },
             
+            ActionAnimationType::Play(game) => {
+                match game {
+                    CreatureGame::Drawing => [
+                        include_texture!("../../resources/animations/playing/drawing0.png"),
+                        include_texture!("../../resources/animations/playing/drawing1.png"),
+                        include_texture!("../../resources/animations/playing/drawing2.png"),
+                        include_texture!("../../resources/animations/playing/drawing3.png"),
+                    ],
+                    CreatureGame::Basketball => [
+                        include_texture!("../../resources/animations/playing/basketball0.png"),
+                        include_texture!("../../resources/animations/playing/basketball1.png"),
+                        include_texture!("../../resources/animations/playing/basketball2.png"),
+                        include_texture!("../../resources/animations/playing/basketball3.png"),
+                    ],
+                    CreatureGame::Frisbee => [
+                        include_texture!("../../resources/animations/playing/frisbee0.png"),
+                        include_texture!("../../resources/animations/playing/frisbee1.png"),
+                        include_texture!("../../resources/animations/playing/frisbee2.png"),
+                        include_texture!("../../resources/animations/playing/frisbee3.png"),
+                    ],
+                }
+            },
+
             ActionAnimationType::Health => [
                 include_texture!("../../resources/animations/health/syringe0.png"),
                 include_texture!("../../resources/animations/health/syringe1.png"),
                 include_texture!("../../resources/animations/health/syringe2.png"),
                 include_texture!("../../resources/animations/health/syringe3.png"),
             ],
-            
-            ActionAnimationType::Play => [
-                include_texture!("../../resources/animations/playing/basketball0.png"),
-                include_texture!("../../resources/animations/playing/basketball1.png"),
-                include_texture!("../../resources/animations/playing/basketball2.png"),
-                include_texture!("../../resources/animations/playing/basketball3.png"),
-            ]
         }
     }
 }
