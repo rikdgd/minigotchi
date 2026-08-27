@@ -4,7 +4,7 @@ use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
 use crate::ui::interaction_menu::InteractionMenu;
-use crate::ui::interaction_menu::menu_item_generation::{gen_all_food_items, gen_all_game_items};
+use crate::ui::interaction_menu::menu_item_generation::gen_interaction_items;
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
@@ -15,6 +15,8 @@ use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAni
 use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
 use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
+use crate::food::Food;
+use crate::creature_game::CreatureGame;
 use crate::ui::shop::ShopPage;
 use crate::utils::Location;
 use crate::ui::play_area::play_area_background_color;
@@ -187,7 +189,7 @@ impl GameRunner {
                             && creature.food().value() != 100
                             && !creature.is_sick()
                         {
-                            let mut menu = InteractionMenu::new(gen_all_food_items());
+                            let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
                             if let Some(food) = menu.render().await {
                                 creature.eat(food);
                                 self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
@@ -197,7 +199,7 @@ impl GameRunner {
                     InteractionButton::Joy(_) => {
                         let creature = self.state.creature_mut();
                         if !creature.is_asleep() && creature.joy().value() != 100 {
-                            let mut menu = InteractionMenu::new(gen_all_game_items());
+                            let mut menu: InteractionMenu<CreatureGame> = InteractionMenu::new(gen_interaction_items());
                             if let Some(game) = menu.render().await {
                                 if game.energy_cost() <= creature.energy().value() {
                                     creature.play(game);

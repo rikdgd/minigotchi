@@ -40,4 +40,12 @@ impl CreatureInteraction for Food {
     fn menu_title() -> String {
         "Select food".to_string()
     }
+
+    fn all_variants() -> [Self; 3] {
+        [
+            Food::Soup,
+            Food::Cookie,
+            Food::Burger,
+        ]
+    }
 }

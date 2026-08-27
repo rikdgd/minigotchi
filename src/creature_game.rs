@@ -48,4 +48,12 @@ impl CreatureInteraction for CreatureGame {
     fn menu_title() -> String {
         "Select game".to_string()
     }
+
+    fn all_variants() -> [Self; 3] {
+        [
+            CreatureGame::Drawing,
+            CreatureGame::Basketball, 
+            CreatureGame::Frisbee,
+        ]
+    }
 }
