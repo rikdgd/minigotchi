@@ -8,6 +8,7 @@ use crate::utils::Dimensions;
 pub enum EmotionAnimationType {
     Happy,
     Sad,
+    Tired,
 }
 
 #[derive(Debug, Clone)]
@@ -50,6 +51,10 @@ impl EmotionAnimation {
             EmotionAnimationType::Sad => [
                 include_texture!("../../resources/animations/emotions/sad0.png"),
                 include_texture!("../../resources/animations/emotions/sad1.png"),
+            ],
+            EmotionAnimationType::Tired => [
+                include_texture!("../../resources/animations/emotions/tired0.png"),
+                include_texture!("../../resources/animations/emotions/tired1.png"),
             ],
         }
     }

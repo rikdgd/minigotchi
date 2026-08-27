@@ -205,7 +205,7 @@ impl GameRunner {
                                 } else {
                                     // Display a short animation to let the player know the interaction
                                     // was unsuccessful.
-                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
+                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
                                 }
                             }
                         }
