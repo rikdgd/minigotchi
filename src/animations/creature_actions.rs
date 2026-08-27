@@ -108,13 +108,6 @@ impl CreatureActionAnimation {
                 }
             },
             
-            ActionAnimationType::Health => [
-                include_texture!("../../resources/animations/health/syringe0.png"),
-                include_texture!("../../resources/animations/health/syringe1.png"),
-                include_texture!("../../resources/animations/health/syringe2.png"),
-                include_texture!("../../resources/animations/health/syringe3.png"),
-            ],
-            
             ActionAnimationType::Play(game) => {
                 match game {
                     CreatureGame::Drawing => [
@@ -136,7 +129,14 @@ impl CreatureActionAnimation {
                         include_texture!("../../resources/animations/playing/frisbee3.png"),
                     ],
                 }
-            }
+            },
+
+            ActionAnimationType::Health => [
+                include_texture!("../../resources/animations/health/syringe0.png"),
+                include_texture!("../../resources/animations/health/syringe1.png"),
+                include_texture!("../../resources/animations/health/syringe2.png"),
+                include_texture!("../../resources/animations/health/syringe3.png"),
+            ],
         }
     }
 }
