@@ -38,8 +38,11 @@ impl CreatureInteraction for CreatureGame {
     }
 
     fn sprite(&self) -> Texture2D {
-        // TODO: Get texture based on self
-        include_texture!("../resources/animations/playing/basketball0.png")
+        match self {
+            CreatureGame::Drawing => include_texture!("../resources/animations/playing/drawing2.png"),
+            CreatureGame::Basketball => include_texture!("../resources/animations/playing/basketball0.png"),
+            CreatureGame::Frisbee => include_texture!("../resources/animations/playing/frisbee0.png"),
+        }
     }
 
     fn menu_title() -> String {

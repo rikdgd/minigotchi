@@ -129,7 +129,12 @@ impl CreatureActionAnimation {
                         include_texture!("../../resources/animations/playing/basketball2.png"),
                         include_texture!("../../resources/animations/playing/basketball3.png"),
                     ],
-                    CreatureGame::Frisbee => todo!(),
+                    CreatureGame::Frisbee => [
+                        include_texture!("../../resources/animations/playing/frisbee0.png"),
+                        include_texture!("../../resources/animations/playing/frisbee1.png"),
+                        include_texture!("../../resources/animations/playing/frisbee2.png"),
+                        include_texture!("../../resources/animations/playing/frisbee3.png"),
+                    ],
                 }
             }
         }
