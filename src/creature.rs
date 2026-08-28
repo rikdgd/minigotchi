@@ -199,6 +199,12 @@ impl Creature {
 
         self.food.add(food.points());
         self.previous_food_update = now;
+        
+        if self.personality.liked_food() == food {
+            self.love.add(5);
+        } else if self.personality.hated_food() == food {
+            self.love.subtract(5);
+        }
 
         // The creature has a 1/3 chance of getting sick when eating
         if gen_range(0, 3) == 0 {
@@ -235,14 +241,21 @@ impl Creature {
         self.joy.add(game.points());
         self.previous_joy_update = get_now_millis();
         self.energy.subtract(game.energy_cost());
+        
+        if self.personality.liked_game() == game {
+            self.love.add(5);
+        } else if self.personality.hated_game() == game {
+            self.love.subtract(5);
+        }
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn heal(&mut self) {
-        // Only heal the creature successfully 66% of the time.
-        if gen_range(0, 3) != 0 && self.growth_stage != GrowthStage::Egg {
+        if self.growth_stage != GrowthStage::Egg {
             self.is_sick = false;
             self.previous_health_update = get_now_millis();
+            
+            self.love.subtract(5);
         }
     }
     
