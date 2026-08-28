@@ -8,14 +8,17 @@ const MOVE_SPEED: f32 = 1.5;
 const FRAME_TIME: f32 = 0.25;
 
 /// # CursorStalk
-/// A `CreatureMovement` that makes the creature move towards the mouse cursor at a constant speed.
-/// The creature stays within the playing field and will not leave it.
+/// A `CreatureMovement` that makes the creature move towards/away from the mouse cursor at a
+/// constant speed. Whether the creature walks towards or away from the cursor is dependent on its
+/// `love` stat.
+/// This movement ensures that the creature stays within the playing field and will not leave it.
 #[derive(Debug, Clone, Copy)]
 pub struct CursorStalk {
     pub current_location: Location,
     last_x_movement: f32,
     shape_dimensions: Dimensions,
     timer: f32,
+    hates_player: bool,
 }
 
 impl CursorStalk {
@@ -28,6 +31,7 @@ impl CursorStalk {
                 height: creature.texture().height(),
             },
             timer: 0.0,
+            hates_player: creature.love().value() < 50,
         }
     }
 
@@ -64,10 +68,17 @@ impl CursorStalk {
         let y_dist = mouse_pos.y - creature_location.y;
         let mouse_dist = self.calc_mouse_distance(mouse_pos);
 
-        (
+        let mut xy_move = (
             x_dist / mouse_dist * MOVE_SPEED,
             y_dist / mouse_dist * MOVE_SPEED,
-        )
+        );
+        
+        if self.hates_player {
+            xy_move.0 = xy_move.0 * -1.0;
+            xy_move.1 = xy_move.1 * -1.0;
+        }
+        
+        xy_move
     }
 
     /// Checks if `self.current_location` is still within the bounds of the playing area, and if not,
@@ -99,7 +110,7 @@ impl CreatureMovement for CursorStalk {
     fn current_location(&self) -> Location {
         self.current_location
     }
-
+    
     fn next_location(&mut self) -> Location {
         self.timer += get_frame_time();
         if self.timer >= FRAME_TIME {
@@ -109,7 +120,7 @@ impl CreatureMovement for CursorStalk {
 
         self.current_location
     }
-
+    
     fn mirror_sprite(&self) -> bool {
         self.last_x_movement >= 0.0
     }
@@ -179,6 +190,7 @@ mod test {
             last_x_movement: 0.0,
             timer: 0.0,
             shape_dimensions: Dimensions { width: TEST_SPRITE_DIMENSION, height: TEST_SPRITE_DIMENSION },
+            hates_player: false,
         };
         valid_movement.validify_location();
         assert_eq!(valid_movement.current_location, valid_location);
@@ -190,6 +202,7 @@ mod test {
                 last_x_movement: 0.0,
                 timer: 0.0,
                 shape_dimensions: Dimensions { width: TEST_SPRITE_DIMENSION, height: TEST_SPRITE_DIMENSION },
+                hates_player: false,
             };
             stalk_movement.validify_location();
             assert_eq!(stalk_movement.current_location, test_pair.expected_location);

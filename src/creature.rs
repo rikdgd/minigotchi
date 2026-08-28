@@ -274,6 +274,10 @@ impl Creature {
     pub fn health(&self) -> Stat {
         self.health
     }
+    
+    pub fn love(&self) -> Stat {
+        self.love
+    }
 
     pub fn is_asleep(&self) -> bool {
         self.asleep_since.is_some()
