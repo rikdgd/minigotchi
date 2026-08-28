@@ -129,7 +129,7 @@ impl GameRunner {
 
     fn draw_creature(&mut self) {
         // The creature shouldn't be drawn when an animation is playing.
-        if self.state.animation_queue.first().is_some() {
+        if !self.state.animation_queue.is_empty() {
             return;
         }
 
@@ -172,7 +172,7 @@ impl GameRunner {
     }
 
     async fn handle_button_click(&mut self) {
-        if self.state.animation_queue.first().is_some()
+        if !self.state.animation_queue.is_empty()
             || self.state.creature().growth_stage() == GrowthStage::Egg
         {
             return;

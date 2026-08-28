@@ -60,7 +60,7 @@ impl GameState {
         self.update_coins(now);
 
         // Remove the first animation when it has finished playing
-        if self.animation_queue.first().is_some() && !self.animation_queue[0].playing() {
+        if !self.animation_queue.is_empty() && !self.animation_queue[0].playing() {
             self.animation_queue.remove(0);
         }
 

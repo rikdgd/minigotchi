@@ -74,8 +74,8 @@ impl CursorStalk {
         );
         
         if self.hates_player {
-            xy_move.0 = xy_move.0 * -1.0;
-            xy_move.1 = xy_move.1 * -1.0;
+            xy_move.0 *= -1.0;
+            xy_move.1 *= -1.0;
         }
         
         xy_move
