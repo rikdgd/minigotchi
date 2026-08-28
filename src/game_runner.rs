@@ -178,6 +178,8 @@ impl GameRunner {
             return;
         }
         
+        let personality = self.state.creature().personality();
+        
         for button in &self.interaction_buttons {
             if button.get_button().is_clicked() {
                 match button {
@@ -193,6 +195,13 @@ impl GameRunner {
                             if let Some(food) = menu.render().await {
                                 creature.eat(food);
                                 self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                                
+                                // Display an animation based on if the creature likes the food:
+                                if personality.liked_food() == food {
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
+                                } else if personality.hated_food() == food {
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
+                                }
                             }
                         }
                     },
@@ -204,6 +213,14 @@ impl GameRunner {
                                 if game.energy_cost() <= creature.energy().value() {
                                     creature.play(game);
                                     self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+
+                                    // Display an animation based on if the creature likes the game:
+                                    if personality.liked_game() == game {
+                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
+                                    } else if personality.hated_game() == game {
+                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
+                                    }
+                                    
                                 } else {
                                     // Display a short animation to let the player know the interaction
                                     // was unsuccessful.

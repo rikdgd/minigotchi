@@ -287,6 +287,10 @@ impl Creature {
         &self.alive
     }
     
+    pub fn personality(&self) -> CreaturePersonality {
+        self.personality
+    }
+    
     pub fn is_sick(&self) -> bool {
         self.is_sick
     }
