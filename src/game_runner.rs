@@ -87,8 +87,8 @@ impl GameRunner {
             clear_background(BACKGROUND_COLOR);
             self.draw_main_ui();
             
-            // If an animation is playing, render it
-            if let Some(animation) = self.state.current_animation.as_mut()
+            // If there is an animation present in the queue, play it.
+            if let Some(animation) = self.state.animation_queue.first_mut()
                 && animation.playing(){
                 animation.render();
             }
@@ -129,7 +129,7 @@ impl GameRunner {
 
     fn draw_creature(&mut self) {
         // The creature shouldn't be drawn when an animation is playing.
-        if self.state.current_animation.is_some() {
+        if self.state.animation_queue.first().is_some() {
             return;
         }
 
@@ -172,7 +172,7 @@ impl GameRunner {
     }
 
     async fn handle_button_click(&mut self) {
-        if self.state.current_animation.is_some()
+        if self.state.animation_queue.first().is_some()
             || self.state.creature().growth_stage() == GrowthStage::Egg
         {
             return;
@@ -192,7 +192,7 @@ impl GameRunner {
                             let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
                             if let Some(food) = menu.render().await {
                                 creature.eat(food);
-                                self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                                self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
                             }
                         }
                     },
@@ -203,11 +203,11 @@ impl GameRunner {
                             if let Some(game) = menu.render().await {
                                 if game.energy_cost() <= creature.energy().value() {
                                     creature.play(game);
-                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+                                    self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
                                 } else {
                                     // Display a short animation to let the player know the interaction
                                     // was unsuccessful.
-                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
                                 }
                             }
                         }
@@ -216,7 +216,7 @@ impl GameRunner {
                         let creature = self.state.creature_mut();
                         if !creature.is_asleep() && creature.is_sick() {
                             creature.heal();
-                            self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
+                            self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
                         }
                     },
                 }
