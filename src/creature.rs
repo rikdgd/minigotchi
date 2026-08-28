@@ -68,7 +68,7 @@ impl Creature {
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
-            love: Stat::new(20).unwrap(),
+            love: Stat::new(0).unwrap(),
             personality: CreaturePersonality::new_random(),
             
             previous_food_update: now_millis,
