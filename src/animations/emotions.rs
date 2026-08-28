@@ -6,10 +6,9 @@ use crate::utils::Dimensions;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum EmotionAnimationType {
-    Happy,
+    Love,
     Sad,
     Tired,
-    Love,
 }
 
 #[derive(Debug, Clone)]
@@ -45,9 +44,9 @@ impl EmotionAnimation {
     
     fn get_frames(animation_type: EmotionAnimationType) -> [Texture2D; 2] {
         match animation_type {
-            EmotionAnimationType::Happy => [
-                include_texture!("../../resources/animations/emotions/happy0.png"),
-                include_texture!("../../resources/animations/emotions/happy1.png"),
+            EmotionAnimationType::Love => [
+                include_texture!("../../resources/animations/emotions/love0.png"),
+                include_texture!("../../resources/animations/emotions/love1.png"),
             ],
             EmotionAnimationType::Sad => [
                 include_texture!("../../resources/animations/emotions/sad0.png"),
@@ -57,10 +56,6 @@ impl EmotionAnimation {
                 include_texture!("../../resources/animations/emotions/tired0.png"),
                 include_texture!("../../resources/animations/emotions/tired1.png"),
             ],
-            EmotionAnimationType::Love => [
-                include_texture!("../../resources/animations/emotions/love0.png"),
-                include_texture!("../../resources/animations/emotions/love1.png"),
-            ]
         }
     }
 }

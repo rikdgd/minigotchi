@@ -1,8 +1,9 @@
 use macroquad::texture::Texture2D;
 use macroquad::rand::gen_range;
+use serde::{Deserialize, Serialize};
 use crate::food::Food;
 use crate::creature_game::CreatureGame;
-use serde::{Deserialize, Serialize};
+use crate::creature_personality::CreaturePersonality;
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
@@ -42,10 +43,14 @@ pub struct Creature {
     joy: Stat,
     energy: Stat,
     health: Stat,
+    love: Stat, // Hidden stat that determines how much the creature likes the player.
+    personality: CreaturePersonality,
+    
     previous_food_update: i64,
     previous_joy_update: i64,
     previous_energy_update: i64,
     previous_health_update: i64,
+    
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
@@ -63,10 +68,14 @@ impl Creature {
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
+            love: Stat::new(0).unwrap(),
+            personality: CreaturePersonality::new_random(),
+            
             previous_food_update: now_millis,
             previous_joy_update: now_millis,
             previous_energy_update: now_millis,
             previous_health_update: now_millis,
+            
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
@@ -190,9 +199,15 @@ impl Creature {
 
         self.food.add(food.points());
         self.previous_food_update = now;
+        
+        if self.personality.liked_food() == food {
+            self.love.add(5);
+        } else if self.personality.hated_food() == food {
+            self.love.subtract(5);
+        }
 
-        // The creature has a 1/3 chance of getting sick when eating
-        if gen_range(0, 3) == 0 {
+        // The creature has a chance to get sick when eating:
+        if gen_range(0, Stat::MAX_VALUE) < food.points() {
             self.is_sick = true;
             self.health.subtract(20);
             self.previous_health_update = now;
@@ -226,14 +241,21 @@ impl Creature {
         self.joy.add(game.points());
         self.previous_joy_update = get_now_millis();
         self.energy.subtract(game.energy_cost());
+        
+        if self.personality.liked_game() == game {
+            self.love.add(5);
+        } else if self.personality.hated_game() == game {
+            self.love.subtract(5);
+        }
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn heal(&mut self) {
-        // Only heal the creature successfully 66% of the time.
-        if gen_range(0, 3) != 0 && self.growth_stage != GrowthStage::Egg {
+        if self.growth_stage != GrowthStage::Egg {
             self.is_sick = false;
             self.previous_health_update = get_now_millis();
+            
+            self.love.subtract(5);
         }
     }
     
@@ -252,6 +274,10 @@ impl Creature {
     pub fn health(&self) -> Stat {
         self.health
     }
+    
+    pub fn love(&self) -> Stat {
+        self.love
+    }
 
     pub fn is_asleep(&self) -> bool {
         self.asleep_since.is_some()
@@ -263,6 +289,10 @@ impl Creature {
 
     pub fn alive(&self) -> &bool {
         &self.alive
+    }
+    
+    pub fn personality(&self) -> CreaturePersonality {
+        self.personality
     }
     
     pub fn is_sick(&self) -> bool {
@@ -293,7 +323,7 @@ impl Creature {
 
 #[cfg(test)]
 mod tests {
-    use crate::creature::Creature;
+    use crate::creature::{Creature, GrowthStage};
     use crate::shapes::CreatureShapes;
     use crate::utils::Stat;
 
@@ -332,5 +362,34 @@ mod tests {
         assert!(!creature_a.alive);  // Should be dead
         assert!(!creature_b.alive);  // Should be dead
         assert!(creature_c.alive);   // Should be alive
+    }
+    
+    #[test]
+    fn update_love_stat() {
+        let mut creature = Creature::new("test", CreatureShapes::Sheep, 0);
+        creature.growth_stage = GrowthStage::Adult;
+        
+        let liked_food = creature.personality().liked_food();
+        let hated_food = creature.personality().hated_food();
+
+        let liked_game = creature.personality().liked_game();
+        let hated_game = creature.personality().hated_game();
+        
+        
+        let love = creature.love().value();
+        creature.eat(liked_food);
+        assert!(love < creature.love().value());
+        
+        let love = creature.love().value();
+        creature.eat(hated_food);
+        assert!(love > creature.love().value());
+        
+        let love = creature.love().value();
+        creature.play(liked_game);
+        assert!(love < creature.love().value());
+
+        let love = creature.love().value();
+        creature.play(hated_game);
+        assert!(love > creature.love().value());
     }
 }

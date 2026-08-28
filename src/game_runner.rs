@@ -4,7 +4,7 @@ use crate::game_state::GameState;
 use crate::save_management::get_save_file_path;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
 use crate::ui::interaction_menu::InteractionMenu;
-use crate::ui::interaction_menu::menu_item_generation::{gen_all_food_items, gen_all_game_items};
+use crate::ui::interaction_menu::menu_item_generation::gen_interaction_items;
 use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
@@ -15,6 +15,8 @@ use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAni
 use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
 use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
+use crate::food::Food;
+use crate::creature_game::CreatureGame;
 use crate::ui::shop::ShopPage;
 use crate::utils::Location;
 use crate::ui::play_area::play_area_background_color;
@@ -85,8 +87,8 @@ impl GameRunner {
             clear_background(BACKGROUND_COLOR);
             self.draw_main_ui();
             
-            // If an animation is playing, render it
-            if let Some(animation) = self.state.current_animation.as_mut()
+            // If there is an animation present in the queue, play it.
+            if let Some(animation) = self.state.animation_queue.first_mut()
                 && animation.playing(){
                 animation.render();
             }
@@ -127,7 +129,7 @@ impl GameRunner {
 
     fn draw_creature(&mut self) {
         // The creature shouldn't be drawn when an animation is playing.
-        if self.state.current_animation.is_some() {
+        if !self.state.animation_queue.is_empty() {
             return;
         }
 
@@ -170,11 +172,13 @@ impl GameRunner {
     }
 
     async fn handle_button_click(&mut self) {
-        if self.state.current_animation.is_some()
+        if !self.state.animation_queue.is_empty()
             || self.state.creature().growth_stage() == GrowthStage::Egg
         {
             return;
         }
+        
+        let personality = self.state.creature().personality();
         
         for button in &self.interaction_buttons {
             if button.get_button().is_clicked() {
@@ -187,25 +191,40 @@ impl GameRunner {
                             && creature.food().value() != 100
                             && !creature.is_sick()
                         {
-                            let mut menu = InteractionMenu::new(gen_all_food_items());
+                            let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
                             if let Some(food) = menu.render().await {
                                 creature.eat(food);
-                                self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                                self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+                                
+                                // Display an animation based on if the creature likes the food:
+                                if personality.liked_food() == food {
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
+                                } else if personality.hated_food() == food {
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
+                                }
                             }
                         }
                     },
                     InteractionButton::Joy(_) => {
                         let creature = self.state.creature_mut();
                         if !creature.is_asleep() && creature.joy().value() != 100 {
-                            let mut menu = InteractionMenu::new(gen_all_game_items());
+                            let mut menu: InteractionMenu<CreatureGame> = InteractionMenu::new(gen_interaction_items());
                             if let Some(game) = menu.render().await {
                                 if game.energy_cost() <= creature.energy().value() {
                                     creature.play(game);
-                                    self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+                                    self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+
+                                    // Display an animation based on if the creature likes the game:
+                                    if personality.liked_game() == game {
+                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
+                                    } else if personality.hated_game() == game {
+                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
+                                    }
+                                    
                                 } else {
                                     // Display a short animation to let the player know the interaction
                                     // was unsuccessful.
-                                    self.state.set_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
+                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
                                 }
                             }
                         }
@@ -214,7 +233,7 @@ impl GameRunner {
                         let creature = self.state.creature_mut();
                         if !creature.is_asleep() && creature.is_sick() {
                             creature.heal();
-                            self.state.set_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
+                            self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
                         }
                     },
                 }

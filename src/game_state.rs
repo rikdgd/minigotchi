@@ -19,7 +19,7 @@ pub struct GameState {
     pub inventory: Inventory,
     pub prev_growth_stage: GrowthStage,
     pub creature_movement: Box<dyn CreatureMovement>,
-    pub current_animation: Option<Box<dyn Animation>>,
+    pub animation_queue: Vec<Box<dyn Animation>>,
     is_stalking_cursor: bool,
     sickness_movement_playing: bool,
 }
@@ -36,7 +36,7 @@ impl GameState {
             last_coin_time: now,
             inventory: Inventory::default(),
             prev_growth_stage,
-            current_animation: None,
+            animation_queue: Vec::new(),
             is_stalking_cursor: false,
             sickness_movement_playing: false,
         }
@@ -59,10 +59,9 @@ impl GameState {
         self.creature.update_state(now);
         self.update_coins(now);
 
-        // Set the animation to None when it has finished
-        if let Some(animation) = &self.current_animation
-            && !animation.playing() {
-            self.current_animation = None;
+        // Remove the first animation when it has finished playing
+        if !self.animation_queue.is_empty() && !self.animation_queue[0].playing() {
+            self.animation_queue.remove(0);
         }
 
         // Update the creature's movement if it happens to "evolve"
@@ -99,11 +98,9 @@ impl GameState {
         self.last_coin_time
     }
 
-    /// Sets the `current_animation` to a new animation, if it is already set this method does **nothing**.
-    pub fn set_animation<T: Animation + 'static>(&mut self, animation: T) {
-        if self.current_animation.is_none() {
-            self.current_animation = Some(Box::new(animation));
-        }
+    /// Adds a new animation to the animation queue.
+    pub fn push_animation<T: Animation + 'static>(&mut self, animation: T) {
+        self.animation_queue.push(Box::new(animation));
     }
 
     fn should_follow_cursor(&self) -> bool {
@@ -177,7 +174,7 @@ impl From<SaveState> for GameState {
             last_coin_time: value.last_coin_time,
             inventory: value.inventory,
             prev_growth_stage: value.creature.growth_stage(),
-            current_animation: None,
+            animation_queue: Vec::new(),
             is_stalking_cursor: false,
             sickness_movement_playing: value.creature.is_sick(),
             creature: value.creature,

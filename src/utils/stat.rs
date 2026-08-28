@@ -4,18 +4,20 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Stat(u8);
 impl Stat {
+    pub const MAX_VALUE: u8 = 100;
+    
     pub fn value(&self) -> u8 {
         self.0
     }
 
     pub fn new(value: u8) -> Result<Self, std::io::Error> {
-        if value <= 100 {
+        if value <= Self::MAX_VALUE {
             return Ok(Stat(value));
         }
 
         Err(std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
-            "value not between 0 and 100",
+            format!("value not between 0 and {}", Self::MAX_VALUE),
         ))
     }
 
@@ -23,10 +25,10 @@ impl Stat {
     pub fn add(&mut self, value: u8) {
         let new_value = self.0 + value;
 
-        if new_value <= 100 {
+        if new_value <= Self::MAX_VALUE {
             self.0 = new_value;
         } else {
-            self.0 = 100;
+            self.0 = Self::MAX_VALUE;
         }
     }
 
@@ -44,14 +46,14 @@ impl Stat {
     /// _0 <= value <= 100_
     #[allow(unused)]
     pub fn set(&mut self, value: u8) -> Result<(), std::io::Error> {
-        if value <= 100 {
+        if value <= Self::MAX_VALUE {
             self.0 = value;
             return Ok(());
         }
 
         Err(std::io::Error::new(
             std::io::ErrorKind::InvalidInput,
-            "value not between 0 and 100",
+            format!("value not between 0 and {}", Self::MAX_VALUE),
         ))
     }
 }

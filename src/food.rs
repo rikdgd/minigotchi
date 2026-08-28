@@ -1,9 +1,10 @@
 use macroquad::prelude::Texture2D;
+use serde::{Serialize, Deserialize};
 use crate::include_texture;
 use crate::ui::interaction_menu::CreatureInteraction;
 
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Food {
     Soup,
     Cookie,
@@ -39,5 +40,13 @@ impl CreatureInteraction for Food {
     
     fn menu_title() -> String {
         "Select food".to_string()
+    }
+
+    fn all_variants() -> [Self; 3] {
+        [
+            Food::Soup,
+            Food::Cookie,
+            Food::Burger,
+        ]
     }
 }

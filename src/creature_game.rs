@@ -1,9 +1,10 @@
 use macroquad::prelude::Texture2D;
+use serde::{Serialize, Deserialize};
 use crate::include_texture;
 use crate::ui::interaction_menu::CreatureInteraction;
 
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum CreatureGame {
     Drawing,
     Basketball,
@@ -47,5 +48,13 @@ impl CreatureInteraction for CreatureGame {
 
     fn menu_title() -> String {
         "Select game".to_string()
+    }
+
+    fn all_variants() -> [Self; 3] {
+        [
+            CreatureGame::Drawing,
+            CreatureGame::Basketball, 
+            CreatureGame::Frisbee,
+        ]
     }
 }

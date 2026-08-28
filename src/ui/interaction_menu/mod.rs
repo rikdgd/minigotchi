@@ -20,6 +20,9 @@ pub trait CreatureInteraction: Clone + Copy {
     fn name(&self) -> &str;
     fn sprite(&self) -> Texture2D;
     fn menu_title() -> String;
+    
+    /// Returns an array containing all 3 possible variants for the given `CreatureInteraction`.
+    fn all_variants() -> [Self; 3];
 }
 
 /// The **InteractionMenu** struct is used to render a UI used to perform an interaction with the
