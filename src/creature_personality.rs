@@ -1,16 +1,17 @@
 use macroquad::rand::gen_range;
+use serde::{Serialize, Deserialize};
 use crate::food::Food;
 use crate::creature_game::CreatureGame;
 use crate::ui::interaction_menu::CreatureInteraction;
 
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct CreaturePersonality {
-    pub liked_food: Food,
-    pub hated_food: Food,
+    liked_food: Food,
+    hated_food: Food,
     
-    pub liked_game: CreatureGame,
-    pub hated_game: CreatureGame,
+    liked_game: CreatureGame,
+    hated_game: CreatureGame,
 }
 
 impl CreaturePersonality {
@@ -33,6 +34,22 @@ impl CreaturePersonality {
             hated_game,
         }
     }
+    
+    pub fn liked_food(&self) -> Food {
+        self.liked_food
+    }
+    
+    pub fn hated_food(&self) -> Food {
+        self.hated_food
+    }
+    
+    pub fn liked_game(&self) -> CreatureGame {
+        self.liked_game
+    }
+    
+    pub fn hated_game(&self) -> CreatureGame {
+        self.hated_game
+    }
 }
 
 
@@ -45,8 +62,8 @@ mod tests {
         for _ in 0..100 {
             let personality = CreaturePersonality::new_random();
             
-            assert_ne!(personality.liked_food, personality.hated_food);
-            assert_ne!(personality.liked_game, personality.hated_game);
+            assert_ne!(personality.liked_food(), personality.hated_food());
+            assert_ne!(personality.liked_game(), personality.hated_game());
         }
     }
 }

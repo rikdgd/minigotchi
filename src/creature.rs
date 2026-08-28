@@ -1,8 +1,9 @@
 use macroquad::texture::Texture2D;
 use macroquad::rand::gen_range;
+use serde::{Deserialize, Serialize};
 use crate::food::Food;
 use crate::creature_game::CreatureGame;
-use serde::{Deserialize, Serialize};
+use crate::creature_personality::CreaturePersonality;
 use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
@@ -42,10 +43,14 @@ pub struct Creature {
     joy: Stat,
     energy: Stat,
     health: Stat,
+    love: Stat, // Hidden stat that determines how much the creature likes the player.
+    personality: CreaturePersonality,
+    
     previous_food_update: i64,
     previous_joy_update: i64,
     previous_energy_update: i64,
     previous_health_update: i64,
+    
     shape: CreatureShapes,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
@@ -63,10 +68,14 @@ impl Creature {
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
+            love: Stat::new(20).unwrap(),
+            personality: CreaturePersonality::new_random(),
+            
             previous_food_update: now_millis,
             previous_joy_update: now_millis,
             previous_energy_update: now_millis,
             previous_health_update: now_millis,
+            
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,

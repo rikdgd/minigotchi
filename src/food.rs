@@ -1,9 +1,10 @@
 use macroquad::prelude::Texture2D;
+use serde::{Serialize, Deserialize};
 use crate::include_texture;
 use crate::ui::interaction_menu::CreatureInteraction;
 
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Food {
     Soup,
     Cookie,
