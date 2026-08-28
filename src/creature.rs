@@ -206,8 +206,8 @@ impl Creature {
             self.love.subtract(5);
         }
 
-        // The creature has a 1/3 chance of getting sick when eating
-        if gen_range(0, 3) == 0 {
+        // The creature has a chance to get sick when eating:
+        if gen_range(0, Stat::MAX_VALUE) < food.points() {
             self.is_sick = true;
             self.health.subtract(20);
             self.previous_health_update = now;
