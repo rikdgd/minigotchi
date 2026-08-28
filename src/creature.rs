@@ -323,7 +323,7 @@ impl Creature {
 
 #[cfg(test)]
 mod tests {
-    use crate::creature::Creature;
+    use crate::creature::{Creature, GrowthStage};
     use crate::shapes::CreatureShapes;
     use crate::utils::Stat;
 
@@ -362,5 +362,34 @@ mod tests {
         assert!(!creature_a.alive);  // Should be dead
         assert!(!creature_b.alive);  // Should be dead
         assert!(creature_c.alive);   // Should be alive
+    }
+    
+    #[test]
+    fn update_love_stat() {
+        let mut creature = Creature::new("test", CreatureShapes::Sheep, 0);
+        creature.growth_stage = GrowthStage::Adult;
+        
+        let liked_food = creature.personality().liked_food();
+        let hated_food = creature.personality().hated_food();
+
+        let liked_game = creature.personality().liked_game();
+        let hated_game = creature.personality().hated_game();
+        
+        
+        let love = creature.love().value();
+        creature.eat(liked_food);
+        assert!(love < creature.love().value());
+        
+        let love = creature.love().value();
+        creature.eat(hated_food);
+        assert!(love > creature.love().value());
+        
+        let love = creature.love().value();
+        creature.play(liked_game);
+        assert!(love < creature.love().value());
+
+        let love = creature.love().value();
+        creature.play(hated_game);
+        assert!(love > creature.love().value());
     }
 }
