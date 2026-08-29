@@ -137,7 +137,10 @@ impl Creature {
         while now_millis - self.previous_health_update >= Self::HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
                 self.health.subtract(30);
-                self.love.subtract(5);  // Creature doesn't like being sick, so decrease love
+                // Creature doesn't like being sick, so decrease love
+                self.love.subtract(5);
+                self.previous_love_update = now_millis;
+                
             } else {
                 self.health.add(1);
             }
@@ -213,8 +216,10 @@ impl Creature {
         
         if self.personality.liked_food() == food {
             self.love.add(5);
+            self.previous_love_update = now;
         } else if self.personality.hated_food() == food {
             self.love.subtract(5);
+            self.previous_love_update = now;
         }
 
         // The creature has a chance to get sick when eating:
@@ -255,20 +260,26 @@ impl Creature {
         
         if self.personality.liked_game() == game {
             self.love.add(5);
+            self.previous_love_update = get_now_millis();
         } else if self.personality.hated_game() == game {
             self.love.subtract(5);
+            self.previous_love_update = get_now_millis();
         }
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn heal(&mut self) {
-        if self.growth_stage != GrowthStage::Egg {
-            self.is_sick = false;
-            self.previous_health_update = get_now_millis();
-            
-            // The creature doesn't like being given medicine, so lower it love stat
-            self.love.subtract(5);
+        if self.growth_stage == GrowthStage::Egg {
+            return;
         }
+        let now = get_now_millis();
+        
+        self.is_sick = false;
+        self.previous_health_update = now;
+        
+        // The creature doesn't like being given medicine, so lower it love stat
+        self.love.subtract(5);
+        self.previous_love_update = now;
     }
     
     pub fn food(&self) -> Stat {
