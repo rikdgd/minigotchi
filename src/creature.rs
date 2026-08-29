@@ -12,6 +12,7 @@ const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
 const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
 const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
 const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
+const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -50,6 +51,7 @@ pub struct Creature {
     previous_joy_update: i64,
     previous_energy_update: i64,
     previous_health_update: i64,
+    previous_love_update: i64,
     
     shape: CreatureShapes,
     growth_stage: GrowthStage,
@@ -75,6 +77,7 @@ impl Creature {
             previous_joy_update: now_millis,
             previous_energy_update: now_millis,
             previous_health_update: now_millis,
+            previous_love_update: now_millis,
             
             shape,
             growth_stage: GrowthStage::Egg,
@@ -131,13 +134,19 @@ impl Creature {
 
         while now_millis - self.previous_health_update >= HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
-                self.health.subtract(20);
+                self.health.subtract(30);
+                self.love.subtract(5);  // Creature doesn't like being sick, so decrease love
             } else {
                 self.health.add(1);
             }
 
             self.previous_health_update += HEALTH_OFFSET_MILLIS;
             self.update_alive_status(self.previous_health_update);
+        }
+        
+        while now_millis - self.previous_love_update >= LOVE_OFFSET_MILLIS && self.alive {
+            self.love.subtract(1);
+            self.previous_love_update += LOVE_OFFSET_MILLIS;
         }
     }
 
@@ -255,6 +264,7 @@ impl Creature {
             self.is_sick = false;
             self.previous_health_update = get_now_millis();
             
+            // The creature doesn't like being given medicine, so lower it love stat
             self.love.subtract(5);
         }
     }
