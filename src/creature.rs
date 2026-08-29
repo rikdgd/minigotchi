@@ -8,11 +8,7 @@ use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
-const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
-const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
-const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
-const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
-const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
+
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -63,6 +59,12 @@ pub struct Creature {
 }
 
 impl Creature {
+    const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
+    const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
+    const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
+    const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
+    const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
+    
     pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
         Self {
             name: String::from(name),
@@ -109,30 +111,30 @@ impl Creature {
     fn update_stats(&mut self, now_millis: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now_millis - self.previous_food_update >= FOOD_OFFSET_MILLIS && self.alive{
+        while now_millis - self.previous_food_update >= Self::FOOD_OFFSET_MILLIS && self.alive{
             self.food.subtract(1);
-            self.previous_food_update += FOOD_OFFSET_MILLIS;
+            self.previous_food_update += Self::FOOD_OFFSET_MILLIS;
 
             self.update_alive_status(self.previous_food_update);
         }
 
-        while now_millis - self.previous_energy_update >= ENERGY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_energy_update >= Self::ENERGY_OFFSET_MILLIS && self.alive {
             if self.is_asleep() {
                 self.energy.add(1);
             }
 
-            self.previous_energy_update += ENERGY_OFFSET_MILLIS;
+            self.previous_energy_update += Self::ENERGY_OFFSET_MILLIS;
             self.update_alive_status(self.previous_energy_update);
         }
 
-        while now_millis - self.previous_joy_update >= JOY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_joy_update >= Self::JOY_OFFSET_MILLIS && self.alive {
             self.joy.subtract(1);
-            self.previous_joy_update += JOY_OFFSET_MILLIS;
+            self.previous_joy_update += Self::JOY_OFFSET_MILLIS;
 
             self.update_alive_status(self.previous_joy_update);
         }
 
-        while now_millis - self.previous_health_update >= HEALTH_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_health_update >= Self::HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
                 self.health.subtract(30);
                 self.love.subtract(5);  // Creature doesn't like being sick, so decrease love
@@ -140,13 +142,13 @@ impl Creature {
                 self.health.add(1);
             }
 
-            self.previous_health_update += HEALTH_OFFSET_MILLIS;
+            self.previous_health_update += Self::HEALTH_OFFSET_MILLIS;
             self.update_alive_status(self.previous_health_update);
         }
         
-        while now_millis - self.previous_love_update >= LOVE_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_love_update >= Self::LOVE_OFFSET_MILLIS && self.alive {
             self.love.subtract(1);
-            self.previous_love_update += LOVE_OFFSET_MILLIS;
+            self.previous_love_update += Self::LOVE_OFFSET_MILLIS;
         }
     }
 
