@@ -64,6 +64,7 @@ impl Creature {
     const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
     const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
     const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
+    const SICKNESS_HEALTH_COST: u8 = 30;
     
     pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
         Self {
@@ -136,7 +137,7 @@ impl Creature {
 
         while now_millis - self.previous_health_update >= Self::HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
-                self.health.subtract(30);
+                self.health.subtract(Self::SICKNESS_HEALTH_COST);
                 // Creature doesn't like being sick, so decrease love
                 self.love.subtract(5);
                 self.previous_love_update = now_millis;
@@ -225,7 +226,7 @@ impl Creature {
         // The creature has a chance to get sick when eating:
         if gen_range(0, Stat::MAX_VALUE) < food.points() {
             self.is_sick = true;
-            self.health.subtract(20);
+            self.health.subtract(Self::SICKNESS_HEALTH_COST);
             self.previous_health_update = now;
         }
     }
