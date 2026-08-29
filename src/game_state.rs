@@ -80,7 +80,7 @@ impl GameState {
     fn update_coins(&mut self, now: i64) {
         const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
         
-        while (now - self.last_coin_time) / DAY_MILLIS > 0 {
+        while now - self.last_coin_time >= DAY_MILLIS {
             self.inventory.coins += 1;
             self.last_coin_time += DAY_MILLIS;
         }
