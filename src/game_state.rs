@@ -30,7 +30,7 @@ impl GameState {
         let creature = Creature::new(creature_name, creature_shape, now);
         let prev_growth_stage = creature.growth_stage();
 
-        Self {
+        let state = Self {
             creature_movement: get_creature_movement(&creature, CREATURE_BASE_LOCATION),
             creature,
             last_coin_time: now,
@@ -39,7 +39,9 @@ impl GameState {
             animation_queue: Vec::new(),
             is_stalking_cursor: false,
             sickness_movement_playing: false,
-        }
+        };
+        
+        state.adjust_for_debug_names()
     }
     
     pub async fn from_file(path: &str) -> Result<Self, macroquad::Error> {
@@ -153,6 +155,25 @@ impl GameState {
             self.creature_movement = get_creature_movement(self.creature(), center_location);
             self.sickness_movement_playing = false;
         }
+    }
+    
+    /// This method is called in the `GameState::new` function to adjust the GameState when a special
+    /// *"debug name"* is entered.
+    fn adjust_for_debug_names(mut self) -> Self {
+        match self.creature().name() {
+            "@test" => {
+                self.inventory.coins = 1000;
+                self.creature.set_growth_stage(GrowthStage::Adult);
+            },
+            "@jeb" => {
+                self.inventory.equipped_color = crate::items::creature_color::CreatureColor::Rainbow;
+                self.inventory.creature_colors = vec![crate::items::creature_color::CreatureColor::Rainbow];
+            },
+            
+            _ => (),
+        }
+        
+        self
     }
 }
 

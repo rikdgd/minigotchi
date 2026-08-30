@@ -335,6 +335,13 @@ impl Creature {
         self.shape
     }
     
+    /// This is a setter function for the creatures `growth_stage`. This should **ONLY** be used for
+    /// generating special creatures from *"debug names"*, since the creature will update its
+    /// growth stage automatically when calling `self.update_state()`.
+    pub fn set_growth_stage(&mut self, growth_stage: GrowthStage) {
+        self.growth_stage = growth_stage;
+    }
+    
     pub fn texture(&self) -> Texture2D {
         match self.growth_stage {
             GrowthStage::Egg => egg_shape(),
