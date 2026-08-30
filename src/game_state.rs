@@ -10,7 +10,10 @@ use crate::shapes::CreatureShapes;
 use crate::save_management::{SaveState, store_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
-use crate::items::inventory::Inventory;
+use crate::items::{
+    inventory::Inventory,
+    creature_color::CreatureColor,
+};
 
 
 pub struct GameState {
@@ -166,8 +169,8 @@ impl GameState {
                 self.creature.set_growth_stage(GrowthStage::Adult);
             },
             "@jeb" => {
-                self.inventory.equipped_color = crate::items::creature_color::CreatureColor::Rainbow;
-                self.inventory.creature_colors = vec![crate::items::creature_color::CreatureColor::Rainbow];
+                self.inventory.equipped_color = CreatureColor::Rainbow;
+                self.inventory.creature_colors = vec![CreatureColor::Rainbow];
             },
             
             _ => (),
