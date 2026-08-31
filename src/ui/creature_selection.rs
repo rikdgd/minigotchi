@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use macroquad::rand::gen_range;
 use crate::shapes::CreatureShape;
 use crate::ui::button::Button;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -14,7 +15,7 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 /// * `confirm_btn` - The button component that the user can use to select the next shape.
 #[derive(Debug, Clone)]
 pub struct CreatureSelection {
-    selected_shape: CreatureShape,
+    selection_index: usize,
     next_btn: Button,
     confirm_btn: Button,
 }
@@ -70,7 +71,7 @@ impl CreatureSelection {
     }
     
     fn draw_creature_texture(&self) {
-        let creature_texture = self.selected_shape.get_texture();
+        let creature_texture = self.selected_shape().get_texture();
         draw_texture_ex(
             &creature_texture,
             SCREEN_WIDTH as f32 / 2.0 - (creature_texture.width() * Self::CREATURE_ZOOM_FACTOR) / 2.0,
@@ -88,28 +89,21 @@ impl CreatureSelection {
 
     fn update(&mut self) -> Option<CreatureShape> {
         if self.next_btn.is_clicked() {
-            self.selected_shape = Self::next_creature(self.selected_shape);
+            self.selection_index += 1;
+            
+            self.selected_shape();
         }
 
         if self.confirm_btn.is_clicked() {
-            return Some(self.selected_shape);
+            return Some(self.selected_shape());
         }
 
         None
     }
-
-    fn next_creature(creature: CreatureShape) -> CreatureShape {
-        match creature {
-            CreatureShape::Turtle => CreatureShape::Snail,
-            CreatureShape::Snail => CreatureShape::Fish,
-            CreatureShape::Fish => CreatureShape::Mouse,
-            CreatureShape::Mouse => CreatureShape::Frog,
-            CreatureShape::Frog => CreatureShape::Squid,
-            CreatureShape::Squid => CreatureShape::Sheep,
-            CreatureShape::Sheep => CreatureShape::Germ,
-            CreatureShape::Germ => CreatureShape::Jellyfish,
-            CreatureShape::Jellyfish => CreatureShape::Turtle,
-        }
+    
+    fn selected_shape(&self) -> CreatureShape {
+        let creature_index = self.selection_index % CreatureShape::ALL_VARIANTS.len();
+        CreatureShape::ALL_VARIANTS[creature_index]
     }
 
     fn next_button() -> Button {
@@ -138,7 +132,7 @@ impl CreatureSelection {
 impl Default for CreatureSelection {
     fn default() -> Self {
         Self {
-            selected_shape: CreatureShape::new_random(),
+            selection_index: gen_range(0, CreatureShape::ALL_VARIANTS.len()),
             next_btn: Self::next_button(),
             confirm_btn: Self::confirm_btn(),
         }

@@ -1,5 +1,4 @@
 use macroquad::prelude::*;
-use macroquad::rand::gen_range;
 use macroquad::texture::Texture2D;
 use serde::{Serialize, Deserialize};
 
@@ -66,11 +65,6 @@ impl CreatureShape {
             CreatureShape::Germ => include_texture!("../resources/germ_backdrop.png"),
             CreatureShape::Jellyfish => include_texture!("../resources/jellyfish_backdrop.png"),
         }
-    }
-    
-    pub fn new_random() -> Self {
-        let index = gen_range(0, Self::ALL_VARIANTS.len());
-        Self::ALL_VARIANTS[index]        
     }
 }
 
