@@ -90,8 +90,6 @@ impl CreatureSelection {
     fn update(&mut self) -> Option<CreatureShape> {
         if self.next_btn.is_clicked() {
             self.selection_index += 1;
-            
-            self.selected_shape();
         }
 
         if self.confirm_btn.is_clicked() {
@@ -135,6 +133,37 @@ impl Default for CreatureSelection {
             selection_index: gen_range(0, CreatureShape::ALL_VARIANTS.len()),
             next_btn: Self::next_button(),
             confirm_btn: Self::confirm_btn(),
+        }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use crate::shapes::CreatureShape;
+    use crate::ui::creature_selection::CreatureSelection;
+    
+    #[test]
+    fn shape_selection_is_cycle() {
+        let mut cs = CreatureSelection::default();
+        let original_shape = cs.selected_shape();
+        
+        cs.selection_index += CreatureShape::ALL_VARIANTS.len();
+        let new_shape = cs.selected_shape();
+        
+        assert_eq!(original_shape, new_shape);
+    }
+    
+    #[test]
+    fn selection_cycle_matches_shapes() {
+        let mut cs = CreatureSelection {
+            selection_index: 0,
+            ..Default::default()
+        };
+        
+        for expected_shape in CreatureShape::ALL_VARIANTS {
+            assert_eq!(expected_shape, cs.selected_shape());
+            cs.selection_index += 1;
         }
     }
 }
