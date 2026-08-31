@@ -9,7 +9,7 @@ use crate::ui::stat_display::stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
 use crate::ui::play_area::draw_play_area;
-use crate::shapes::sleeping_icon;
+use crate::shapes::{sleeping_icon, CreatureShapes};
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
@@ -157,12 +157,13 @@ impl GameRunner {
         if self.state.creature().growth_stage() != GrowthStage::Adult {
             return;
         }
-        
+        const BACKDROP_OFFSET: f32 = (CreatureShapes::TEXTURE_DIMENSION - CreatureShapes::BACKDROP_DIMENSION) / 2.0;
         let backdrop = self.state.creature().shape().get_backdrop();
+        
         draw_texture_ex(
             &backdrop,
-            draw_loc.x,
-            draw_loc.y,
+            draw_loc.x + BACKDROP_OFFSET,
+            draw_loc.y + BACKDROP_OFFSET,
             play_area_background_color(self.state.creature().is_asleep()),
             DrawTextureParams {
                 flip_x: self.state.creature_movement.mirror_sprite(),
