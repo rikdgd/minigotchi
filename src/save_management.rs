@@ -53,11 +53,11 @@ pub fn get_save_file_path() -> String {
 mod tests {
     use crate::game_state::GameState;
     use crate::save_management::SaveState;
-    use crate::shapes::CreatureShapes;
+    use crate::shapes::CreatureShape;
 
     #[test]
     fn game_save_state_conversion() {
-        let original_state = GameState::new("test", CreatureShapes::Sheep);
+        let original_state = GameState::new("test", CreatureShape::Sheep);
         let save_state: SaveState = (&original_state).into();
         
         let retrieved_state: GameState = save_state.into();

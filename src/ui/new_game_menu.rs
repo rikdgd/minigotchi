@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 use crate::game_state::GameState;
-use crate::shapes::CreatureShapes;
+use crate::shapes::CreatureShape;
 use crate::ui::button::Button;
 use crate::ui::creature_selection::CreatureSelection;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -34,7 +34,7 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 #[derive(Debug, Clone)]
 pub struct NewGameMenu {
     name_buffer: String,
-    selected_shape: Option<CreatureShapes>,
+    selected_shape: Option<CreatureShape>,
     backspace_timer: f32,
     confirm_btn: Button,
 }

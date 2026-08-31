@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use crate::shapes::CreatureShapes;
+use crate::shapes::CreatureShape;
 use crate::ui::button::Button;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 
@@ -14,7 +14,7 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 /// * `confirm_btn` - The button component that the user can use to select the next shape.
 #[derive(Debug, Clone)]
 pub struct CreatureSelection {
-    selected_shape: CreatureShapes,
+    selected_shape: CreatureShape,
     next_btn: Button,
     confirm_btn: Button,
 }
@@ -29,8 +29,8 @@ impl CreatureSelection {
     /// ## Returns:
     /// When the user has confirmed their choice of shape, this method will return a copy of
     /// `self.selected_shape`.
-    pub async fn render(&mut self) -> CreatureShapes {
-        let creature_shape: CreatureShapes;
+    pub async fn render(&mut self) -> CreatureShape {
+        let creature_shape: CreatureShape;
         let info_text_dimensions = measure_text(
             Self::INFO_TEXT, 
             None, 
@@ -86,7 +86,7 @@ impl CreatureSelection {
         );
     }
 
-    fn update(&mut self) -> Option<CreatureShapes> {
+    fn update(&mut self) -> Option<CreatureShape> {
         if self.next_btn.is_clicked() {
             self.selected_shape = Self::next_creature(self.selected_shape);
         }
@@ -98,17 +98,17 @@ impl CreatureSelection {
         None
     }
 
-    fn next_creature(creature: CreatureShapes) -> CreatureShapes {
+    fn next_creature(creature: CreatureShape) -> CreatureShape {
         match creature {
-            CreatureShapes::Turtle => CreatureShapes::Snail,
-            CreatureShapes::Snail => CreatureShapes::Fish,
-            CreatureShapes::Fish => CreatureShapes::Mouse,
-            CreatureShapes::Mouse => CreatureShapes::Frog,
-            CreatureShapes::Frog => CreatureShapes::Squid,
-            CreatureShapes::Squid => CreatureShapes::Sheep,
-            CreatureShapes::Sheep => CreatureShapes::Germ,
-            CreatureShapes::Germ => CreatureShapes::Jellyfish,
-            CreatureShapes::Jellyfish => CreatureShapes::Turtle,
+            CreatureShape::Turtle => CreatureShape::Snail,
+            CreatureShape::Snail => CreatureShape::Fish,
+            CreatureShape::Fish => CreatureShape::Mouse,
+            CreatureShape::Mouse => CreatureShape::Frog,
+            CreatureShape::Frog => CreatureShape::Squid,
+            CreatureShape::Squid => CreatureShape::Sheep,
+            CreatureShape::Sheep => CreatureShape::Germ,
+            CreatureShape::Germ => CreatureShape::Jellyfish,
+            CreatureShape::Jellyfish => CreatureShape::Turtle,
         }
     }
 
@@ -138,7 +138,7 @@ impl CreatureSelection {
 impl Default for CreatureSelection {
     fn default() -> Self {
         Self {
-            selected_shape: CreatureShapes::new_random(),
+            selected_shape: CreatureShape::new_random(),
             next_btn: Self::next_button(),
             confirm_btn: Self::confirm_btn(),
         }

@@ -6,7 +6,7 @@ use crate::animations::Animation;
 use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
 use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
-use crate::shapes::CreatureShapes;
+use crate::shapes::CreatureShape;
 use crate::save_management::{SaveState, store_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
@@ -28,7 +28,7 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn new(creature_name: &str, creature_shape: CreatureShapes) -> Self {
+    pub fn new(creature_name: &str, creature_shape: CreatureShape) -> Self {
         let now = get_now_millis();
         let creature = Creature::new(creature_name, creature_shape, now);
         let prev_growth_stage = creature.growth_stage();
@@ -217,16 +217,16 @@ impl Drop for GameState {
 #[cfg(test)]
 mod tests {
     use crate::game_state::GameState;
-    use crate::shapes::CreatureShapes;
+    use crate::shapes::CreatureShape;
     
     const DAY_MILLIS: i64 = 1000 * 60 * 60 * 24;
     
     #[test]
     fn test_coin_updates() {
-        let mut days_1_state = GameState::new("test", CreatureShapes::Sheep);
-        let mut days_2_state = GameState::new("test", CreatureShapes::Sheep);
-        let mut hours_13_state = GameState::new("test", CreatureShapes::Sheep);
-        let mut days_100_state = GameState::new("test", CreatureShapes::Sheep);
+        let mut days_1_state = GameState::new("test", CreatureShape::Sheep);
+        let mut days_2_state = GameState::new("test", CreatureShape::Sheep);
+        let mut hours_13_state = GameState::new("test", CreatureShape::Sheep);
+        let mut days_100_state = GameState::new("test", CreatureShape::Sheep);
         
         
         days_1_state.last_coin_time -= DAY_MILLIS;

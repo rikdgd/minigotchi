@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::food::Food;
 use crate::creature_game::CreatureGame;
 use crate::creature_personality::CreaturePersonality;
-use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
+use crate::shapes::{CreatureShape, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
@@ -49,7 +49,7 @@ pub struct Creature {
     previous_health_update: i64,
     previous_love_update: i64,
     
-    shape: CreatureShapes,
+    shape: CreatureShape,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
     is_sick: bool,
@@ -66,7 +66,7 @@ impl Creature {
     const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
     const SICKNESS_HEALTH_COST: u8 = 30;
     
-    pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
+    pub fn new(name: &str, shape: CreatureShape, now_millis: i64) -> Self {
         Self {
             name: String::from(name),
             food: Stat::new(50).unwrap(),
@@ -331,7 +331,7 @@ impl Creature {
         self.time_of_death
     }
     
-    pub fn shape(&self) -> CreatureShapes {
+    pub fn shape(&self) -> CreatureShape {
         self.shape
     }
     
@@ -355,7 +355,7 @@ impl Creature {
 #[cfg(test)]
 mod tests {
     use crate::creature::{Creature, GrowthStage};
-    use crate::shapes::CreatureShapes;
+    use crate::shapes::CreatureShape;
     use crate::utils::Stat;
 
     #[test]
@@ -364,19 +364,19 @@ mod tests {
         let example_time = 1000;
 
         // Should be death
-        let mut creature_a = Creature::new("A", CreatureShapes::Snail, 0);
+        let mut creature_a = Creature::new("A", CreatureShape::Snail, 0);
         creature_a.food = Stat::new(0).unwrap();
         creature_a.joy = Stat::new(0).unwrap();
 
         // Should be death
-        let mut creature_b = Creature::new("B", CreatureShapes::Mouse, 0);
+        let mut creature_b = Creature::new("B", CreatureShape::Mouse, 0);
         creature_b.food = Stat::new(6).unwrap();
         creature_b.joy = Stat::new(8).unwrap();
         creature_b.energy = Stat::new(100).unwrap();
         creature_b.health = Stat::new(100).unwrap();
 
         // Should be alive
-        let mut creature_c = Creature::new("C", CreatureShapes::Squid, 0);
+        let mut creature_c = Creature::new("C", CreatureShape::Squid, 0);
         creature_c.food = Stat::new(7).unwrap();
         creature_c.joy = Stat::new(8).unwrap();
         creature_c.energy = Stat::new(0).unwrap();
@@ -397,7 +397,7 @@ mod tests {
     
     #[test]
     fn update_love_stat() {
-        let mut creature = Creature::new("test", CreatureShapes::Sheep, 0);
+        let mut creature = Creature::new("test", CreatureShape::Sheep, 0);
         creature.growth_stage = GrowthStage::Adult;
         
         let liked_food = creature.personality().liked_food();

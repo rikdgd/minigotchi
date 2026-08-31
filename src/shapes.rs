@@ -10,10 +10,8 @@ macro_rules! include_texture {
     };
 }
 
-const NUM_SHAPES: u8 = 9;
-
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
-pub enum CreatureShapes {
+pub enum CreatureShape {
     Turtle,
     Snail,
     Fish,
@@ -22,22 +20,34 @@ pub enum CreatureShapes {
     Squid,
     Sheep,
     Germ,
-    Jellyfish
+    Jellyfish,
 }
 
-impl CreatureShapes {
+impl CreatureShape {
+    /// An array containing all possible `CreatureShapes` variants.
+    pub const ALL_VARIANTS: [Self; 9] = [
+        CreatureShape::Turtle,
+        CreatureShape::Snail,
+        CreatureShape::Fish,
+        CreatureShape::Mouse,
+        CreatureShape::Frog,
+        CreatureShape::Squid,
+        CreatureShape::Sheep,
+        CreatureShape::Germ,
+        CreatureShape::Jellyfish,
+    ];
     
     pub fn get_texture(&self) -> Texture2D {
         match self {
-            CreatureShapes::Turtle => include_texture!("../resources/turtle.png"),
-            CreatureShapes::Snail => include_texture!("../resources/snail.png"),
-            CreatureShapes::Fish => include_texture!("../resources/fish.png"),
-            CreatureShapes::Mouse => include_texture!("../resources/mouse.png"),
-            CreatureShapes::Frog => include_texture!("../resources/frog.png"),
-            CreatureShapes::Squid => include_texture!("../resources/squid.png"),
-            CreatureShapes::Sheep => include_texture!("../resources/sheep.png"),
-            CreatureShapes::Germ => include_texture!("../resources/germ.png"),
-            CreatureShapes::Jellyfish => include_texture!("../resources/jellyfish.png"),
+            CreatureShape::Turtle => include_texture!("../resources/turtle.png"),
+            CreatureShape::Snail => include_texture!("../resources/snail.png"),
+            CreatureShape::Fish => include_texture!("../resources/fish.png"),
+            CreatureShape::Mouse => include_texture!("../resources/mouse.png"),
+            CreatureShape::Frog => include_texture!("../resources/frog.png"),
+            CreatureShape::Squid => include_texture!("../resources/squid.png"),
+            CreatureShape::Sheep => include_texture!("../resources/sheep.png"),
+            CreatureShape::Germ => include_texture!("../resources/germ.png"),
+            CreatureShape::Jellyfish => include_texture!("../resources/jellyfish.png"),
         }
     }
     
@@ -46,30 +56,21 @@ impl CreatureShapes {
     /// to prevent any background pixels being visible through the creature's sprite.
     pub fn get_backdrop(&self) -> Texture2D {
         match self {
-            CreatureShapes::Turtle => include_texture!("../resources/turtle_backdrop.png"),
-            CreatureShapes::Snail => include_texture!("../resources/snail_backdrop.png"),
-            CreatureShapes::Fish => include_texture!("../resources/fish_backdrop.png"),
-            CreatureShapes::Mouse => include_texture!("../resources/mouse_backdrop.png"),
-            CreatureShapes::Frog => include_texture!("../resources/frog_backdrop.png"),
-            CreatureShapes::Squid => include_texture!("../resources/squid_backdrop.png"),
-            CreatureShapes::Sheep => include_texture!("../resources/sheep_backdrop.png"),
-            CreatureShapes::Germ => include_texture!("../resources/germ_backdrop.png"),
-            CreatureShapes::Jellyfish => include_texture!("../resources/jellyfish_backdrop.png"),
+            CreatureShape::Turtle => include_texture!("../resources/turtle_backdrop.png"),
+            CreatureShape::Snail => include_texture!("../resources/snail_backdrop.png"),
+            CreatureShape::Fish => include_texture!("../resources/fish_backdrop.png"),
+            CreatureShape::Mouse => include_texture!("../resources/mouse_backdrop.png"),
+            CreatureShape::Frog => include_texture!("../resources/frog_backdrop.png"),
+            CreatureShape::Squid => include_texture!("../resources/squid_backdrop.png"),
+            CreatureShape::Sheep => include_texture!("../resources/sheep_backdrop.png"),
+            CreatureShape::Germ => include_texture!("../resources/germ_backdrop.png"),
+            CreatureShape::Jellyfish => include_texture!("../resources/jellyfish_backdrop.png"),
         }
     }
     
     pub fn new_random() -> Self {
-        match gen_range(0, NUM_SHAPES) {
-            0 => Self::Turtle,
-            1 => Self::Snail,
-            2 => Self::Fish,
-            3 => Self::Mouse,
-            4 => Self::Frog,
-            5 => Self::Squid,
-            6 => Self::Sheep,
-            7 => Self::Germ,
-            _ => Self::Jellyfish,
-        }
+        let index = gen_range(0, Self::ALL_VARIANTS.len());
+        Self::ALL_VARIANTS[index]        
     }
 }
 
