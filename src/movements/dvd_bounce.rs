@@ -1,7 +1,8 @@
 use macroquad::time::get_frame_time;
 use crate::creature::Creature;
 use crate::movements::CreatureMovement;
-use crate::utils::{Dimensions, Location, random_helpers::get_random_bool};
+use crate::utils::{Dimensions, Location};
+use crate::utils::direction::{XDirection, YDirection};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
 const STEP_SIZE: f32 = 1.0;
@@ -10,8 +11,8 @@ const STEP_SIZE: f32 = 1.0;
 pub struct DvdBounce {
     timer: f32,
     creature_location: Location,
-    x_toggle: bool,
-    y_toggle: bool,
+    x_direction: XDirection,
+    y_direction: YDirection,
     shape_dimensions: Dimensions,
 }
 
@@ -21,8 +22,8 @@ impl DvdBounce {
         Self {
             timer: 0.0,
             creature_location: Location { x: 50.0, y: 50.0 },
-            x_toggle: get_random_bool(),
-            y_toggle: get_random_bool(),
+            x_direction: XDirection::new_random(),
+            y_direction: YDirection::new_random(),
             shape_dimensions: Dimensions {
                 width: shape.width(),
                 height: shape.height(),
@@ -38,16 +39,16 @@ impl DvdBounce {
 
     /// Updates the movement toggles `self.x_toggle` and `self.y_toggle` when the creature is about to move out of bounds.
     fn update_toggles(&mut self) {
-        if self.creature_location.x >= PLAY_AREA_RECT.right() - self.shape_dimensions.width ||
-            self.creature_location.x <= PLAY_AREA_RECT.x
-        {
-            self.x_toggle = !self.x_toggle;
+        if self.creature_location.x >= PLAY_AREA_RECT.right() - self.shape_dimensions.width {
+            self.x_direction = XDirection::Left;
+        } else if self.creature_location.x <= PLAY_AREA_RECT.x {
+            self.x_direction = XDirection::Right;
         }
         
-        if self.creature_location.y >= PLAY_AREA_RECT.bottom() - self.shape_dimensions.height ||
-            self.creature_location.y <= PLAY_AREA_RECT.y
-        {
-            self.y_toggle = !self.y_toggle;
+        if self.creature_location.y >= PLAY_AREA_RECT.bottom() - self.shape_dimensions.height {
+            self.y_direction = YDirection::Up;
+        } else if self.creature_location.y <= PLAY_AREA_RECT.y {
+            self.y_direction = YDirection::Down;
         }
     }
 
@@ -55,15 +56,15 @@ impl DvdBounce {
     /// passed since the previous update.
     fn update_state(&mut self) {
         self.update_toggles();
-
-        match self.x_toggle {
-            true => self.creature_location.x += STEP_SIZE,
-            false => self.creature_location.x -= STEP_SIZE,
+        
+        match self.x_direction {
+            XDirection::Right => self.creature_location.x += STEP_SIZE,
+            XDirection::Left => self.creature_location.x -= STEP_SIZE,
         }
 
-        match self.y_toggle {
-            true => self.creature_location.y += STEP_SIZE,
-            false => self.creature_location.y -= STEP_SIZE,
+        match self.y_direction {
+            YDirection::Up => self.creature_location.y -= STEP_SIZE,
+            YDirection::Down => self.creature_location.y += STEP_SIZE,
         }
     }
 }
@@ -79,11 +80,11 @@ impl CreatureMovement for DvdBounce {
             self.update_state();
             self.timer = 0.0;
         }
-
+        
         self.creature_location
     }
 
     fn mirror_sprite(&self) -> bool {
-        self.x_toggle
+        self.x_direction == XDirection::Right
     }
 }
