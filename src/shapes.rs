@@ -10,7 +10,7 @@ macro_rules! include_texture {
     };
 }
 
-const NUM_SHAPES: u8 = 7;
+const NUM_SHAPES: u8 = 9;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum CreatureShapes {
@@ -21,6 +21,8 @@ pub enum CreatureShapes {
     Frog,
     Squid,
     Sheep,
+    Germ,
+    Jellyfish
 }
 
 impl CreatureShapes {
@@ -34,6 +36,8 @@ impl CreatureShapes {
             CreatureShapes::Frog => include_texture!("../resources/frog.png"),
             CreatureShapes::Squid => include_texture!("../resources/squid.png"),
             CreatureShapes::Sheep => include_texture!("../resources/sheep.png"),
+            CreatureShapes::Germ => include_texture!("../resources/germ.png"),
+            CreatureShapes::Jellyfish => include_texture!("../resources/jellyfish.png"),
         }
     }
     
@@ -49,6 +53,8 @@ impl CreatureShapes {
             CreatureShapes::Frog => include_texture!("../resources/frog_backdrop.png"),
             CreatureShapes::Squid => include_texture!("../resources/squid_backdrop.png"),
             CreatureShapes::Sheep => include_texture!("../resources/sheep_backdrop.png"),
+            CreatureShapes::Germ => include_texture!("../resources/germ_backdrop.png"),
+            CreatureShapes::Jellyfish => include_texture!("../resources/jellyfish_backdrop.png"),
         }
     }
     
@@ -60,7 +66,9 @@ impl CreatureShapes {
             3 => Self::Mouse,
             4 => Self::Frog,
             5 => Self::Squid,
-            _ => Self::Sheep,
+            6 => Self::Sheep,
+            7 => Self::Germ,
+            _ => Self::Jellyfish,
         }
     }
 }

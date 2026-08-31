@@ -106,7 +106,9 @@ impl CreatureSelection {
             CreatureShapes::Mouse => CreatureShapes::Frog,
             CreatureShapes::Frog => CreatureShapes::Squid,
             CreatureShapes::Squid => CreatureShapes::Sheep,
-            CreatureShapes::Sheep => CreatureShapes::Turtle,
+            CreatureShapes::Sheep => CreatureShapes::Germ,
+            CreatureShapes::Germ => CreatureShapes::Jellyfish,
+            CreatureShapes::Jellyfish => CreatureShapes::Turtle,
         }
     }
 
