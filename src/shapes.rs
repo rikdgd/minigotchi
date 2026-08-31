@@ -24,8 +24,6 @@ pub enum CreatureShapes {
 }
 
 impl CreatureShapes {
-    pub const TEXTURE_DIMENSION: f32 = 25.0;
-    pub const BACKDROP_DIMENSION: f32 = 27.0;
     
     pub fn get_texture(&self) -> Texture2D {
         match self {
