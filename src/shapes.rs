@@ -22,11 +22,12 @@ pub enum CreatureShape {
     Jellyfish,
     Chicken,
     Ufo,
+    Bunny,
 }
 
 impl CreatureShape {
     /// An array containing all possible `CreatureShapes` variants.
-    pub const ALL_VARIANTS: [Self; 11] = [
+    pub const ALL_VARIANTS: [Self; 12] = [
         CreatureShape::Turtle,
         CreatureShape::Snail,
         CreatureShape::Fish,
@@ -38,6 +39,8 @@ impl CreatureShape {
         CreatureShape::Jellyfish,
         CreatureShape::Chicken,
         CreatureShape::Ufo,
+        CreatureShape::Bunny,
+        
     ];
     
     pub fn get_texture(&self) -> Texture2D {
@@ -53,6 +56,7 @@ impl CreatureShape {
             CreatureShape::Jellyfish => include_texture!("../resources/jellyfish.png"),
             CreatureShape::Chicken => include_texture!("../resources/chicken.png"),
             CreatureShape::Ufo => include_texture!("../resources/ufo.png"),
+            CreatureShape::Bunny => include_texture!("../resources/bunny.png"),
         }
     }
     
@@ -72,6 +76,7 @@ impl CreatureShape {
             CreatureShape::Jellyfish => include_texture!("../resources/jellyfish_backdrop.png"),
             CreatureShape::Chicken => include_texture!("../resources/chicken_backdrop.png"),
             CreatureShape::Ufo => include_texture!("../resources/ufo_backdrop.png"),
+            CreatureShape::Bunny => include_texture!("../resources/bunny_backdrop.png"),
         }
     }
 }
