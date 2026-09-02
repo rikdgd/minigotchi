@@ -23,11 +23,12 @@ pub enum CreatureShape {
     Chicken,
     Ufo,
     Bunny,
+    Bug,
 }
 
 impl CreatureShape {
     /// An array containing all possible `CreatureShapes` variants.
-    pub const ALL_VARIANTS: [Self; 12] = [
+    pub const ALL_VARIANTS: [Self; 13] = [
         CreatureShape::Turtle,
         CreatureShape::Snail,
         CreatureShape::Fish,
@@ -40,6 +41,7 @@ impl CreatureShape {
         CreatureShape::Chicken,
         CreatureShape::Ufo,
         CreatureShape::Bunny,
+        CreatureShape::Bug,
         
     ];
     
@@ -57,6 +59,7 @@ impl CreatureShape {
             CreatureShape::Chicken => include_texture!("../resources/chicken.png"),
             CreatureShape::Ufo => include_texture!("../resources/ufo.png"),
             CreatureShape::Bunny => include_texture!("../resources/bunny.png"),
+            CreatureShape::Bug => include_texture!("../resources/bug.png"),
         }
     }
     
@@ -77,6 +80,7 @@ impl CreatureShape {
             CreatureShape::Chicken => include_texture!("../resources/chicken_backdrop.png"),
             CreatureShape::Ufo => include_texture!("../resources/ufo_backdrop.png"),
             CreatureShape::Bunny => include_texture!("../resources/bunny_backdrop.png"),
+            CreatureShape::Bug => include_texture!("../resources/bug_backdrop.png"),
         }
     }
 }
