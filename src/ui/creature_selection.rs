@@ -15,7 +15,8 @@ use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
 /// * `confirm_btn` - The button component that the user can use to select the next shape.
 #[derive(Debug, Clone)]
 pub struct CreatureSelection {
-    selection_index: usize,
+    selection_index: isize,
+    previous_btn: Button,
     next_btn: Button,
     confirm_btn: Button,
 }
@@ -44,6 +45,7 @@ impl CreatureSelection {
 
             self.next_btn.render();
             self.confirm_btn.render();
+            self.previous_btn.render();
 
             Self::draw_info_text(info_text_dimensions);
             self.draw_creature_texture();
@@ -74,8 +76,8 @@ impl CreatureSelection {
         let creature_texture = self.selected_shape().get_texture();
         draw_texture_ex(
             &creature_texture,
-            SCREEN_WIDTH as f32 / 2.0 - (creature_texture.width() * Self::CREATURE_ZOOM_FACTOR) / 2.0,
-            (SCREEN_HEIGHT as f32 / 2.0 - (creature_texture.height() * Self::CREATURE_ZOOM_FACTOR) / 2.0) - 10.0,
+            (SCREEN_WIDTH as f32 - (creature_texture.width() * Self::CREATURE_ZOOM_FACTOR)) / 2.0,
+            (SCREEN_HEIGHT as f32 - creature_texture.height() * Self::CREATURE_ZOOM_FACTOR) / 2.0 - 10.0,
             BLACK,
             DrawTextureParams {
                 dest_size: Some(Vec2::new(
@@ -91,6 +93,10 @@ impl CreatureSelection {
         if self.next_btn.is_clicked() {
             self.selection_index += 1;
         }
+        
+        if self.previous_btn.is_clicked() {
+            self.selection_index -= 1;
+        }
 
         if self.confirm_btn.is_clicked() {
             return Some(self.selected_shape());
@@ -100,27 +106,49 @@ impl CreatureSelection {
     }
     
     fn selected_shape(&self) -> CreatureShape {
-        let creature_index = self.selection_index % CreatureShape::ALL_VARIANTS.len();
-        CreatureShape::ALL_VARIANTS[creature_index]
+        let creature_index = self.selection_index % CreatureShape::ALL_VARIANTS.len() as isize;
+        let creature_index = if creature_index < 0 {
+            CreatureShape::ALL_VARIANTS.len() as isize + creature_index
+        } else {
+            creature_index
+        };
+        CreatureShape::ALL_VARIANTS[creature_index as usize]
     }
 
     fn next_button() -> Button {
         let mut next_btn = Button::default();
-        next_btn.text = "next".to_string();
-        next_btn.pos = (
-            ((SCREEN_WIDTH as f32 / 2.0) - next_btn.size.x / 2.0) - 30.0,
-            ((SCREEN_HEIGHT as f32 / 2.0) - next_btn.size.y / 2.0) + 50.0,
-        ).into();
+        next_btn.text = ">".to_string();
+        next_btn.fontsize = 16.0;
 
+        next_btn.size = (15.0, 20.0).into();
+        next_btn.pos = (
+            (SCREEN_WIDTH as f32 - next_btn.size.x) / 2.0 + 50.0,
+            SCREEN_HEIGHT as f32 / 2.0 - next_btn.size.y
+        ).into();
+        
         next_btn
+    }
+
+    fn previous_button() -> Button {
+        let mut btn = Button::default();
+        btn.text = "<".to_string();
+        btn.fontsize = 16.0;
+        
+        btn.size = (15.0, 20.0).into();
+        btn.pos = (
+            (SCREEN_WIDTH as f32 - btn.size.x) / 2.0 - 50.0,
+            SCREEN_HEIGHT as f32 / 2.0 - btn.size.y
+        ).into();
+        
+        btn
     }
 
     fn confirm_btn() -> Button {
         let mut confirm_btn = Button::default();
         confirm_btn.text = "confirm".to_string();
         confirm_btn.pos = (
-            ((SCREEN_WIDTH as f32 / 2.0) - confirm_btn.size.x / 2.0) + 30.0,
-            ((SCREEN_HEIGHT as f32 / 2.0) - confirm_btn.size.y / 2.0) + 50.0,
+            (SCREEN_WIDTH as f32 - confirm_btn.size.x) / 2.0,
+            (SCREEN_HEIGHT as f32 - confirm_btn.size.y) / 2.0 + 40.0,
         ).into();
 
         confirm_btn
@@ -130,8 +158,9 @@ impl CreatureSelection {
 impl Default for CreatureSelection {
     fn default() -> Self {
         Self {
-            selection_index: gen_range(0, CreatureShape::ALL_VARIANTS.len()),
+            selection_index: gen_range(0, CreatureShape::ALL_VARIANTS.len() as isize),
             next_btn: Self::next_button(),
+            previous_btn: Self::previous_button(),
             confirm_btn: Self::confirm_btn(),
         }
     }
@@ -148,9 +177,13 @@ mod tests {
         let mut cs = CreatureSelection::default();
         let original_shape = cs.selected_shape();
         
-        cs.selection_index += CreatureShape::ALL_VARIANTS.len();
+        cs.selection_index += CreatureShape::ALL_VARIANTS.len() as isize;
         let new_shape = cs.selected_shape();
         
+        assert_eq!(original_shape, new_shape);
+        
+        cs.selection_index -= CreatureShape::ALL_VARIANTS.len() as isize * 2;
+        let new_shape = cs.selected_shape();
         assert_eq!(original_shape, new_shape);
     }
     
