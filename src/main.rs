@@ -11,6 +11,7 @@ mod animations;
 mod items;
 mod game_runner;
 mod creature_personality;
+mod coin_drops;
 
 use macroquad::prelude::*;
 use game_runner::GameRunner;
