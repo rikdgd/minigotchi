@@ -74,7 +74,7 @@ impl NewGameMenu {
             draw_text(
                 &self.name_buffer,
                 (SCREEN_WIDTH as f32 - name_text_size.width) / 2.0,
-                (SCREEN_HEIGHT as f32 - name_text_size.height) / 2.0 - 15.0,
+                (SCREEN_HEIGHT as f32 - name_text_size.height) / 2.0,
                 28.0,
                 BLACK,
             );
@@ -88,6 +88,20 @@ impl NewGameMenu {
         }
         
         new_game_state
+    }
+    
+    /// This function returns a `Button` component that is used to confirm the
+    /// name entered by the user. This function is made public to allow reusing it for the
+    /// `CreatureSelection` menu. 
+    pub fn confirm_btn() -> Button {
+        let mut confirm_btn = Button::default();
+        confirm_btn.text = "confirm".to_string();
+        confirm_btn.pos = (
+            (SCREEN_WIDTH as f32 - confirm_btn.size.x) / 2.0,
+            (SCREEN_HEIGHT as f32 - confirm_btn.size.y) / 2.0 + 40.0,
+        ).into();
+
+        confirm_btn
     }
     
     fn update(&mut self) -> Option<GameState> {
@@ -122,11 +136,7 @@ impl Default for NewGameMenu {
         Self {
             name_buffer: String::new(),
             selected_shape: None,
-            confirm_btn: Button {
-                pos: Vec2::new(75.0, 150.0),
-                text: String::from("confirm"),
-                ..Default::default()
-            },
+            confirm_btn: Self::confirm_btn(),
             backspace_timer: 0.0,
         }
     }

@@ -3,6 +3,7 @@ use macroquad::rand::gen_range;
 use crate::shapes::CreatureShape;
 use crate::ui::button::Button;
 use crate::{BACKGROUND_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT};
+use crate::ui::new_game_menu::NewGameMenu;
 
 
 /// The **CreatureSelection** struct manages the state of the creature selection screen
@@ -144,14 +145,7 @@ impl CreatureSelection {
     }
 
     fn confirm_btn() -> Button {
-        let mut confirm_btn = Button::default();
-        confirm_btn.text = "confirm".to_string();
-        confirm_btn.pos = (
-            (SCREEN_WIDTH as f32 - confirm_btn.size.x) / 2.0,
-            (SCREEN_HEIGHT as f32 - confirm_btn.size.y) / 2.0 + 40.0,
-        ).into();
-
-        confirm_btn
+        NewGameMenu::confirm_btn()
     }
 }
 
