@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use macroquad::rand::gen_range;
+use crate::include_texture;
 use crate::utils::{Stat, Location, Dimensions};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
@@ -67,12 +68,16 @@ impl<'a> CoinDropManager<'a> {
     
     /// Draws the dropped coin on the screen, if one is present.
     pub fn draw_coin(&self) {
-        if self.dropped_coin.is_none() {
-            return;
+        if let Some(coin) = self.dropped_coin {
+            let texture = include_texture!("../resources/coin.png");
+            draw_texture_ex(
+                &texture,
+                coin.0.x,
+                coin.0.y,
+                YELLOW,
+                DrawTextureParams::default(),
+            );
         }
-        
-        // draw_texture_ex()
-        todo!()
     }
     
     /// Checks if the creature collides with the dropped coin when present. If it does, this function
