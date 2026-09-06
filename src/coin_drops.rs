@@ -4,8 +4,6 @@ use crate::utils::{Stat, Location, Dimensions};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
 
-
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct DroppedCoin(Rect);
 impl DroppedCoin {
@@ -51,9 +49,35 @@ impl<'a> CoinDropManager<'a> {
         }
     }
     
-    /// Updates the state of dropped coins and their collisions with the creature. This functions
-    /// returns `true` when the creature collides with a coin, and `false` otherwise.
-    pub fn update_collisions(&mut self, creature_loc: Location) -> bool {
+    /// Updates the state of the **CoinDropManager**, this includes:
+    /// * Try spawning a coin drop.
+    /// * Update creature-coin collisions.
+    /// 
+    /// ## Parameters:
+    /// * `creature_loc` - The current location of the creature, this is needed to check if the
+    ///   creature has picked up a coin.
+    /// 
+    /// ## Returns:
+    /// This function returns `true` when the creature has picked up a coin, and false otherwise.
+    pub fn update(&mut self, creature_loc: Location) -> bool {
+        self.try_spawn_coin();
+        
+        self.update_collisions(creature_loc)
+    }
+    
+    /// Draws the dropped coin on the screen, if one is present.
+    pub fn draw_coin(&self) {
+        if self.dropped_coin.is_none() {
+            return;
+        }
+        
+        // draw_texture_ex()
+        todo!()
+    }
+    
+    /// Checks if the creature collides with the dropped coin when present. If it does, this function
+    /// sets `self.dropped_coin` to `None` and returns `true`.
+    fn update_collisions(&mut self, creature_loc: Location) -> bool {
         let creature_rect = Rect::new(
             creature_loc.x,
             creature_loc.y,
@@ -68,11 +92,10 @@ impl<'a> CoinDropManager<'a> {
             }
         }
         
-        self.try_spawn_coins();
         false
     }
     
-    fn try_spawn_coins(&mut self) {
+    fn try_spawn_coin(&mut self) {
         if self.creature_love.value() < 80 || self.dropped_coin.is_some() {
             return;
         }
@@ -81,8 +104,9 @@ impl<'a> CoinDropManager<'a> {
         if self.drop_timer > 300. {
             self.drop_timer = 0.;
             
-            // TODO: Only create new coin drop depending on random chance based of love stat.
-            self.dropped_coin = Some(DroppedCoin::new_random());
+            if gen_range(0, 100) < 5 {
+                self.dropped_coin = Some(DroppedCoin::new_random());
+            }
         }
     }
 }
