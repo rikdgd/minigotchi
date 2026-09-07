@@ -2,6 +2,7 @@ use macroquad::prelude::*;
 use macroquad::rand::gen_range;
 use crate::include_texture;
 use crate::creature::Creature;
+use crate::shapes::CreatureShape;
 use crate::utils::{Location, Dimensions};
 use crate::ui::play_area::{PLAY_AREA_RECT, play_area_background_color};
 
@@ -84,15 +85,13 @@ impl CoinDropManager {
     /// Checks if the creature collides with the dropped coin when present. If it does, this function
     /// sets `self.dropped_coin` to `None` and returns `true`.
     fn update_collisions(&mut self, creature_loc: Location) -> bool {
-        let creature_rect = Rect::new(
-            creature_loc.x,
-            creature_loc.y,
-            25.,
-            25.,
+        let creature_center = Vec2::new(
+            creature_loc.x + CreatureShape::TEXTURE_DIMENSIONS.width / 2.,
+            creature_loc.y + CreatureShape::TEXTURE_DIMENSIONS.height / 2.,
         );
         
         if let Some(coin) = self.dropped_coin {
-            if coin.0.overlaps(&creature_rect) {
+            if coin.0.contains(creature_center) {
                 self.dropped_coin = None;
                 return true;
             }
