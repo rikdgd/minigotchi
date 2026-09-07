@@ -81,12 +81,7 @@ impl GameRunner {
     pub async fn run_game(&mut self) {
         loop {
             self.state.update();
-            
-            // Update coin drops:
-            self.coin_drop_manager.update(
-                self.state.creature_movement.current_location(),
-                self.state.creature(),
-            );
+            self.update_coin_drops();
             
             // If the creature has died, render the death screen and set the new state
             if !self.state.creature().alive() {
@@ -110,6 +105,17 @@ impl GameRunner {
             self.handle_shop_button_click().await;
             
             next_frame().await;
+        }
+    }
+    
+    fn update_coin_drops(&mut self) {
+        let picked_up_coin = self.coin_drop_manager.update(
+            self.state.creature_movement.current_location(),
+            self.state.creature(),
+        );
+        
+        if picked_up_coin {
+            self.state.inventory.coins += 1;
         }
     }
 
