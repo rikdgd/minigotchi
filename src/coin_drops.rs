@@ -1,7 +1,8 @@
 use macroquad::prelude::*;
 use macroquad::rand::gen_range;
 use crate::include_texture;
-use crate::utils::{Stat, Location, Dimensions};
+use crate::creature::Creature;
+use crate::utils::{Location, Dimensions};
 use crate::ui::play_area::PLAY_AREA_RECT;
 
 
@@ -33,23 +34,13 @@ impl DroppedCoin {
 }
 
 
-#[derive(Debug, Clone)]
-pub struct CoinDropManager<'a> {
+#[derive(Debug, Clone, Copy, Default)]
+pub struct CoinDropManager {
     drop_timer: f32,
-    creature_love: &'a Stat,
     dropped_coin: Option<DroppedCoin>,
 }
 
-impl<'a> CoinDropManager<'a> {
-    pub fn new(creature_love: &'a Stat) -> Self {
-        Self {
-            creature_love,
-            
-            drop_timer: 0.,
-            dropped_coin: None,
-        }
-    }
-    
+impl CoinDropManager {
     /// Updates the state of the **CoinDropManager**, this includes:
     /// * Try spawning a coin drop.
     /// * Update creature-coin collisions.
@@ -57,12 +48,12 @@ impl<'a> CoinDropManager<'a> {
     /// ## Parameters:
     /// * `creature_loc` - The current location of the creature, this is needed to check if the
     ///   creature has picked up a coin.
+    /// * `creature` - A reference to the creature, used to get the value of its *love* stat.
     /// 
     /// ## Returns:
-    /// This function returns `true` when the creature has picked up a coin, and false otherwise.
-    pub fn update(&mut self, creature_loc: Location) -> bool {
-        self.try_spawn_coin();
-        
+    /// This function returns `true` when the creature has picked up a coin, and `false` otherwise.
+    pub fn update(&mut self, creature_loc: Location, creature: &Creature) -> bool {
+        self.try_spawn_coin(creature);
         self.update_collisions(creature_loc)
     }
     
@@ -100,8 +91,8 @@ impl<'a> CoinDropManager<'a> {
         false
     }
     
-    fn try_spawn_coin(&mut self) {
-        if self.creature_love.value() < 80 || self.dropped_coin.is_some() {
+    fn try_spawn_coin(&mut self, creature: &Creature) {
+        if creature.love().value() < 80 || self.dropped_coin.is_some() {
             return;
         }
         
