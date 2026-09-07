@@ -3,13 +3,13 @@ use macroquad::rand::gen_range;
 use crate::include_texture;
 use crate::creature::Creature;
 use crate::utils::{Location, Dimensions};
-use crate::ui::play_area::PLAY_AREA_RECT;
+use crate::ui::play_area::{PLAY_AREA_RECT, play_area_background_color};
 
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct DroppedCoin(Rect);
 impl DroppedCoin {
-    const COIN_DIMENSIONS: Dimensions = Dimensions { width: 5., height: 10. };
+    const COIN_DIMENSIONS: Dimensions = Dimensions { width: 9., height: 12. };
     
     /// Creates a new `DroppedCoin` instance with a random location within the *'playing area'* on the
     /// screen.
@@ -17,12 +17,12 @@ impl DroppedCoin {
         let x = gen_range(
             PLAY_AREA_RECT.x,
             PLAY_AREA_RECT.right() - Self::COIN_DIMENSIONS.width,
-        );
+        ).round();
 
         let y = gen_range(
             PLAY_AREA_RECT.y,
             PLAY_AREA_RECT.bottom() - Self::COIN_DIMENSIONS.height,
-        );
+        ).round();
         
         Self(Rect::new(
             x,
@@ -58,14 +58,24 @@ impl CoinDropManager {
     }
     
     /// Draws the dropped coin on the screen, if one is present.
-    pub fn draw_coin(&self) {
+    pub fn draw_coin(&self, creature_asleep: bool) {
         if let Some(coin) = self.dropped_coin {
-            let texture = include_texture!("../resources/coin.png");
+            let coin_texture = include_texture!("../resources/dropped_items/coin.png");
+            let backdrop_texture = include_texture!("../resources/dropped_items/coin_backdrop.png");
+
             draw_texture_ex(
-                &texture,
+                &backdrop_texture,
                 coin.0.x,
                 coin.0.y,
-                YELLOW,
+                play_area_background_color(creature_asleep),
+                DrawTextureParams::default(),
+            );
+            
+            draw_texture_ex(
+                &coin_texture,
+                coin.0.x,
+                coin.0.y,
+                BLACK,
                 DrawTextureParams::default(),
             );
         }

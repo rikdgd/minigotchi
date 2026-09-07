@@ -117,7 +117,7 @@ impl GameRunner {
         draw_play_area(self.state.creature());
         self.state.inventory.equipped_background.render();
         
-        self.coin_drop_manager.draw_coin();
+        self.coin_drop_manager.draw_coin(self.state.creature().is_asleep());
         self.draw_creature();
         
         stat_display(self.state.creature());
