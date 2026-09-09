@@ -94,11 +94,11 @@ impl CoinDropManager {
             creature_loc.y + CreatureShape::TEXTURE_DIMENSIONS.height / 2.,
         );
         
-        if let Some(coin) = self.dropped_coin {
-            if coin.0.contains(creature_center) {
-                self.dropped_coin = None;
-                return true;
-            }
+        if let Some(coin) = self.dropped_coin 
+            && coin.0.contains(creature_center) 
+        {
+            self.dropped_coin = None;
+            return true;
         }
         
         false
