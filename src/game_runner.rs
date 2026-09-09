@@ -20,6 +20,7 @@ use crate::creature_game::CreatureGame;
 use crate::ui::shop::ShopPage;
 use crate::utils::Location;
 use crate::ui::play_area::play_area_background_color;
+use crate::coin_drops::CoinDropManager;
 
 
 /// The **GameRunner** structure can be used to run the Minigotchi game. It has ownership of the
@@ -37,6 +38,7 @@ use crate::ui::play_area::play_area_background_color;
 /// ```
 pub struct GameRunner {
     state: GameState,
+    coin_drop_manager: CoinDropManager,
     
     interaction_buttons: [InteractionButton; 4],
     sleep_icon_movement: EggHop,
@@ -72,12 +74,14 @@ impl GameRunner {
             shop_button: ShopPage::shop_button(),
 
             state: game_state,
+            coin_drop_manager: CoinDropManager::default(),
         }
     }
 
     pub async fn run_game(&mut self) {
         loop {
             self.state.update();
+            self.update_coin_drops();
             
             // If the creature has died, render the death screen and set the new state
             if !self.state.creature().alive() {
@@ -103,10 +107,23 @@ impl GameRunner {
             next_frame().await;
         }
     }
+    
+    fn update_coin_drops(&mut self) {
+        let picked_up_coin = self.coin_drop_manager.update(
+            self.state.creature_movement.current_location(),
+            self.state.creature(),
+        );
+        
+        if picked_up_coin {
+            self.state.inventory.coins += 1;
+        }
+    }
 
     fn draw_main_ui(&mut self) {
         draw_play_area(self.state.creature());
         self.state.inventory.equipped_background.render();
+        
+        self.coin_drop_manager.draw_coin(self.state.creature().is_asleep());
         self.draw_creature();
         
         stat_display(self.state.creature());

@@ -24,8 +24,5 @@ pub fn play_area_background_color(is_asleep: bool) -> Color {
 
 pub fn play_area_center() -> Location {
     let play_area_center = PLAY_AREA_RECT.center();
-    Location {
-        x: play_area_center.x,
-        y: play_area_center.y,
-    }
+    (play_area_center.x, play_area_center.y).into()
 }

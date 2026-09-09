@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use macroquad::texture::Texture2D;
 use serde::{Serialize, Deserialize};
+use crate::utils::Dimensions;
 
 #[macro_export]
 macro_rules! include_texture {
@@ -45,6 +46,8 @@ impl CreatureShape {
         CreatureShape::Bug,
         CreatureShape::Crab,
     ];
+    
+    pub const TEXTURE_DIMENSIONS: Dimensions = Dimensions { width: 25., height: 25. };
     
     pub fn get_texture(&self) -> Texture2D {
         match self {

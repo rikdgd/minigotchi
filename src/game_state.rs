@@ -167,6 +167,8 @@ impl GameState {
             "@test" => {
                 self.inventory.coins = 1000;
                 self.creature.set_growth_stage(GrowthStage::Adult);
+                self.creature.set_love(50)
+                    .expect("Love value for debug creature is wrongly configured");
             },
             "@jeb" => {
                 self.inventory.equipped_color = CreatureColor::Rainbow;

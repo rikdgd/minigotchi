@@ -21,7 +21,7 @@ impl Stat {
         ))
     }
 
-    /// Adds the provided value, never exceeding 100.
+    /// Adds the provided value, never exceeding [Stat::MAX_VALUE].
     pub fn add(&mut self, value: u8) {
         let new_value = self.0 + value;
 
@@ -32,7 +32,7 @@ impl Stat {
         }
     }
 
-    /// subtracts the provided value, never wrapping around.
+    /// Subtracts the provided value, never going below 0.
     pub fn subtract(&mut self, value: u8) {
         if self.0 >= value {
             self.0 -= value;
