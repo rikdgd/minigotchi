@@ -113,7 +113,7 @@ impl CoinDropManager {
         if self.drop_timer > Self::COIN_DROP_DELAY {
             self.drop_timer = 0.;
             
-            if gen_range(0, 100) < 5 {
+            if gen_range(0, 100) < 10 {
                 self.dropped_coin = Some(DroppedCoin::new_random());
             }
         }
