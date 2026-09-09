@@ -56,11 +56,8 @@ impl PopupAnimation for CreatureActionAnimation {}
 impl CreatureActionAnimation {
     pub fn new(action_type: ActionAnimationType) -> Self {
         let frames = Self::get_frames(action_type);
-        let dimensions = Dimensions { 
-            width: frames[0].width(),
-            height: frames[0].height(),
-        };
-
+        let dimensions = (frames[0].width(), frames[0].height()).into();
+        
         Self {
             current_frame: 0,
             frame_timer: 0.0,
