@@ -42,6 +42,10 @@ pub struct CoinDropManager {
 }
 
 impl CoinDropManager {
+    /// This is the delay used for coin drops. Every `COIN_DROP_DELAY` seconds an attempt is made to
+    /// spawn a new `DroppedCoin`.
+    pub const COIN_DROP_DELAY: f32 = 300.;
+    
     /// Updates the state of the **CoinDropManager**, this includes:
     /// * Try spawning a coin drop.
     /// * Update creature-coin collisions.
@@ -106,7 +110,7 @@ impl CoinDropManager {
         }
         
         self.drop_timer += get_frame_time();
-        if self.drop_timer > 300. {
+        if self.drop_timer > Self::COIN_DROP_DELAY {
             self.drop_timer = 0.;
             
             if gen_range(0, 100) < 5 {
@@ -180,5 +184,43 @@ mod tests {
             let result = coin_manager.update(test_set.creature_location, &creature);
             assert_eq!(test_set.expected_result, result);
         }
+    }
+    
+    #[macroquad::test]
+    async fn coin_spawn_timer() {
+        let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
+        let mut coin_manager = CoinDropManager::default();
+        
+        
+        // Too low friendship AND to little time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY / 2.;
+        creature.set_love(10).unwrap();
+        coin_manager.try_spawn_coin(&creature);
+        
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY / 2.);
+
+        
+        // Enough friendship AND time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY * 2.;
+        creature.set_love(100).unwrap();
+
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), 0.);
+        
+        
+        // Enough friendship BUT NOT time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY / 2.;
+        creature.set_love(90).unwrap();
+        
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY / 2.);
+        
+        
+        // Too low friendship BUT enough time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY * 1.1;
+        creature.set_love(50).unwrap();
+        
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY * 1.1);
     }
 }
