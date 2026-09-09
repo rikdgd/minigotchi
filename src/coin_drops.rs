@@ -115,3 +115,70 @@ impl CoinDropManager {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use crate::coin_drops::*;
+    use crate::creature::Creature;
+    use crate::shapes::CreatureShape;
+    use crate::Location;
+    
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct CoinCreatureLocationSet {
+        pub creature_location: Location,
+        pub coin_location: Location,
+        pub expected_result: bool,
+    }
+
+    #[test]
+    fn coin_pickup_radius() {
+        let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
+        creature.set_love(100).unwrap();
+        
+        let test_sets = [
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50. + CreatureShape::TEXTURE_DIMENSIONS.width / 2. - 1.,
+                    20. + CreatureShape::TEXTURE_DIMENSIONS.height / 2. - 1.,
+                    ).into(),
+                expected_result: true,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (10., 10.).into(),
+                coin_location: (100., 20.).into(),
+                expected_result: false,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50. + CreatureShape::TEXTURE_DIMENSIONS.width,
+                    20.,
+                ).into(),
+                expected_result: false,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50.,
+                    20. + CreatureShape::TEXTURE_DIMENSIONS.height,
+                ).into(),
+                expected_result: false,
+            },
+        ];
+        
+        for test_set in test_sets {
+            let mut coin_manager = CoinDropManager::default();
+            coin_manager.dropped_coin = Some(DroppedCoin(Rect::new(
+                test_set.coin_location.x,
+                test_set.coin_location.y,
+                DroppedCoin::COIN_DIMENSIONS.width,
+                DroppedCoin::COIN_DIMENSIONS.height,
+            )));
+            
+            let result = coin_manager.update(test_set.creature_location, &creature);
+            assert_eq!(test_set.expected_result, result);
+        }
+    }
+}

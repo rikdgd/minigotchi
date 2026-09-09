@@ -302,6 +302,11 @@ impl Creature {
     pub fn love(&self) -> Stat {
         self.love
     }
+    
+    /// Setter for the creature's `love` stat. Useful for unit testing.
+    pub fn set_love(&mut self, value: u8) -> Result<(), std::io::Error> {
+        self.love.set(value)
+    }
 
     pub fn is_asleep(&self) -> bool {
         self.asleep_since.is_some()
@@ -357,6 +362,7 @@ mod tests {
     use crate::creature::{Creature, GrowthStage};
     use crate::shapes::CreatureShape;
     use crate::utils::Stat;
+    use crate::utils::time::get_now_millis;
 
     #[test]
     fn update_alive_status() {
@@ -397,7 +403,7 @@ mod tests {
     
     #[test]
     fn update_love_stat() {
-        let mut creature = Creature::new("test", CreatureShape::Sheep, 0);
+        let mut creature = Creature::new("test", CreatureShape::Sheep, get_now_millis());
         creature.growth_stage = GrowthStage::Adult;
         
         let liked_food = creature.personality().liked_food();
@@ -409,10 +415,12 @@ mod tests {
         
         let love = creature.love().value();
         creature.eat(liked_food);
+        creature.is_sick = false;
         assert!(love < creature.love().value());
         
         let love = creature.love().value();
         creature.eat(hated_food);
+        creature.is_sick = false;
         assert!(love > creature.love().value());
         
         let love = creature.love().value();
