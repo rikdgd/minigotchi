@@ -156,7 +156,7 @@ impl Creature {
         }
     }
 
-    /// Calls the creature's `die()` method when appropriate, updating its `alive` status.
+    /// Calls the creature's [die](Creature::die) method when appropriate, updating its `alive` status.
     ///
     /// ## Parameters:
     /// * `update_time` - The time at which the creature's alive status should be updated. This time
@@ -342,7 +342,7 @@ impl Creature {
     
     /// This is a setter function for the creatures `growth_stage`. This should **ONLY** be used for
     /// generating special creatures from *"debug names"*, since the creature will update its
-    /// growth stage automatically when calling `self.update_state()`.
+    /// growth stage automatically when calling [self.update_state](Creature::update_state).
     pub fn set_growth_stage(&mut self, growth_stage: GrowthStage) {
         self.growth_stage = growth_stage;
     }
