@@ -35,7 +35,7 @@ async fn main() {
 fn main_window_conf() -> Conf {
     let icon = Icon {
         small: favicon::SMALL_ICON,
-        medium: [0; 4096],
+        medium: favicon::MEDIUM_ICON,
         big: [0; 16384],
     };
     
