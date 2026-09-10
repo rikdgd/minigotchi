@@ -36,7 +36,7 @@ fn main_window_conf() -> Conf {
     let icon = Icon {
         small: favicon::SMALL_ICON,
         medium: favicon::MEDIUM_ICON,
-        big: [0; 16384],
+        big: favicon::BIG_ICON,
     };
     
     Conf {

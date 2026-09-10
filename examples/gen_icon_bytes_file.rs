@@ -3,13 +3,13 @@ use std::fs::OpenOptions;
 use std::io::Write;
 
 
-const SMALL_ICON_SIZE: usize = 16 * 16 * 4;
-const MEDIUM_ICON_SIZE: usize = 32 * 32 * 4;
-const BIG_ICON_SIZE: usize = 64 * 64 * 4;
+const _SMALL_ICON_SIZE: usize = 16 * 16 * 4;
+const _MEDIUM_ICON_SIZE: usize = 32 * 32 * 4;
+const _BIG_ICON_SIZE: usize = 64 * 64 * 4;
 
 /// Set this constant to one of the above icon size constants to configure this example.
-const USING_ICON_SIZE: usize = MEDIUM_ICON_SIZE;
-const ICON_IMG_PATH: &str = "resources/icon/icon_32x32.png";
+const USING_ICON_SIZE: usize = _BIG_ICON_SIZE;
+const ICON_IMG_PATH: &str = "resources/icon/icon_64x64.png";
 
 
 /// This example can be used to generate the byte data used by the [miniquad Icon](macroquad::miniquad::conf::Icon).
