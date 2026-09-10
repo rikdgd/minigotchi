@@ -46,6 +46,10 @@ impl CoinDropManager {
     /// spawn a new `DroppedCoin`.
     pub const COIN_DROP_DELAY: f32 = 300.;
     
+    /// The chance in percentage of actually spawning a dropped coin every
+    /// [COIN_DROP_DELAY](CoinDropManager::COIN_DROP_DELAY) seconds.
+    const COIN_DROP_CHANCE: u32 = 6;
+    
     /// Updates the state of the **CoinDropManager**, this includes:
     /// * Try spawning a coin drop.
     /// * Update creature-coin collisions.
@@ -113,7 +117,7 @@ impl CoinDropManager {
         if self.drop_timer > Self::COIN_DROP_DELAY {
             self.drop_timer = 0.;
             
-            if gen_range(0, 100) < 10 {
+            if gen_range(0, 100) < Self::COIN_DROP_CHANCE {
                 self.dropped_coin = Some(DroppedCoin::new_random());
             }
         }
