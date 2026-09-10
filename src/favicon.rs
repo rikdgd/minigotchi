@@ -1,3 +1,12 @@
+/*
+Importing application icon data like this seems very inefficient, however it is required by the macroquad/miniquad
+crate since loading file data from disk while generating the run config makes macroquad panic.
+The default macroquad icon is also hardcoded in this way, so thats why for minigotchi this is done as well. 
+
+To consistently generate this icon data from an image, look at the example named: 'gen_icon_bytes_file'.
+The images used to generate the existing icons can be found in the 'resources/icon/' directory.
+*/
+
 pub const SMALL_ICON: [u8; 1024] = 
 [0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255,
 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255,
