@@ -24,8 +24,7 @@ async fn main() {
 
 
 async fn load_image_pixel_data() -> Vec<[u8; 4]> {
-    let texture = load_texture("resources/icon/icon_16x16.png").await.unwrap();
-    let image = texture.get_texture_data();
+    let image = load_image("resources/icon/icon_16x16.png").await.unwrap();
     let image_pixels = image.get_image_data();
     image_pixels.to_vec()
 }
