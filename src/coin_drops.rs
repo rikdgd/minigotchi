@@ -38,6 +38,7 @@ impl DroppedCoin {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct CoinDropManager {
     drop_timer: f32,
+    despawn_timer: f32,
     dropped_coin: Option<DroppedCoin>,
 }
 
@@ -45,6 +46,9 @@ impl CoinDropManager {
     /// This is the delay used for coin drops. Every `COIN_DROP_DELAY` seconds an attempt is made to
     /// spawn a new `DroppedCoin`.
     pub const COIN_DROP_DELAY: f32 = 300.;
+    
+    /// The amount of **seconds** before a dropped coin despawns.
+    const COIN_LIFETIME: f32 = 360.;
     
     /// The chance in percentage of actually spawning a dropped coin every
     /// [COIN_DROP_DELAY](CoinDropManager::COIN_DROP_DELAY) seconds.
@@ -62,7 +66,7 @@ impl CoinDropManager {
     /// ## Returns:
     /// This function returns `true` when the creature has picked up a coin, and `false` otherwise.
     pub fn update(&mut self, creature_loc: Location, creature: &Creature) -> bool {
-        self.try_spawn_coin(creature);
+        self.update_coin_spawns(creature);
         self.update_collisions(creature_loc)
     }
     
@@ -108,6 +112,11 @@ impl CoinDropManager {
         false
     }
     
+    fn update_coin_spawns(&mut self, creature: &Creature) {
+        self.try_spawn_coin(creature);
+        self.try_despawn_coin();
+    }
+    
     fn try_spawn_coin(&mut self, creature: &Creature) {
         if creature.love().value() < 80 || self.dropped_coin.is_some() {
             return;
@@ -120,6 +129,18 @@ impl CoinDropManager {
             if gen_range(0, 100) < Self::COIN_DROP_CHANCE {
                 self.dropped_coin = Some(DroppedCoin::new_random());
             }
+        }
+    }
+    
+    fn try_despawn_coin(&mut self) {
+        if self.dropped_coin.is_none() {
+            return;
+        }
+        
+        self.despawn_timer += get_frame_time();
+        if self.despawn_timer > Self::COIN_LIFETIME {
+            self.despawn_timer = 0.;
+            self.dropped_coin = None;
         }
     }
 }
@@ -139,8 +160,13 @@ mod tests {
         pub expected_result: bool,
     }
 
-    #[test]
-    fn coin_pickup_radius() {
+    #[macroquad::test]
+    async fn coin_drop_tests() {
+        coin_pickup_radius_test().await;
+        coin_spawn_timer_test().await;
+    }
+    
+    async fn coin_pickup_radius_test() {
         let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
         creature.set_love(100).unwrap();
         
@@ -190,8 +216,7 @@ mod tests {
         }
     }
     
-    #[macroquad::test]
-    async fn coin_spawn_timer() {
+    async fn coin_spawn_timer_test() {
         let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
         let mut coin_manager = CoinDropManager::default();
         
