@@ -55,11 +55,9 @@ impl BuyableItem for GameBackground {
     fn price(&self) -> u32 {
         match self {
             GameBackground::Plain => 0,
-            GameBackground::Fields => 7,
-            GameBackground::Shrooms => 7,
+            GameBackground::Shrooms => 10,
             GameBackground::Cave => 10,
-            GameBackground::Ocean => 10,
-            GameBackground::Space => 10,
+            _ => 15,
         }
     }
 

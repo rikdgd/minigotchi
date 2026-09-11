@@ -64,13 +64,8 @@ impl BuyableItem for CreatureColor {
     fn price(&self) -> u32 {
         match self {
             CreatureColor::Black => 0,
-            CreatureColor::Red => 3,
-            CreatureColor::Green => 3,
-            CreatureColor::Blue => 3,
-            CreatureColor::Pink => 5,
-            CreatureColor::Yellow => 5,
-            CreatureColor::Cyan => 5,
-            CreatureColor::Rainbow => 10,
+            CreatureColor::Rainbow => 15,
+            _ => 5,
         }
     }
 

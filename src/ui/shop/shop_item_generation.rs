@@ -77,15 +77,15 @@ fn get_all_items() -> Vec<ShopItem> {
             Rc::clone(&background_sprite),
         ),
         ShopItem::new(
-            Box::new(GameBackground::Fields),
-            Rc::clone(&background_sprite),
-        ),
-        ShopItem::new(
             Box::new(GameBackground::Shrooms),
             Rc::clone(&background_sprite),
         ),
         ShopItem::new(
             Box::new(GameBackground::Cave),
+            Rc::clone(&background_sprite),
+        ),
+        ShopItem::new(
+            Box::new(GameBackground::Fields),
             Rc::clone(&background_sprite),
         ),
         ShopItem::new(
