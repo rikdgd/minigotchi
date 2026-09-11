@@ -151,7 +151,7 @@ impl Creature {
         }
         
         while now_millis - self.previous_love_update >= Self::LOVE_OFFSET_MILLIS && self.alive {
-            self.love.subtract(1);
+            self.love.subtract(2);
             self.previous_love_update += Self::LOVE_OFFSET_MILLIS;
         }
     }
