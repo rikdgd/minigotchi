@@ -224,7 +224,7 @@ impl Creature {
         }
 
         // The creature has a chance to get sick when eating:
-        if gen_range(0, Stat::MAX_VALUE) < food.points() {
+        if gen_range(0, Stat::MAX_VALUE - 10) < food.points() {
             self.is_sick = true;
             self.health.subtract(Self::SICKNESS_HEALTH_COST);
             self.previous_health_update = now;
