@@ -184,12 +184,15 @@ impl<'a> ShopPage<'a> {
     }
     
     fn scroll_shop_items(&mut self, direction: ScrollDirection) {
+        let (top_limit, bot_limit) = self.scroll_limits();
         let y_move = match direction {
-            ScrollDirection::Down => -7.0,
-            ScrollDirection::Up => 7.0,
+            ScrollDirection::Down => -10.0,
+            ScrollDirection::Up => 10.0,
         };
         
-        if self.current_scroll + y_move > 0.0 {
+        if self.current_scroll + y_move >= top_limit 
+            || self.current_scroll + y_move <= bot_limit
+        {
             return;
         }
         
@@ -197,6 +200,20 @@ impl<'a> ShopPage<'a> {
         for item in &mut self.items {
             item.move_y(y_move);
         }
+    }
+    
+    /// Returns the two scrolling limits for the shop page in the following shape:
+    /// `(top_limit, bottom_limit)`.
+    fn scroll_limits(&self) -> (f32, f32) {
+        let top_limit = ShopItem::get_draw_height(0) - 20.;
+        
+        let bottom_limit = if let Some(item) = self.items.last() {
+            -(ShopItem::get_draw_height(item.index().unwrap()) - SCREEN_HEIGHT as f32 / 2.)
+        } else {
+            f32::MIN
+        };
+
+        (top_limit, bottom_limit)
     }
     
     /// Returns the `Button` component used to enter the shop page. Note that this Button component

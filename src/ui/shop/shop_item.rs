@@ -54,6 +54,15 @@ impl ShopItem {
             ),
         }
     }
+
+    /// Returns the **Y location** on the screen where a `ShopItem` should be drawn given its
+    /// index in the list of all shop items.
+    ///
+    /// ## Parameters:
+    /// * `item_index` - The index the given `ShopItem` instance has in the list of all ShopItems in the ShopPage.
+    pub fn get_draw_height(item_index: u32) -> f32 {
+        item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0
+    }
     
     pub fn set_index(&mut self, index: u32) {
         self.index = Some(index);
@@ -97,6 +106,10 @@ impl ShopItem {
     
     pub fn move_y(&mut self, y_move: f32) {
         self.area.y += y_move;
+    }
+    
+    pub fn index(&self) -> Option<u32> {
+        self.index
     }
     
     fn draw_background(&self) {
@@ -152,14 +165,5 @@ impl ShopItem {
             Color { r: 0.1, g: 0.1, b: 0.1, a: 1.0},
             DrawTextureParams::default(),
         );
-    }
-    
-    /// Returns the **Y location** on the screen where a `ShopItem` should be drawn given its
-    /// index in the list of all shop items.
-    /// 
-    /// ## Parameters:
-    /// * `item_index` - The index the given `ShopItem` instance has in the list of all ShopItems in the ShopPage.
-    fn get_draw_height(item_index: u32) -> f32 {
-        item_index as f32 * (Self::ITEM_HEIGHT * 1.2).round() + 25.0
     }
 }
