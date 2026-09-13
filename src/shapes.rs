@@ -28,11 +28,12 @@ pub enum CreatureShape {
     Crab,
     AppleBoy,
     Furby,
+    Bee,
 }
 
 impl CreatureShape {
     /// An array containing all possible `CreatureShapes` variants.
-    pub const ALL_VARIANTS: [Self; 16] = [
+    pub const ALL_VARIANTS: [Self; 17] = [
         CreatureShape::Turtle,
         CreatureShape::Snail,
         CreatureShape::Fish,
@@ -49,6 +50,7 @@ impl CreatureShape {
         CreatureShape::Crab,
         CreatureShape::AppleBoy,
         CreatureShape::Furby,
+        CreatureShape::Bee,
     ];
     
     pub const TEXTURE_DIMENSIONS: Dimensions = Dimensions { width: 25., height: 25. };
@@ -71,6 +73,7 @@ impl CreatureShape {
             CreatureShape::Crab => include_texture!("../resources/crab.png"),
             CreatureShape::AppleBoy => include_texture!("../resources/appleboy.png"),
             CreatureShape::Furby => include_texture!("../resources/furby.png"),
+            CreatureShape::Bee => include_texture!("../resources/bee.png"),
         }
     }
     
@@ -95,6 +98,7 @@ impl CreatureShape {
             CreatureShape::Crab => include_texture!("../resources/crab_backdrop.png"),
             CreatureShape::AppleBoy => include_texture!("../resources/appleboy_backdrop.png"),
             CreatureShape::Furby => include_texture!("../resources/furby_backdrop.png"),
+            CreatureShape::Bee => include_texture!("../resources/bee_backdrop.png"),
         }
     }
 }
