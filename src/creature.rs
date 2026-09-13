@@ -63,7 +63,7 @@ impl Creature {
     const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
     const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
     const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
-    const LOVE_OFFSET_MILLIS: i64 = 60 * MINUTE_MILLIS;
+    const LOVE_OFFSET_MILLIS: i64 = 45 * MINUTE_MILLIS;
     const SICKNESS_HEALTH_COST: u8 = 30;
     
     pub fn new(name: &str, shape: CreatureShape, now_millis: i64) -> Self {
@@ -151,7 +151,7 @@ impl Creature {
         }
         
         while now_millis - self.previous_love_update >= Self::LOVE_OFFSET_MILLIS && self.alive {
-            self.love.subtract(2);
+            self.love.subtract(1);
             self.previous_love_update += Self::LOVE_OFFSET_MILLIS;
         }
     }
