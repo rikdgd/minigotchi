@@ -15,8 +15,8 @@ impl Food {
     pub fn points(&self) -> u8 {
         match self {
             Food::Soup => 20,
-            Food::Cookie => 30,
-            Food::Burger => 40,
+            Food::Cookie => 25,
+            Food::Burger => 33,
         }
     }
 }
