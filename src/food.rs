@@ -16,8 +16,12 @@ impl Food {
         match self {
             Food::Soup => 20,
             Food::Cookie => 25,
-            Food::Burger => 33,
+            Food::Burger => 30,
         }
+    }
+    
+    pub fn sick_chance(&self) -> u8 {
+        self.points() + 5
     }
 }
 
