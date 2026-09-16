@@ -139,7 +139,7 @@ impl Creature {
             if self.is_sick {
                 self.health.subtract(Self::SICKNESS_HEALTH_COST);
                 // Creature doesn't like being sick, so decrease love
-                self.love.subtract(10);
+                self.love.subtract(25);
                 self.previous_love_update = now_millis;
                 
             } else {
