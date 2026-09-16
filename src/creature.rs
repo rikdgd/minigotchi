@@ -139,7 +139,7 @@ impl Creature {
             if self.is_sick {
                 self.health.subtract(Self::SICKNESS_HEALTH_COST);
                 // Creature doesn't like being sick, so decrease love
-                self.love.subtract(5);
+                self.love.subtract(10);
                 self.previous_love_update = now_millis;
                 
             } else {
@@ -277,10 +277,6 @@ impl Creature {
         
         self.is_sick = false;
         self.previous_health_update = now;
-        
-        // The creature doesn't like being given medicine, so lower it love stat
-        self.love.subtract(5);
-        self.previous_love_update = now;
     }
     
     pub fn food(&self) -> Stat {
