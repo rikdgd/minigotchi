@@ -50,14 +50,14 @@ pub struct CoinDropManager {
 impl CoinDropManager {
     /// This is the delay used for coin drops. Every `COIN_DROP_DELAY` seconds an attempt is made to
     /// spawn a new `DroppedCoin`.
-    pub const COIN_DROP_DELAY: f32 = 300.;
+    pub const COIN_DROP_DELAY: f32 = 600.;
     
     /// The amount of **seconds** before a dropped coin despawns.
-    const COIN_LIFETIME: f32 = 360.;
+    const COIN_LIFETIME: f32 = 600.;
     
     /// The chance in percentage of actually spawning a dropped coin every
     /// [COIN_DROP_DELAY](CoinDropManager::COIN_DROP_DELAY) seconds.
-    const COIN_DROP_CHANCE: u32 = 6;
+    const COIN_DROP_CHANCE: u32 = 11;
     
     /// Updates the state of the **CoinDropManager**, this includes:
     /// * Try spawning a coin drop.
