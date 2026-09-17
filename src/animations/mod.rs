@@ -4,6 +4,10 @@ use crate::utils::{Location, Dimensions};
 
 pub mod creature_actions;
 pub mod emotions;
+mod coin_pickup;
+
+pub use coin_pickup::CoinPickupAnimation;
+
 
 /// An animation that can be rendered on the screen.
 pub trait Animation {

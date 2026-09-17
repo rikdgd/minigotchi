@@ -13,6 +13,7 @@ use crate::shapes::sleeping_icon;
 use crate::movements::{CreatureMovement, EggHop};
 use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
 use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
+use crate::animations::CoinPickupAnimation;
 use crate::{ui, BACKGROUND_COLOR};
 use crate::creature::GrowthStage;
 use crate::food::Food;
@@ -116,6 +117,7 @@ impl GameRunner {
         
         if picked_up_coin {
             self.state.inventory.coins += 1;
+            self.state.animation_queue.push(Box::new(CoinPickupAnimation::default()));
         }
     }
 
