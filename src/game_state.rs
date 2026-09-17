@@ -102,6 +102,10 @@ impl GameState {
     pub fn last_coin_time(&self) -> i64 {
         self.last_coin_time
     }
+    
+    pub fn cursor_stalk_active(&self) -> bool {
+        self.is_stalking_cursor
+    }
 
     /// Adds a new animation to the animation queue.
     pub fn push_animation<T: Animation + 'static>(&mut self, animation: T) {
@@ -167,7 +171,7 @@ impl GameState {
             "@test" => {
                 self.inventory.coins = 1000;
                 self.creature.set_growth_stage(GrowthStage::Adult);
-                self.creature.set_love(50)
+                self.creature.set_love(100)
                     .expect("Love value for debug creature is wrongly configured");
             },
             "@jeb" => {

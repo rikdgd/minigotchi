@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use macroquad::rand::gen_range;
+use crate::game_state::GameState;
 use crate::include_texture;
 use crate::creature::Creature;
 use crate::shapes::CreatureShape;
@@ -69,9 +70,14 @@ impl CoinDropManager {
     /// 
     /// ## Returns:
     /// This function returns `true` when the creature has picked up a coin, and `false` otherwise.
-    pub fn update(&mut self, creature_loc: Location, creature: &Creature) -> bool {
-        self.update_coin_spawns(creature);
-        self.update_collisions(creature_loc)
+    pub fn update(&mut self, state: &GameState) -> bool {
+        self.update_coin_spawns(state.creature());
+        
+        if state.cursor_stalk_active() {
+            self.update_collisions(state.creature_movement.current_location())
+        } else {
+            false
+        }
     }
     
     /// Draws the dropped coin on the screen, if one is present.
@@ -215,7 +221,10 @@ mod tests {
                 DroppedCoin::COIN_DIMENSIONS.height,
             )));
             
-            let result = coin_manager.update(test_set.creature_location, &creature);
+            let result = {
+                coin_manager.update_coin_spawns(&creature);
+                coin_manager.update_collisions(test_set.creature_location)
+            };
             assert_eq!(test_set.expected_result, result);
         }
     }

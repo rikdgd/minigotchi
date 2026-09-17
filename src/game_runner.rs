@@ -110,11 +110,7 @@ impl GameRunner {
     }
     
     fn update_coin_drops(&mut self) {
-        let picked_up_coin = self.coin_drop_manager.update(
-            self.state.creature_movement.current_location(),
-            self.state.creature(),
-        );
-        
+        let picked_up_coin = self.coin_drop_manager.update(&self.state);
         if picked_up_coin {
             self.state.inventory.coins += 1;
             self.state.animation_queue.push(Box::new(CoinPickupAnimation::default()));
