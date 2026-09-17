@@ -11,18 +11,22 @@ use crate::ui::play_area::{PLAY_AREA_RECT, play_area_background_color};
 struct DroppedCoin(Rect);
 impl DroppedCoin {
     const COIN_DIMENSIONS: Dimensions = Dimensions { width: 9., height: 12. };
+    const SPAWN_MARGINS: (f32, f32) = (
+        (CreatureShape::TEXTURE_DIMENSIONS.width / 2.).round(),
+        (CreatureShape::TEXTURE_DIMENSIONS.height / 2.).round()
+    );
     
     /// Creates a new `DroppedCoin` instance with a random location within the *'playing area'* on the
     /// screen.
     pub fn new_random() -> Self {
         let x = gen_range(
-            PLAY_AREA_RECT.x,
-            PLAY_AREA_RECT.right() - Self::COIN_DIMENSIONS.width,
+            PLAY_AREA_RECT.x + Self::SPAWN_MARGINS.0,
+            PLAY_AREA_RECT.right() - Self::COIN_DIMENSIONS.width - Self::SPAWN_MARGINS.0,
         ).round();
-
+        
         let y = gen_range(
-            PLAY_AREA_RECT.y,
-            PLAY_AREA_RECT.bottom() - Self::COIN_DIMENSIONS.height,
+            PLAY_AREA_RECT.y + Self::SPAWN_MARGINS.1,
+            PLAY_AREA_RECT.bottom() - Self::COIN_DIMENSIONS.height - Self::SPAWN_MARGINS.1,
         ).round();
         
         Self(Rect::new(
