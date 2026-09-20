@@ -15,6 +15,8 @@ pub enum CreatureColor {
     Pink,
     Yellow,
     Cyan,
+    Purple,
+    Orange,
     Rainbow,
 }
 
@@ -28,6 +30,8 @@ impl CreatureColor {
             CreatureColor::Pink => Color::new(0.8, 0.0, 0.8, 1.0),
             CreatureColor::Yellow => Color::new(0.9, 0.9, 0.0, 1.0),
             CreatureColor::Cyan => Color::new(0.0, 0.9, 0.9, 1.0),
+            CreatureColor::Purple => Color::new(0.5, 0.0, 1.0, 1.0),
+            CreatureColor::Orange => Color::new(0.9, 0.42, 0.0, 1.0),
             CreatureColor::Rainbow => Self::get_rainbow_color(),
         }
     }
@@ -57,6 +61,8 @@ impl BuyableItem for CreatureColor {
             CreatureColor::Pink => "Pink color",
             CreatureColor::Yellow => "Yellow color",
             CreatureColor::Cyan => "Cyan color",
+            CreatureColor::Purple => "Purple color",
+            CreatureColor::Orange => "Orange color",
             CreatureColor::Rainbow => "Rainbow color",
         }
     }

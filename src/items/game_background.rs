@@ -15,6 +15,7 @@ pub enum GameBackground {
     Cave,
     Ocean,
     Space,
+    Pillar,
 }
 
 impl GameBackground {
@@ -26,6 +27,7 @@ impl GameBackground {
             GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
             GameBackground::Ocean => Some(include_texture!("../../resources/game_backgrounds/ocean.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
+            GameBackground::Pillar => Some(include_texture!("../../resources/game_backgrounds/pillar.png")),
         };
         
         if let Some(bg_texture) = bg_texture {
@@ -49,6 +51,7 @@ impl BuyableItem for GameBackground {
             GameBackground::Cave => "Cave BG",
             GameBackground::Ocean => "Ocean BG",
             GameBackground::Space => "Space BG",
+            GameBackground::Pillar => "The Pillar BG" 
         }
     }
 

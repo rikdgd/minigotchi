@@ -40,6 +40,7 @@ fn get_all_items() -> Vec<ShopItem> {
     let background_sprite = Rc::new(include_texture!("../../../resources/shop/item_sprites/background_item.png"));
     
     vec![
+        // Creature colors:
         ShopItem::new(
             Box::new(CreatureColor::Black),
             Rc::clone(&color_sprite),
@@ -69,9 +70,19 @@ fn get_all_items() -> Vec<ShopItem> {
             Rc::clone(&color_sprite),
         ),
         ShopItem::new(
+            Box::new(CreatureColor::Purple),
+            Rc::clone(&color_sprite),
+        ),
+        ShopItem::new(
+            Box::new(CreatureColor::Orange),
+            Rc::clone(&color_sprite),
+        ),
+        ShopItem::new(
             Box::new(CreatureColor::Rainbow),
             Rc::clone(&color_sprite),
         ),
+        
+        // Game backgrounds:
         ShopItem::new(
             Box::new(GameBackground::Plain),
             Rc::clone(&background_sprite),
@@ -94,6 +105,10 @@ fn get_all_items() -> Vec<ShopItem> {
         ),
         ShopItem::new(
             Box::new(GameBackground::Space),
+            Rc::clone(&background_sprite),
+        ),
+        ShopItem::new(
+            Box::new(GameBackground::Pillar),
             Rc::clone(&background_sprite),
         ),
     ]
