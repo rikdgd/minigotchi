@@ -30,11 +30,12 @@ pub enum CreatureShape {
     Furby,
     Bee,
     Flowey,
+    Cultist,
 }
 
 impl CreatureShape {
     /// An array containing all possible `CreatureShapes` variants.
-    pub const ALL_VARIANTS: [Self; 18] = [
+    pub const ALL_VARIANTS: [Self; 19] = [
         CreatureShape::Turtle,
         CreatureShape::Snail,
         CreatureShape::Fish,
@@ -53,6 +54,7 @@ impl CreatureShape {
         CreatureShape::Furby,
         CreatureShape::Bee,
         CreatureShape::Flowey,
+        CreatureShape::Cultist,
     ];
     
     pub const TEXTURE_DIMENSIONS: Dimensions = Dimensions { width: 25., height: 25. };
@@ -77,6 +79,7 @@ impl CreatureShape {
             CreatureShape::Furby => include_texture!("../resources/furby.png"),
             CreatureShape::Bee => include_texture!("../resources/bee.png"),
             CreatureShape::Flowey => include_texture!("../resources/flowey.png"),
+            CreatureShape::Cultist => include_texture!("../resources/cultist.png"),
         }
     }
     
@@ -103,6 +106,7 @@ impl CreatureShape {
             CreatureShape::Furby => include_texture!("../resources/furby_backdrop.png"),
             CreatureShape::Bee => include_texture!("../resources/bee_backdrop.png"),
             CreatureShape::Flowey => include_texture!("../resources/flowey_backdrop.png"),
+            CreatureShape::Cultist => include_texture!("../resources/cultist_backdrop.png"),
         }
     }
 }
