@@ -107,13 +107,15 @@ impl CoinDropManager {
     /// Checks if the creature collides with the dropped coin when present. If it does, this function
     /// sets `self.dropped_coin` to `None` and returns `true`.
     fn update_collisions(&mut self, creature_loc: Location) -> bool {
-        let creature_center = Vec2::new(
-            creature_loc.x + CreatureShape::TEXTURE_DIMENSIONS.width / 2.,
-            creature_loc.y + CreatureShape::TEXTURE_DIMENSIONS.height / 2.,
+        let creature_hitbox = Rect::new(
+            creature_loc.x + CreatureShape::TEXTURE_DIMENSIONS.width / 4.,
+            creature_loc.y + CreatureShape::TEXTURE_DIMENSIONS.height / 4.,
+            CreatureShape::TEXTURE_DIMENSIONS.width / 2.,
+            CreatureShape::TEXTURE_DIMENSIONS.height / 2.,
         );
         
         if let Some(coin) = self.dropped_coin 
-            && coin.0.contains(creature_center) 
+            && coin.0.overlaps(&creature_hitbox)
         {
             self.dropped_coin = None;
             return true;
