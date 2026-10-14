@@ -104,7 +104,7 @@ impl Creature {
         }
 
         // If the creature is still sleeping while its energy is already full, wake it up.
-        if self.is_asleep() && self.energy.value() == 100 {
+        if self.is_asleep() && self.energy.is_max() {
             self.asleep_since = None;
         }
     }
@@ -251,7 +251,7 @@ impl Creature {
     pub fn play(&mut self, game: CreatureGame) {
         if self.growth_stage == GrowthStage::Egg || 
             self.energy.value() < game.energy_cost() ||
-            self.joy.value() == 100
+            self.joy.is_max()
         {
             return;
         }

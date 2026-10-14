@@ -9,6 +9,7 @@ pub enum EmotionAnimationType {
     Love,
     Sad,
     Tired,
+    Sick,
 }
 
 #[derive(Debug, Clone)]
@@ -19,16 +20,18 @@ pub struct EmotionAnimation {
     playing: bool,
 }
 
-impl EmotionAnimation {
-    pub fn new(animation_type: EmotionAnimationType) -> Self {
+impl From<EmotionAnimationType> for EmotionAnimation {
+    fn from(value: EmotionAnimationType) -> Self {
         Self {
-            frames: Self::get_frames(animation_type),
+            frames: Self::get_frames(value),
             current_frame: 0,
             frame_timer: 0.0,
             playing: true,
         }
     }
-    
+}
+
+impl EmotionAnimation {
     fn update_state(&mut self) {
         if self.frame_timer > 0.50 {
             self.current_frame += 1;
@@ -55,6 +58,10 @@ impl EmotionAnimation {
             EmotionAnimationType::Tired => [
                 include_texture!("../../resources/animations/emotions/tired0.png"),
                 include_texture!("../../resources/animations/emotions/tired1.png"),
+            ],
+            EmotionAnimationType::Sick => [
+                include_texture!("../../resources/animations/emotions/sick0.png"),
+                include_texture!("../../resources/animations/emotions/sick1.png"),
             ],
         }
     }

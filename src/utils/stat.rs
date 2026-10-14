@@ -40,6 +40,11 @@ impl Stat {
             self.0 = 0;
         }
     }
+    
+    /// Returns `true` when the value of this stat is equal to [`Self::MAX_VALUE`].
+    pub fn is_max(&self) -> bool {
+        self.0 == Self::MAX_VALUE
+    }
 
     /// Sets the Stat to the provided value <br>
     /// returns [std::io::ErrorKind::InvalidInput] when value does not fit range: <br>

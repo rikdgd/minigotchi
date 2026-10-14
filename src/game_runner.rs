@@ -202,48 +202,56 @@ impl GameRunner {
                     
                     InteractionButton::Food(_) => {
                         let creature = self.state.creature_mut();
-                        if !creature.is_asleep()
-                            && creature.food().value() != 100
-                            && !creature.is_sick()
-                        {
-                            let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
-                            if let Some(food) = menu.render().await {
-                                creature.eat(food);
-                                self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
-                                
-                                // Display an animation based on if the creature likes the food:
-                                if personality.liked_food() == food {
-                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
-                                } else if personality.hated_food() == food {
-                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
-                                }
+                        if creature.is_asleep() || creature.food().is_max() {
+                            return;
+                        }
+                        
+                        if creature.is_sick() {
+                            self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sick));
+                            return;
+                        }
+                        
+                        let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
+                        if let Some(food) = menu.render().await {
+                            creature.eat(food);
+                            self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+
+                            // Display an animation based on if the creature likes the food:
+                            if personality.liked_food() == food {
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Love));
+                            } else if personality.hated_food() == food {
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sad));
                             }
                         }
                     },
+                    
                     InteractionButton::Joy(_) => {
                         let creature = self.state.creature_mut();
-                        if !creature.is_asleep() && creature.joy().value() != 100 {
-                            let mut menu: InteractionMenu<CreatureGame> = InteractionMenu::new(gen_interaction_items());
-                            if let Some(game) = menu.render().await {
-                                if game.energy_cost() <= creature.energy().value() {
-                                    creature.play(game);
-                                    self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+                        if creature.is_asleep() || creature.joy().is_max() {
+                            return;
+                        }
+                        
+                        let mut menu: InteractionMenu<CreatureGame> = InteractionMenu::new(gen_interaction_items());
+                        if let Some(game) = menu.render().await {
+                            if game.energy_cost() <= creature.energy().value() {
+                                creature.play(game);
+                                self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
 
-                                    // Display an animation based on if the creature likes the game:
-                                    if personality.liked_game() == game {
-                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Love));
-                                    } else if personality.hated_game() == game {
-                                        self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Sad));
-                                    }
-                                    
-                                } else {
-                                    // Display a short animation to let the player know the interaction
-                                    // was unsuccessful.
-                                    self.state.push_animation(EmotionAnimation::new(EmotionAnimationType::Tired));
+                                // Display an animation based on if the creature likes the game:
+                                if personality.liked_game() == game {
+                                    self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Love));
+                                } else if personality.hated_game() == game {
+                                    self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sad));
                                 }
+                                
+                            } else {
+                                // Display a short animation to let the player know the interaction
+                                // was unsuccessful.
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Tired));
                             }
                         }
                     },
+                    
                     InteractionButton::Health(_) => {
                         let creature = self.state.creature_mut();
                         if !creature.is_asleep() && creature.is_sick() {
