@@ -159,17 +159,17 @@ impl Creature {
     /// Calls the creature's [die](Creature::die) method when appropriate, updating its `alive` status.
     ///
     /// ## Parameters:
-    /// * `update_time` - The time at which the creature's alive status should be updated. This time
-    ///   is only used to calculate and display the creature's age on the death screen.
+    /// * `update_time` - The time at which the creature has died in millis since the UNIX epoch.
+    ///   This time is only used to calculate and display the creature's age on the death screen.
     fn update_alive_status(&mut self, update_time: i64) {
         let stats_sum = self.food.value() + self.joy.value();
         if stats_sum < 15 {
-            self.die(update_time)
+            self.die(update_time);
         }
 
         for stat in [self.food, self.joy, self.health] {
             if stat.value() == 0 {
-                self.die(update_time)
+                self.die(update_time);
             }
         }
     }
@@ -228,6 +228,7 @@ impl Creature {
             self.is_sick = true;
             self.health.subtract(Self::SICKNESS_HEALTH_COST);
             self.previous_health_update = now;
+            self.update_alive_status(now)
         }
     }
 
