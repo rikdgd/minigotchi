@@ -1,7 +1,6 @@
 use macroquad::prelude::*;
 
 use crate::game_state::GameState;
-use crate::save_management::get_save_file_path;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
 use crate::ui::interaction_menu::InteractionMenu;
 use crate::ui::interaction_menu::menu_item_generation::gen_interaction_items;
@@ -55,8 +54,7 @@ impl GameRunner {
         // Seed the random number generator
         rand::srand(miniquad::date::now() as u64);
         
-        let save_file_path = get_save_file_path();
-        let game_state = match GameState::from_file(&save_file_path).await {
+        let game_state = match GameState::from_file().await {
             Ok(mut state) => {
                 state.update();
                 

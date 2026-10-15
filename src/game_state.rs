@@ -1,5 +1,4 @@
 use macroquad::prelude::*;
-use macroquad::file::load_file;
 use macroquad::input::mouse_position;
 use macroquad::rand::gen_range;
 use crate::animations::Animation;
@@ -7,7 +6,7 @@ use crate::creature::{Creature, GrowthStage};
 use crate::CREATURE_BASE_LOCATION;
 use crate::movements::{CreatureMovement, CursorStalk, SicknessShakeMovement, get_creature_movement};
 use crate::shapes::CreatureShape;
-use crate::save_management::{SaveState, store_save_state};
+use crate::save_management::{SaveState, store_save_state, retrieve_save_state};
 use crate::ui::play_area::{play_area_center, PLAY_AREA_RECT};
 use crate::utils::{Location, time::get_now_millis};
 use crate::items::{
@@ -47,14 +46,11 @@ impl GameState {
         state.adjust_for_debug_names()
     }
     
-    pub async fn from_file(path: &str) -> Result<Self, macroquad::Error> {
-        let file_bytes = load_file(path).await?;
-        let content_string = String::from_utf8_lossy(&file_bytes);
-
-        let state: SaveState = serde_json::from_str(&content_string)
-            .expect("Failed to deserialize GameState from savefile");
-
-        Ok(state.into())
+    /// Attempts to create a GameState from the save file on disk. For more details look at the
+    /// [`retrieve_save_state()`](retrieve_save_state) function.
+    pub async fn from_file() -> Result<Self, macroquad::Error> {
+        let save = retrieve_save_state().await?;
+        Ok(save.into())
     }
 
     pub fn update(&mut self) {

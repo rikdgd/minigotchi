@@ -40,10 +40,22 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
     Ok(())
 }
 
+/// Retrieves the `SaveState` from the save file by reading it and then deserializing it.
+pub async fn retrieve_save_state() -> Result<SaveState, macroquad::Error> {
+    let path = get_save_file_path();
+    let file_bytes = macroquad::file::load_file(&path).await?;
+    let content_string = String::from_utf8_lossy(&file_bytes);
+
+    let state: SaveState = serde_json::from_str(&content_string)
+        .expect("Failed to deserialize GameState from savefile");
+    
+    Ok(state)
+}
+
 pub fn get_save_file_path() -> String {
     let exe_path = std::env::current_exe().unwrap();
     let exe_dir = exe_path.parent().expect("Executable must be in some directory");
-    let data_file_path: PathBuf = exe_dir.join("save-file.txt");
+    let data_file_path: PathBuf = exe_dir.join("minigotchi.sav");
 
     data_file_path.to_str().unwrap().to_string()
 }
