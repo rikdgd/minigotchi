@@ -202,12 +202,12 @@ impl GameRunner {
                     
                     InteractionButton::Food(_) => {
                         let creature = self.state.creature_mut();
-                        if creature.is_asleep() || creature.food().is_max() {
+                        if creature.is_sick() {
+                            self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sick));
                             return;
                         }
                         
-                        if creature.is_sick() {
-                            self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sick));
+                        if creature.is_asleep() || creature.food().is_max() {
                             return;
                         }
                         
