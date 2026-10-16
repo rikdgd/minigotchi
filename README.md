@@ -1,6 +1,8 @@
 # Minigotchi
-This is a very small desktop [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotchi) built using the [**macroquad**](https://macroquad.rs/) crate. Your pet starts as an egg, but
-hatches quickly. In order to take care of you pet you should interact with it, but you should also give your pet the rest it deserves.
+This is a very small desktop [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotchi) built using the
+[**macroquad**](https://macroquad.rs/) crate. Your pet starts as an egg, but hatches quickly. In
+order to take care of you pet you should interact with it, but you should also give your pet the
+rest it deserves.
 
 *The `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).*
 

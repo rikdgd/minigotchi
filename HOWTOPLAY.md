@@ -21,4 +21,4 @@ The game has a couple of core mechanics which will all be explained here, these 
 
 ## Interactions
 
-In order to tale care of you pet you will need to interact with it.
+In order to take care of you pet you will need to interact with it.

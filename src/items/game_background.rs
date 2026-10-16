@@ -10,9 +10,9 @@ use crate::include_texture;
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum GameBackground {
     Plain,
-    Fields,
     Shrooms,
     Cave,
+    Fields,
     Ocean,
     Desert,
     Space,
@@ -22,9 +22,9 @@ pub enum GameBackground {
 impl GameBackground {
     pub const ALL_VARIANTS: [GameBackground; 8] = [
         GameBackground::Plain,
-        GameBackground::Fields,
         GameBackground::Shrooms,
         GameBackground::Cave,
+        GameBackground::Fields,
         GameBackground::Ocean,
         GameBackground::Desert,
         GameBackground::Space,
@@ -34,9 +34,9 @@ impl GameBackground {
     pub fn render(&self) {
         let bg_texture: Option<Texture2D> = match self {
             GameBackground::Plain => None,
-            GameBackground::Fields => Some(include_texture!("../../resources/game_backgrounds/fields.png")),
             GameBackground::Shrooms => Some(include_texture!("../../resources/game_backgrounds/shrooms.png")),
             GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
+            GameBackground::Fields => Some(include_texture!("../../resources/game_backgrounds/fields.png")),
             GameBackground::Ocean => Some(include_texture!("../../resources/game_backgrounds/ocean.png")),
             GameBackground::Desert => Some(include_texture!("../../resources/game_backgrounds/desert.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
@@ -59,9 +59,9 @@ impl BuyableItem for GameBackground {
     fn name(&self) -> &str {
         match self {
             GameBackground::Plain => "Plain BG",
-            GameBackground::Fields => "Fields BG",
             GameBackground::Shrooms => "Shrooms BG",
             GameBackground::Cave => "Cave BG",
+            GameBackground::Fields => "Fields BG",
             GameBackground::Ocean => "Ocean BG",
             GameBackground::Desert => "Desert BG",
             GameBackground::Space => "Space BG",
