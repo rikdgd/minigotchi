@@ -20,6 +20,17 @@ pub enum GameBackground {
 }
 
 impl GameBackground {
+    pub const ALL_VARIANTS: [GameBackground; 8] = [
+        GameBackground::Plain,
+        GameBackground::Fields,
+        GameBackground::Shrooms,
+        GameBackground::Cave,
+        GameBackground::Ocean,
+        GameBackground::Desert,
+        GameBackground::Space,
+        GameBackground::Pillar,
+    ];
+    
     pub fn render(&self) {
         let bg_texture: Option<Texture2D> = match self {
             GameBackground::Plain => None,

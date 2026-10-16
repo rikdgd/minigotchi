@@ -21,6 +21,19 @@ pub enum CreatureColor {
 }
 
 impl CreatureColor {
+    pub const ALL_VARIANTS: [CreatureColor; 10] = [
+        CreatureColor::Black,
+        CreatureColor::Red,
+        CreatureColor::Green,
+        CreatureColor::Blue,
+        CreatureColor::Pink,
+        CreatureColor::Yellow,
+        CreatureColor::Cyan,
+        CreatureColor::Purple,
+        CreatureColor::Orange,
+        CreatureColor::Rainbow,
+    ];
+    
     pub fn get_color(&self) -> Color {
         match self {
             CreatureColor::Black => Color::new(0.0, 0.0, 0.0, 1.0),
