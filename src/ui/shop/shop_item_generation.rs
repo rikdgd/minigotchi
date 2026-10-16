@@ -104,6 +104,10 @@ fn get_all_items() -> Vec<ShopItem> {
             Rc::clone(&background_sprite),
         ),
         ShopItem::new(
+            Box::new(GameBackground::Desert),
+            Rc::clone(&background_sprite),
+        ),
+        ShopItem::new(
             Box::new(GameBackground::Space),
             Rc::clone(&background_sprite),
         ),

@@ -14,6 +14,7 @@ pub enum GameBackground {
     Shrooms,
     Cave,
     Ocean,
+    Desert,
     Space,
     Pillar,
 }
@@ -26,6 +27,7 @@ impl GameBackground {
             GameBackground::Shrooms => Some(include_texture!("../../resources/game_backgrounds/shrooms.png")),
             GameBackground::Cave => Some(include_texture!("../../resources/game_backgrounds/cave.png")),
             GameBackground::Ocean => Some(include_texture!("../../resources/game_backgrounds/ocean.png")),
+            GameBackground::Desert => Some(include_texture!("../../resources/game_backgrounds/desert.png")),
             GameBackground::Space => Some(include_texture!("../../resources/game_backgrounds/space.png")),
             GameBackground::Pillar => Some(include_texture!("../../resources/game_backgrounds/pillar.png")),
         };
@@ -50,6 +52,7 @@ impl BuyableItem for GameBackground {
             GameBackground::Shrooms => "Shrooms BG",
             GameBackground::Cave => "Cave BG",
             GameBackground::Ocean => "Ocean BG",
+            GameBackground::Desert => "Desert BG",
             GameBackground::Space => "Space BG",
             GameBackground::Pillar => "The Pillar BG" 
         }
