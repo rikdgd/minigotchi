@@ -38,7 +38,7 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
         .open(get_save_file_path())?;
 
 
-    file.write_all(save_bytes)?;
+    file.write_all(&save_bytes)?;
     file.flush()?;
 
     Ok(())
