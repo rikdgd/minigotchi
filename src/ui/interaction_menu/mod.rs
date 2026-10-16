@@ -97,7 +97,7 @@ where
                 item.draw();
             }
 
-            self.return_btn.render();
+            self.return_btn.draw();
             self.update();
 
             next_frame().await;

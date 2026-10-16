@@ -60,7 +60,7 @@ impl NewGameMenu {
         loop {
             clear_background(BACKGROUND_COLOR);
             
-            self.confirm_btn.render();
+            self.confirm_btn.draw();
             
             draw_text(
                 Self::NAME_MESSAGE,

@@ -4,7 +4,7 @@ use crate::game_state::GameState;
 use crate::ui::{NewGameMenu, render_death_screen, button::Button};
 use crate::ui::interaction_menu::InteractionMenu;
 use crate::ui::interaction_menu::menu_item_generation::gen_interaction_items;
-use crate::ui::stat_display::stat_display;
+use crate::ui::stat_display::draw_stat_display;
 use crate::ui::interaction_buttons::InteractionButton;
 use crate::movements::get_sleeping_location;
 use crate::ui::play_area::draw_play_area;
@@ -122,7 +122,7 @@ impl GameRunner {
         self.coin_drop_manager.draw_coin(self.state.creature().is_asleep());
         self.draw_creature();
         
-        stat_display(self.state.creature());
+        draw_stat_display(self.state.creature());
         
         // Draw the "Zz" texture when sleeping
         if self.state.creature().is_asleep() {
@@ -135,9 +135,9 @@ impl GameRunner {
         ui::draw_age_display(&self.state);
         
         for button in &self.interaction_buttons {
-            button.get_button().render();
+            button.get_button().draw();
         }
-        self.shop_button.render();
+        self.shop_button.draw();
     }
 
     fn draw_creature(&mut self) {

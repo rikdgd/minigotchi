@@ -44,9 +44,9 @@ impl CreatureSelection {
         loop {
             clear_background(BACKGROUND_COLOR);
 
-            self.next_btn.render();
-            self.confirm_btn.render();
-            self.previous_btn.render();
+            self.next_btn.draw();
+            self.confirm_btn.draw();
+            self.previous_btn.draw();
 
             Self::draw_info_text(info_text_dimensions);
             self.draw_creature_texture();

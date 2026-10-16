@@ -103,7 +103,7 @@ impl<'a> ShopPage<'a> {
             crate::BACKGROUND_COLOR,
         );
         
-        self.return_button.render();
+        self.return_button.draw();
     }
     
     /// Renders an error message when one occurred in the last 2 seconds. When 2 seconds have passed,

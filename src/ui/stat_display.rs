@@ -6,11 +6,11 @@ use crate::utils::Stat;
 const Y_SPACING: f32 = 17.0;
 const RENDER_COLOR: Color = Color::new(0.35, 0.35, 0.35, 1.0);
 
-/// Renders a visualization of the creature's status, using status bars. 
+/// Draws a visualization of the creature's status, using status bars. 
 /// 
 /// ## Parameters:
 /// * `creature` - The creature of which the stats should be displayed.
-pub fn stat_display(creature: &Creature) {
+pub fn draw_stat_display(creature: &Creature) {
     let icon_x: f32 = 10.0;
     let rectangle_x: f32 = 30.0;
     
