@@ -26,6 +26,10 @@ impl From<&GameState> for SaveState {
 
 pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
     let save = serde_json::to_string_pretty(&state)?;
+    let save_bytes = save.as_bytes();
+    
+    #[cfg(not(debug_assertions))]
+    let save_bytes = binary_invert_bytes(&save_bytes);
 
     let mut file = OpenOptions::new()
         .write(true)
@@ -34,7 +38,7 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
         .open(get_save_file_path())?;
 
 
-    file.write_all(save.as_bytes())?;
+    file.write_all(&save_bytes)?;
     file.flush()?;
 
     Ok(())
@@ -44,6 +48,10 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
 pub async fn retrieve_save_state() -> Result<SaveState, macroquad::Error> {
     let path = get_save_file_path();
     let file_bytes = macroquad::file::load_file(&path).await?;
+    
+    #[cfg(not(debug_assertions))]
+    let file_bytes = binary_invert_bytes(&file_bytes);
+    
     let content_string = String::from_utf8_lossy(&file_bytes);
 
     let state: SaveState = serde_json::from_str(&content_string)
@@ -58,6 +66,17 @@ pub fn get_save_file_path() -> String {
     let data_file_path: PathBuf = exe_dir.join("minigotchi.sav");
 
     data_file_path.to_str().unwrap().to_string()
+}
+
+#[cfg(not(debug_assertions))]
+fn binary_invert_bytes(input: &[u8]) -> Vec<u8> {
+    let mut inverted = Vec::new();
+    
+    for b in input {
+        inverted.push(b ^ u8::MAX);
+    }
+    
+    inverted
 }
 
 
