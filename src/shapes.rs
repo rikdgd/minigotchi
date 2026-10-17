@@ -33,11 +33,12 @@ pub enum CreatureShape {
     Cultist,
     Sapling,
     Ghost,
+    Seal,
 }
 
 impl CreatureShape {
     /// An array containing all possible `CreatureShapes` variants.
-    pub const ALL_VARIANTS: [Self; 21] = [
+    pub const ALL_VARIANTS: [Self; 22] = [
         CreatureShape::Turtle,
         CreatureShape::Snail,
         CreatureShape::Fish,
@@ -59,6 +60,7 @@ impl CreatureShape {
         CreatureShape::Cultist,
         CreatureShape::Sapling,
         CreatureShape::Ghost,
+        CreatureShape::Seal,
     ];
     
     pub const TEXTURE_DIMENSIONS: Dimensions = Dimensions { width: 25., height: 25. };
@@ -86,6 +88,7 @@ impl CreatureShape {
             CreatureShape::Cultist => include_texture!("../resources/creature_shapes/cultist.png"),
             CreatureShape::Sapling => include_texture!("../resources/creature_shapes/sapling.png"),
             CreatureShape::Ghost => include_texture!("../resources/creature_shapes/ghost.png"),
+            CreatureShape::Seal => include_texture!("../resources/creature_shapes/seal.png"),
         }
     }
     
@@ -115,6 +118,7 @@ impl CreatureShape {
             CreatureShape::Cultist => include_texture!("../resources/creature_shapes/cultist_backdrop.png"),
             CreatureShape::Sapling => include_texture!("../resources/creature_shapes/sapling_backdrop.png"),
             CreatureShape::Ghost => include_texture!("../resources/creature_shapes/ghost_backdrop.png"),
+            CreatureShape::Seal => include_texture!("../resources/creature_shapes/seal_backdrop.png"),
         }
     }
 }
