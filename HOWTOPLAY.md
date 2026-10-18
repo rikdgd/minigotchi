@@ -4,7 +4,7 @@
 can be build/run. To read about that see ["README"](README.md).*
 
 The Minigotchi game is a game in which you take care of a virtual pet by feeding it and letting it play.
-However you will also have to give your pet enough sleep and take care of it when it gets sick. Each creature
+However, you will also have to give your pet enough sleep and take care of it when it gets sick. Each creature
 has a different *random* personality, so make sure to take notes on what your pet likes and dislikes.
 
 The game has a couple of core mechanics which will all be explained here, these are the following:
@@ -14,11 +14,49 @@ The game has a couple of core mechanics which will all be explained here, these 
     - Sleeping
     - Healing & sickness
 - Personality
-- Love
 - Coins
 - Purchasable items
 
 
 ## Interactions
 
-In order to take care of you pet you will need to interact with it.
+In order to take care of you pet you will need to interact with it. There are a total of
+4 different interactions: **feeding, playing, sleeping** and **healing**. Each has its own purpose
+and is equally important.
+
+### Feeding
+Your pet needs to be fed to prevent it from starving. There are 3 different kinds of food you can give
+your pet: *soup, cookie* and *burger*. Each pet likes something different depending on its personality,
+so it's best to try them all out.
+
+Feeding your pet is not entirely without risk, every now en then your pet might get sick! More details
+about sickness will be explained later on.
+
+### Playing
+Your pet will literally die of boredom when you don't play with it, so it's best that you do. However, playing
+costs energy, which you will have to recover by letting your pet sleep.
+
+Just like with **feeding**, each creature likes something else so take notes on what your pet likes/hates. 
+
+### Sleeping
+In order to restore energy your pet needs to sleep. By pressing the *"Sleep"* button you can let you pet sleep
+or wake it up. Restoring energy takes quite some time, so make sure you let your pet sleep enough.
+
+### Healing
+When feeding your pet there is a possibility that it gets sick. If sickness is left untreated your pet will
+die within a couple of minutes or even seconds. You will know that your creature is sick when it stays centered
+in the screen and starts vibrating. To heal you pet simply press the *"Heal"* button. This will cure its sickness,
+but **does not** restore its health, this will slowly happen over time.
+
+
+## Personality
+
+Like mentioned in the **interactions** explanation each pet has a different personality. This personality is
+completely random and has nothing to do with the kind of pet the user has picked when creating a new pet.
+A pet's personality decides what **feeding** and **playing** interaction it does and doesn't like.
+
+It is a good idea to remember what your pet likes and dislikes, since it has a big influence on the friendship
+between you and your pet.
+
+A creature's personality is static and will not change.
+

@@ -4,9 +4,11 @@ This is a very small desktop [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotc
 order to take care of you pet you should interact with it, but you should also give your pet the
 rest it deserves.
 
-*The `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).*
+No AI has been used in the making of this project, all sprites and code are hand made :)
 
 ![minigotchi](./minigotchi-ss.png)
+
+*This `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).*
 
 
 ## Description
