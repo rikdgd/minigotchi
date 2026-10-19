@@ -4,11 +4,10 @@ This is a very small desktop [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotc
 order to take care of you pet you should interact with it, but you should also give your pet the
 rest it deserves.
 
-No AI has been used in the making of this project, all sprites and code are hand made :)
 
 ![minigotchi](./minigotchi-ss.png)
 
-*This `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).*
+> This `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).
 
 
 ## Description
@@ -23,40 +22,47 @@ state to disk as a single `minigotchi.sav` file, and uses **system time** for ke
 
 - Creature lifecycle
 - Multiple different creatures to pick
-- Creature personalities
-- Ability to gain *trust* from your pet, which might be helpful...
-- Multiple customization items.
 - Feed, play and care actions
+- Creature personalities
+- Ability to gain *trust* from your pet
+- In-game currency
+- Multiple customization items
 - Animated actions and simple movement behaviors
 - Persistent save file written next to the executable (`minigotchi.sav`)
 
 
 ## Build
 
-From the project root run:
+To build this project you'll only need to have `cargo`, `rustc` and a C-compiler like `gcc` or `clang` installed.
+Once installed a release build can be executed by running the following cargo command:
 
 ```bash
 cargo build --release
 ```
 
-This produces an optimized binary: `target/release/minigotchi`.
+This produces an optimized binary found at the following path relative to the project root directory:
+`target/release/minigotchi`.
 
 
 ## Run
 
-You can easily run the debug version of the executable by using `cargo`:
+You can easily run the debug version of the executable by using `cargo` as well. The following command builds and runs
+the debug version of the software.
 
 ```bash
 cargo run
 ```
 
-Or run the release build:
+The release build can also be run directly in this fashion:
 
 ```bash
 cargo run --release
 ```
 
-When the game saves it creates the `minigotchi.sav` file next to the running executable. It serializes
+
+## Save file
+
+When the game saves progress to disk it creates the `minigotchi.sav` file next to the running executable. It serializes
 the data from the game's state that should be persistent and writes them to the file as JSON. However
 in the **release build** of the software the JSON data is also inverted on the binary level to make
 cheating a little harder.
