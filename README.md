@@ -1,20 +1,19 @@
 # Minigotchi
 This is a very small desktop [Tamagotchi](https://en.wikipedia.org/wiki/Tamagotchi) built using the
-[**macroquad**](https://macroquad.rs/) crate. Your pet starts as an egg, but hatches quickly. In
-order to take care of you pet you should interact with it, but you should also give your pet the
-rest it deserves.
-
+[macroquad](https://macroquad.rs/) crate. Your pet starts off as an egg but hatches quickly. In
+order to take care of your pet you should interact with it on a regular basis by playing with it and
+giving it food.
 
 ![minigotchi](./minigotchi-ss.png)
 
-> This `README.md` does not explain the game's mechanics. To learn about those read: ["How to play"](HOWTOPLAY.md).
+> This `README.md` does not explain the game's mechanics. To learn about those, read: ["How to play"](HOWTOPLAY.md).
 
 
 ## Description
 
 Minigotchi is a compact virtual pet intended to run on the desktop. It runs in a very small window and
 can run as a standalone executable since all sprites are embedded in the software. The basic idea of the
-game is to take care of a virtual pet by interacting with it once every now and then. The game stores its
+game is to take care of a virtual pet by interacting with it once every now and again. The game stores its
 state to disk as a single `minigotchi.sav` file, and uses **system time** for keeping track of the passage of time.
 
 
@@ -34,7 +33,7 @@ state to disk as a single `minigotchi.sav` file, and uses **system time** for ke
 ## Build
 
 To build this project you'll only need to have `cargo`, `rustc` and a C-compiler like `gcc` or `clang` installed.
-Once installed a release build can be executed by running the following cargo command:
+Once installed, a release build can be executed by running the following cargo command:
 
 ```bash
 cargo build --release
@@ -63,7 +62,7 @@ cargo run --release
 ## Save file
 
 When the game saves progress to disk it creates the `minigotchi.sav` file next to the running executable. It serializes
-the data from the game's state that should be persistent and writes them to the file as JSON. However
+the data from the game's state that should be persistent and writes it to the file as JSON. However,
 in the **release build** of the software the JSON data is also inverted on the binary level to make
 cheating a little harder.
 
