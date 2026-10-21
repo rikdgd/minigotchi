@@ -108,6 +108,10 @@ impl GameRunner {
     }
     
     fn update_coin_drops(&mut self) {
+        if self.state.creature().growth_stage() != GrowthStage::Adult {
+            return;
+        }
+        
         let picked_up_coin = self.coin_drop_manager.update(&self.state);
         if picked_up_coin {
             self.state.inventory.coins += 1;
