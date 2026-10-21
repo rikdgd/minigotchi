@@ -1,16 +1,14 @@
 use macroquad::texture::Texture2D;
 use macroquad::rand::gen_range;
-use crate::food::Food;
 use serde::{Deserialize, Serialize};
-use crate::shapes::{CreatureShapes, egg_shape, baby_shape, kid_shape};
+use crate::food::Food;
+use crate::creature_game::CreatureGame;
+use crate::creature_personality::CreaturePersonality;
+use crate::shapes::{CreatureShape, egg_shape, baby_shape, kid_shape};
 use crate::utils::{time::get_now_millis, Stat};
 
 const MINUTE_MILLIS: i64 = 1000 * 60;
-const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
-const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
-const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
-const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
-pub const PLAYING_ENERGY_COST: u8 = 20;
+
 
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GrowthStage {
@@ -35,18 +33,23 @@ impl GrowthStage {
 
 /// This is the struct represents the creature/pet of the player. It mainly keeps track of state-update
 /// times, its status, its shape, and its growth stage.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Creature {
     name: String,
     food: Stat,
     joy: Stat,
     energy: Stat,
     health: Stat,
-    last_time_lower_food: i64,
-    last_time_lower_joy: i64,
-    last_time_lower_energy: i64,
-    last_time_lower_health: i64,
-    shape: CreatureShapes,
+    love: Stat, // Hidden stat that determines how much the creature likes the player.
+    personality: CreaturePersonality,
+    
+    previous_food_update: i64,
+    previous_joy_update: i64,
+    previous_energy_update: i64,
+    previous_health_update: i64,
+    previous_love_update: i64,
+    
+    shape: CreatureShape,
     growth_stage: GrowthStage,
     asleep_since: Option<i64>,
     is_sick: bool,
@@ -56,17 +59,29 @@ pub struct Creature {
 }
 
 impl Creature {
-    pub fn new(name: &str, shape: CreatureShapes, now_millis: i64) -> Self {
+    const FOOD_OFFSET_MILLIS: i64 = 16 * MINUTE_MILLIS;
+    const ENERGY_OFFSET_MILLIS: i64 = 3 * MINUTE_MILLIS;
+    const JOY_OFFSET_MILLIS: i64 = 18 * MINUTE_MILLIS;
+    const HEALTH_OFFSET_MILLIS: i64 = 1000 * 12;   // 12 seconds, 5 times a minute triggered
+    const LOVE_OFFSET_MILLIS: i64 = 45 * MINUTE_MILLIS;
+    const SICKNESS_HEALTH_COST: u8 = 30;
+    
+    pub fn new(name: &str, shape: CreatureShape, now_millis: i64) -> Self {
         Self {
             name: String::from(name),
             food: Stat::new(50).unwrap(),
             joy: Stat::new(50).unwrap(),
             energy: Stat::new(50).unwrap(),
             health: Stat::new(50).unwrap(),
-            last_time_lower_food: now_millis,
-            last_time_lower_joy: now_millis,
-            last_time_lower_energy: now_millis,
-            last_time_lower_health: now_millis,
+            love: Stat::new(0).unwrap(),
+            personality: CreaturePersonality::new_random(),
+            
+            previous_food_update: now_millis,
+            previous_joy_update: now_millis,
+            previous_energy_update: now_millis,
+            previous_health_update: now_millis,
+            previous_love_update: now_millis,
+            
             shape,
             growth_stage: GrowthStage::Egg,
             asleep_since: None,
@@ -89,7 +104,7 @@ impl Creature {
         }
 
         // If the creature is still sleeping while its energy is already full, wake it up.
-        if self.is_asleep() && self.energy.value() == 100 {
+        if self.is_asleep() && self.energy.is_max() {
             self.asleep_since = None;
         }
     }
@@ -97,55 +112,64 @@ impl Creature {
     fn update_stats(&mut self, now_millis: i64) {
         // Use while loops instead of if statements to account for loading from file
         // when we might have been away for more than a single minute.
-        while now_millis - self.last_time_lower_food >= FOOD_OFFSET_MILLIS && self.alive{
+        while now_millis - self.previous_food_update >= Self::FOOD_OFFSET_MILLIS && self.alive{
             self.food.subtract(1);
-            self.last_time_lower_food += FOOD_OFFSET_MILLIS;
+            self.previous_food_update += Self::FOOD_OFFSET_MILLIS;
 
-            self.update_alive_status(self.last_time_lower_food);
+            self.update_alive_status(self.previous_food_update);
         }
 
-        while now_millis - self.last_time_lower_energy >= ENERGY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_energy_update >= Self::ENERGY_OFFSET_MILLIS && self.alive {
             if self.is_asleep() {
                 self.energy.add(1);
             }
 
-            self.last_time_lower_energy += ENERGY_OFFSET_MILLIS;
-            self.update_alive_status(self.last_time_lower_energy);
+            self.previous_energy_update += Self::ENERGY_OFFSET_MILLIS;
+            self.update_alive_status(self.previous_energy_update);
         }
 
-        while now_millis - self.last_time_lower_joy >= JOY_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_joy_update >= Self::JOY_OFFSET_MILLIS && self.alive {
             self.joy.subtract(1);
-            self.last_time_lower_joy += JOY_OFFSET_MILLIS;
+            self.previous_joy_update += Self::JOY_OFFSET_MILLIS;
 
-            self.update_alive_status(self.last_time_lower_joy);
+            self.update_alive_status(self.previous_joy_update);
         }
 
-        while now_millis - self.last_time_lower_health >= HEALTH_OFFSET_MILLIS && self.alive {
+        while now_millis - self.previous_health_update >= Self::HEALTH_OFFSET_MILLIS && self.alive {
             if self.is_sick {
-                self.health.subtract(20);
+                self.health.subtract(Self::SICKNESS_HEALTH_COST);
+                // Creature doesn't like being sick, so decrease love
+                self.love.subtract(25);
+                self.previous_love_update = now_millis;
+                
             } else {
                 self.health.add(1);
             }
 
-            self.last_time_lower_health += HEALTH_OFFSET_MILLIS;
-            self.update_alive_status(self.last_time_lower_health);
+            self.previous_health_update += Self::HEALTH_OFFSET_MILLIS;
+            self.update_alive_status(self.previous_health_update);
+        }
+        
+        while now_millis - self.previous_love_update >= Self::LOVE_OFFSET_MILLIS && self.alive {
+            self.love.subtract(1);
+            self.previous_love_update += Self::LOVE_OFFSET_MILLIS;
         }
     }
 
-    /// Calls the creature's `die()` method when appropriate, updating its `alive` status.
+    /// Calls the creature's [die](Creature::die) method when appropriate, updating its `alive` status.
     ///
     /// ## Parameters:
-    /// * `update_time` - The time at which the creature's alive status should be updated. This time
-    ///   is only used to calculate and display the creature's age on the death screen.
+    /// * `update_time` - The time at which the creature has died in millis since the UNIX epoch.
+    ///   This time is only used to calculate and display the creature's age on the death screen.
     fn update_alive_status(&mut self, update_time: i64) {
         let stats_sum = self.food.value() + self.joy.value();
         if stats_sum < 15 {
-            self.die(update_time)
+            self.die(update_time);
         }
 
         for stat in [self.food, self.joy, self.health] {
             if stat.value() == 0 {
-                self.die(update_time)
+                self.die(update_time);
             }
         }
     }
@@ -186,13 +210,25 @@ impl Creature {
         if self.growth_stage == GrowthStage::Egg || self.is_sick {
             return;
         }
+        let now = get_now_millis();
 
         self.food.add(food.points());
+        self.previous_food_update = now;
+        
+        if self.personality.liked_food() == food {
+            self.love.add(5);
+            self.previous_love_update = now;
+        } else if self.personality.hated_food() == food {
+            self.love.subtract(5);
+            self.previous_love_update = now;
+        }
 
-        // The creature has a 1/3 chance of getting sick when eating
-        if gen_range(0, 3) == 0 {
+        // The creature has a chance to get sick when eating:
+        if gen_range(0, Stat::MAX_VALUE) < food.sick_chance() {
             self.is_sick = true;
-            self.health.subtract(20);
+            self.health.subtract(Self::SICKNESS_HEALTH_COST);
+            self.previous_health_update = now;
+            self.update_alive_status(now)
         }
     }
 
@@ -212,21 +248,36 @@ impl Creature {
 
     /// Interaction used to *"play"* with the creature in order to increase its `joy` stat. This also
     /// adds more time to its `health_decrease_time_left` field, and decreases its `energy` by 20.
-    pub fn play(&mut self) {
-        if self.growth_stage == GrowthStage::Egg || self.energy.value() < PLAYING_ENERGY_COST {
+    pub fn play(&mut self, game: CreatureGame) {
+        if self.growth_stage == GrowthStage::Egg || 
+            self.energy.value() < game.energy_cost() ||
+            self.joy.is_max()
+        {
             return;
         }
 
-        self.joy.add(30);
-        self.energy.subtract(PLAYING_ENERGY_COST);
+        self.joy.add(game.points());
+        self.previous_joy_update = get_now_millis();
+        self.energy.subtract(game.energy_cost());
+        
+        if self.personality.liked_game() == game {
+            self.love.add(5);
+            self.previous_love_update = get_now_millis();
+        } else if self.personality.hated_game() == game {
+            self.love.subtract(5);
+            self.previous_love_update = get_now_millis();
+        }
     }
 
     /// Interaction used to give the creature some medicine in order to increase its `health` stat.
     pub fn heal(&mut self) {
-        // Only heal the creature successfully 66% of the time.
-        if gen_range(0, 3) != 0 && self.growth_stage != GrowthStage::Egg {
-            self.is_sick = false;
+        if self.growth_stage == GrowthStage::Egg {
+            return;
         }
+        let now = get_now_millis();
+        
+        self.is_sick = false;
+        self.previous_health_update = now;
     }
     
     pub fn food(&self) -> Stat {
@@ -244,6 +295,15 @@ impl Creature {
     pub fn health(&self) -> Stat {
         self.health
     }
+    
+    pub fn love(&self) -> Stat {
+        self.love
+    }
+    
+    /// Setter for the creature's `love` stat. Useful for unit testing.
+    pub fn set_love(&mut self, value: u8) -> Result<(), std::io::Error> {
+        self.love.set(value)
+    }
 
     pub fn is_asleep(&self) -> bool {
         self.asleep_since.is_some()
@@ -257,17 +317,34 @@ impl Creature {
         &self.alive
     }
     
+    pub fn personality(&self) -> CreaturePersonality {
+        self.personality
+    }
+    
     pub fn is_sick(&self) -> bool {
         self.is_sick
     }
 
-    pub fn time_created(&self) -> i64 { self.time_created }
+    pub fn time_created(&self) -> i64 { 
+        self.time_created
+    }
     
     pub fn time_of_death(&self) -> Option<i64> {
         self.time_of_death
     }
     
-    pub fn shape(&self) -> Texture2D {
+    pub fn shape(&self) -> CreatureShape {
+        self.shape
+    }
+    
+    /// This is a setter function for the creatures `growth_stage`. This should **ONLY** be used for
+    /// generating special creatures from *"debug names"*, since the creature will update its
+    /// growth stage automatically when calling [self.update_state](Creature::update_state).
+    pub fn set_growth_stage(&mut self, growth_stage: GrowthStage) {
+        self.growth_stage = growth_stage;
+    }
+    
+    pub fn texture(&self) -> Texture2D {
         match self.growth_stage {
             GrowthStage::Egg => egg_shape(),
             GrowthStage::Baby => baby_shape(),
@@ -279,9 +356,10 @@ impl Creature {
 
 #[cfg(test)]
 mod tests {
-    use crate::creature::Creature;
-    use crate::shapes::CreatureShapes;
+    use crate::creature::{Creature, GrowthStage};
+    use crate::shapes::CreatureShape;
     use crate::utils::Stat;
+    use crate::utils::time::get_now_millis;
 
     #[test]
     fn update_alive_status() {
@@ -289,19 +367,19 @@ mod tests {
         let example_time = 1000;
 
         // Should be death
-        let mut creature_a = Creature::new("A", CreatureShapes::Snail, 0);
+        let mut creature_a = Creature::new("A", CreatureShape::Snail, 0);
         creature_a.food = Stat::new(0).unwrap();
         creature_a.joy = Stat::new(0).unwrap();
 
         // Should be death
-        let mut creature_b = Creature::new("B", CreatureShapes::Mouse, 0);
+        let mut creature_b = Creature::new("B", CreatureShape::Mouse, 0);
         creature_b.food = Stat::new(6).unwrap();
         creature_b.joy = Stat::new(8).unwrap();
         creature_b.energy = Stat::new(100).unwrap();
         creature_b.health = Stat::new(100).unwrap();
 
         // Should be alive
-        let mut creature_c = Creature::new("C", CreatureShapes::Squid, 0);
+        let mut creature_c = Creature::new("C", CreatureShape::Squid, 0);
         creature_c.food = Stat::new(7).unwrap();
         creature_c.joy = Stat::new(8).unwrap();
         creature_c.energy = Stat::new(0).unwrap();
@@ -318,5 +396,36 @@ mod tests {
         assert!(!creature_a.alive);  // Should be dead
         assert!(!creature_b.alive);  // Should be dead
         assert!(creature_c.alive);   // Should be alive
+    }
+    
+    #[test]
+    fn update_love_stat() {
+        let mut creature = Creature::new("test", CreatureShape::Sheep, get_now_millis());
+        creature.growth_stage = GrowthStage::Adult;
+        
+        let liked_food = creature.personality().liked_food();
+        let hated_food = creature.personality().hated_food();
+
+        let liked_game = creature.personality().liked_game();
+        let hated_game = creature.personality().hated_game();
+        
+        
+        let love = creature.love().value();
+        creature.eat(liked_food);
+        creature.is_sick = false;
+        assert!(love < creature.love().value());
+        
+        let love = creature.love().value();
+        creature.eat(hated_food);
+        creature.is_sick = false;
+        assert!(love > creature.love().value());
+        
+        let love = creature.love().value();
+        creature.play(liked_game);
+        assert!(love < creature.love().value());
+
+        let love = creature.love().value();
+        creature.play(hated_game);
+        assert!(love > creature.love().value());
     }
 }

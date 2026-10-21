@@ -17,3 +17,12 @@ impl Location {
         }
     }
 }
+
+impl From<(f32, f32)> for Location {
+    fn from(value: (f32, f32)) -> Self {
+        Self {
+            x: value.0,
+            y: value.1,
+        }
+    }
+}

@@ -1,8 +1,10 @@
-use macroquad::prelude::*;
+use macroquad::prelude::Texture2D;
+use serde::{Serialize, Deserialize};
+use crate::include_texture;
+use crate::ui::interaction_menu::CreatureInteraction;
 
-const FOOD_COUNT: u8 = 3;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Food {
     Soup,
     Cookie,
@@ -13,16 +15,42 @@ impl Food {
     pub fn points(&self) -> u8 {
         match self {
             Food::Soup => 20,
-            Food::Cookie => 30,
-            Food::Burger => 40,
+            Food::Cookie => 25,
+            Food::Burger => 30,
+        }
+    }
+    
+    pub fn sick_chance(&self) -> u8 {
+        self.points() + 5
+    }
+}
+
+impl CreatureInteraction for Food {
+    fn name(&self) -> &str {
+        match self {
+            Food::Soup => "Soup",
+            Food::Cookie => "Cookie",
+            Food::Burger => "Burger",
         }
     }
 
-    pub fn new_random() -> Self {
-        match rand::gen_range(0, FOOD_COUNT) {
-            0 => Food::Soup,
-            1 => Food::Cookie,
-            _ => Food::Burger,
+    fn sprite(&self) -> Texture2D {
+        match self {
+            Food::Soup => include_texture!("../resources/animations/eating/soup0.png"),
+            Food::Cookie => include_texture!("../resources/animations/eating/cookie0.png"),
+            Food::Burger => include_texture!("../resources/animations/eating/burger0.png"),
         }
+    }
+    
+    fn menu_title() -> String {
+        "Select food".to_string()
+    }
+
+    fn all_variants() -> [Self; 3] {
+        [
+            Food::Soup,
+            Food::Cookie,
+            Food::Burger,
+        ]
     }
 }

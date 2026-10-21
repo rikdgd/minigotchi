@@ -32,7 +32,7 @@ pub async fn render_death_screen(old_state: &GameState) -> GameState {
             break;
         }
 
-        confirm_btn.render();
+        confirm_btn.draw();
 
         for i in 0..TEXT_ROW_COUNT {
             let font_size = if i == 0 {

@@ -1,0 +1,271 @@
+use macroquad::prelude::*;
+use macroquad::rand::gen_range;
+use crate::game_state::GameState;
+use crate::include_texture;
+use crate::creature::Creature;
+use crate::shapes::CreatureShape;
+use crate::utils::{Location, Dimensions};
+use crate::ui::play_area::{PLAY_AREA_RECT, play_area_background_color};
+
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct DroppedCoin(Rect);
+impl DroppedCoin {
+    const COIN_DIMENSIONS: Dimensions = Dimensions { width: 9., height: 12. };
+    const SPAWN_MARGINS: (f32, f32) = (
+        (CreatureShape::TEXTURE_DIMENSIONS.width / 2.).round(),
+        (CreatureShape::TEXTURE_DIMENSIONS.height / 2.).round()
+    );
+    
+    /// Creates a new `DroppedCoin` instance with a random location within the *'playing area'* on the
+    /// screen.
+    pub fn new_random() -> Self {
+        let x = gen_range(
+            PLAY_AREA_RECT.x + Self::SPAWN_MARGINS.0,
+            PLAY_AREA_RECT.right() - Self::COIN_DIMENSIONS.width - Self::SPAWN_MARGINS.0,
+        ).round();
+        
+        let y = gen_range(
+            PLAY_AREA_RECT.y + Self::SPAWN_MARGINS.1,
+            PLAY_AREA_RECT.bottom() - Self::COIN_DIMENSIONS.height - Self::SPAWN_MARGINS.1,
+        ).round();
+        
+        Self(Rect::new(
+            x,
+            y,
+            Self::COIN_DIMENSIONS.width,
+            Self::COIN_DIMENSIONS.height,
+        ))
+    }
+}
+
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct CoinDropManager {
+    drop_timer: f32,
+    despawn_timer: f32,
+    dropped_coin: Option<DroppedCoin>,
+}
+
+impl CoinDropManager {
+    /// This is the delay used for coin drops. Every `COIN_DROP_DELAY` seconds an attempt is made to
+    /// spawn a new `DroppedCoin`.
+    pub const COIN_DROP_DELAY: f32 = 600.;
+    
+    /// The amount of **seconds** before a dropped coin despawns.
+    const COIN_LIFETIME: f32 = 600.;
+    
+    /// The chance in percentage of actually spawning a dropped coin every
+    /// [COIN_DROP_DELAY](CoinDropManager::COIN_DROP_DELAY) seconds.
+    const COIN_DROP_CHANCE: u32 = 11;
+    
+    /// Updates the state of the **CoinDropManager**, this includes:
+    /// * Try spawning a coin drop.
+    /// * Update creature-coin collisions.
+    /// 
+    /// ## Parameters:
+    /// * `creature_loc` - The current location of the creature, this is needed to check if the
+    ///   creature has picked up a coin.
+    /// * `creature` - A reference to the creature, used to get the value of its *love* stat.
+    /// 
+    /// ## Returns:
+    /// This function returns `true` when the creature has picked up a coin, and `false` otherwise.
+    pub fn update(&mut self, state: &GameState) -> bool {
+        self.update_coin_spawns(state.creature());
+        
+        if state.cursor_stalk_active() {
+            self.update_collisions(state.creature_movement.current_location())
+        } else {
+            false
+        }
+    }
+    
+    /// Draws the dropped coin on the screen, if one is present.
+    pub fn draw_coin(&self, creature_asleep: bool) {
+        if let Some(coin) = self.dropped_coin {
+            let coin_texture = include_texture!("../resources/dropped_items/coin.png");
+            let backdrop_texture = include_texture!("../resources/dropped_items/coin_backdrop.png");
+
+            draw_texture_ex(
+                &backdrop_texture,
+                coin.0.x,
+                coin.0.y,
+                play_area_background_color(creature_asleep),
+                DrawTextureParams::default(),
+            );
+            
+            draw_texture_ex(
+                &coin_texture,
+                coin.0.x,
+                coin.0.y,
+                BLACK,
+                DrawTextureParams::default(),
+            );
+        }
+    }
+    
+    /// Checks if the creature collides with the dropped coin when present. If it does, this function
+    /// sets `self.dropped_coin` to `None` and returns `true`.
+    fn update_collisions(&mut self, creature_loc: Location) -> bool {
+        let creature_hitbox = Rect::new(
+            creature_loc.x + CreatureShape::TEXTURE_DIMENSIONS.width / 4.,
+            creature_loc.y + CreatureShape::TEXTURE_DIMENSIONS.height / 4.,
+            CreatureShape::TEXTURE_DIMENSIONS.width / 2.,
+            CreatureShape::TEXTURE_DIMENSIONS.height / 2.,
+        );
+        
+        if let Some(coin) = self.dropped_coin 
+            && coin.0.overlaps(&creature_hitbox)
+        {
+            self.dropped_coin = None;
+            return true;
+        }
+        
+        false
+    }
+    
+    fn update_coin_spawns(&mut self, creature: &Creature) {
+        self.try_spawn_coin(creature);
+        self.try_despawn_coin();
+    }
+    
+    fn try_spawn_coin(&mut self, creature: &Creature) {
+        if creature.love().value() < 80 || self.dropped_coin.is_some() {
+            return;
+        }
+        
+        self.drop_timer += get_frame_time();
+        if self.drop_timer > Self::COIN_DROP_DELAY {
+            self.drop_timer = 0.;
+            
+            if gen_range(0, 100) < Self::COIN_DROP_CHANCE {
+                self.dropped_coin = Some(DroppedCoin::new_random());
+            }
+        }
+    }
+    
+    fn try_despawn_coin(&mut self) {
+        if self.dropped_coin.is_none() {
+            return;
+        }
+        
+        self.despawn_timer += get_frame_time();
+        if self.despawn_timer > Self::COIN_LIFETIME {
+            self.despawn_timer = 0.;
+            self.dropped_coin = None;
+        }
+    }
+}
+
+
+#[cfg(feature = "macroquad-tests")]
+#[cfg(test)]
+mod tests {
+    use crate::coin_drops::*;
+    use crate::creature::Creature;
+    use crate::shapes::CreatureShape;
+    use crate::Location;
+    
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct CoinCreatureLocationSet {
+        pub creature_location: Location,
+        pub coin_location: Location,
+        pub expected_result: bool,
+    }
+    
+    #[macroquad::test]
+    async fn coin_drop_tests() {
+        coin_pickup_radius_test().await;
+        coin_spawn_timer_test().await;
+    }
+    
+    async fn coin_pickup_radius_test() {
+        let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
+        creature.set_love(100).unwrap();
+        
+        let test_sets = [
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50. + CreatureShape::TEXTURE_DIMENSIONS.width / 2. - 1.,
+                    20. + CreatureShape::TEXTURE_DIMENSIONS.height / 2. - 1.,
+                    ).into(),
+                expected_result: true,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (10., 10.).into(),
+                coin_location: (100., 20.).into(),
+                expected_result: false,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50. + CreatureShape::TEXTURE_DIMENSIONS.width,
+                    20.,
+                ).into(),
+                expected_result: false,
+            },
+            CoinCreatureLocationSet {
+                creature_location: (50., 20.).into(),
+                coin_location: (
+                    50.,
+                    20. + CreatureShape::TEXTURE_DIMENSIONS.height,
+                ).into(),
+                expected_result: false,
+            },
+        ];
+        
+        for test_set in test_sets {
+            let mut coin_manager = CoinDropManager::default();
+            coin_manager.dropped_coin = Some(DroppedCoin(Rect::new(
+                test_set.coin_location.x,
+                test_set.coin_location.y,
+                DroppedCoin::COIN_DIMENSIONS.width,
+                DroppedCoin::COIN_DIMENSIONS.height,
+            )));
+            
+            let result = {
+                coin_manager.update_coin_spawns(&creature);
+                coin_manager.update_collisions(test_set.creature_location)
+            };
+            assert_eq!(test_set.expected_result, result);
+        }
+    }
+    
+    async fn coin_spawn_timer_test() {
+        let mut creature = Creature::new("test", CreatureShape::Bunny, 0);
+        let mut coin_manager = CoinDropManager::default();
+        
+        
+        // Too low friendship AND to little time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY / 2.;
+        creature.set_love(10).unwrap();
+        coin_manager.try_spawn_coin(&creature);
+        
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY / 2.);
+
+        
+        // Enough friendship AND time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY * 2.;
+        creature.set_love(100).unwrap();
+
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), 0.);
+        
+        
+        // Enough friendship BUT NOT time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY / 2.;
+        creature.set_love(90).unwrap();
+        
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY / 2.);
+        
+        
+        // Too low friendship BUT enough time passed:
+        coin_manager.drop_timer = CoinDropManager::COIN_DROP_DELAY * 1.1;
+        creature.set_love(50).unwrap();
+        
+        coin_manager.try_spawn_coin(&creature);
+        assert_eq!(coin_manager.drop_timer.round(), CoinDropManager::COIN_DROP_DELAY * 1.1);
+    }
+}

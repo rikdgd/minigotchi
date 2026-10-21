@@ -12,9 +12,9 @@ pub enum InteractionButton {
 }
 
 impl InteractionButton {
-    /// Returns a hardcoded vector containing the four `InteractionButtons` on the main menu.
-    pub fn main_menu_buttons() -> Vec<InteractionButton> {
-        vec![
+    /// Returns a hardcoded array containing the four `InteractionButton`s on the main menu.
+    pub fn main_menu_buttons() -> [InteractionButton; 4] {
+        [
             InteractionButton::Food(Button { 
                 pos: Vec2::new(0.0, 180.0),
                 text: "Eat".to_string(),

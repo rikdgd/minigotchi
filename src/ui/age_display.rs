@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
-use crate::{GameState, SCREEN_WIDTH};
+use crate::SCREEN_WIDTH;
+use crate::game_state::GameState;
 use crate::utils::time::get_now_millis;
 
 pub fn draw_age_display(state: &GameState) {

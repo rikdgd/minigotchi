@@ -1,0 +1,277 @@
+use macroquad::prelude::*;
+
+use crate::game_state::GameState;
+use crate::ui::{NewGameMenu, render_death_screen, button::Button};
+use crate::ui::interaction_menu::InteractionMenu;
+use crate::ui::interaction_menu::menu_item_generation::gen_interaction_items;
+use crate::ui::stat_display::draw_stat_display;
+use crate::ui::interaction_buttons::InteractionButton;
+use crate::movements::get_sleeping_location;
+use crate::ui::play_area::draw_play_area;
+use crate::shapes::sleeping_icon;
+use crate::movements::{CreatureMovement, EggHop};
+use crate::animations::creature_actions::{ActionAnimationType, CreatureActionAnimation};
+use crate::animations::emotions::{EmotionAnimation, EmotionAnimationType};
+use crate::animations::CoinPickupAnimation;
+use crate::{ui, BACKGROUND_COLOR};
+use crate::creature::GrowthStage;
+use crate::food::Food;
+use crate::creature_game::CreatureGame;
+use crate::ui::shop::ShopPage;
+use crate::utils::Location;
+use crate::ui::play_area::play_area_background_color;
+use crate::coin_drops::CoinDropManager;
+
+
+/// The **GameRunner** structure can be used to run the Minigotchi game. It has ownership of the
+/// `GameState` instance used to run the game and makes sure the correct page/screen is rendered.
+///
+/// ## Example:
+/// ```rust
+/// use macroquad::prelude::*;
+///
+/// #[macroquad::main]
+/// async fn main() {
+///     let mut runner = GameRunner::initiate().await;
+///     runner.run_game().await;
+/// }
+/// ```
+pub struct GameRunner {
+    state: GameState,
+    coin_drop_manager: CoinDropManager,
+    
+    interaction_buttons: [InteractionButton; 4],
+    sleep_icon_movement: EggHop,
+    shop_button: Button,
+}
+
+impl GameRunner {
+    /// Creates a new `GameRunner` instance. To do so it first checks if a save file is available,
+    /// as well as if the save is still valid. If it isn't it will display the correct game menu
+    /// to let the user create a `GameState`. This GameState can then be used to create a new
+    /// GameRunner.
+    pub async fn initiate() -> Self {
+        // Seed the random number generator
+        rand::srand(miniquad::date::now() as u64);
+        
+        let game_state = match GameState::from_file().await {
+            Ok(mut state) => {
+                state.update();
+                
+                if !state.creature().alive() {
+                    render_death_screen(&state).await
+                } else {
+                    state
+                }
+            },
+            Err(_) => NewGameMenu::default().render().await,
+        };
+
+        Self {
+            interaction_buttons: InteractionButton::main_menu_buttons(),
+            sleep_icon_movement: EggHop::new(get_sleeping_location(game_state.creature()).translate(-9.0, -16.0)),
+            shop_button: ShopPage::shop_button(),
+
+            state: game_state,
+            coin_drop_manager: CoinDropManager::default(),
+        }
+    }
+
+    pub async fn run_game(&mut self) {
+        loop {
+            self.state.update();
+            self.update_coin_drops();
+            
+            // If the creature has died, render the death screen and set the new state
+            if !self.state.creature().alive() {
+                self.state = render_death_screen(&self.state).await;
+            }
+            
+            clear_background(BACKGROUND_COLOR);
+            self.draw_main_ui();
+            
+            // If there is an animation present in the queue, play it.
+            if let Some(animation) = self.state.animation_queue.first_mut()
+                && animation.playing(){
+                animation.render();
+            }
+            
+            // Handle user inputs:
+            if is_key_pressed(KeyCode::Escape) {
+                break;
+            }
+            self.handle_button_click().await;
+            self.handle_shop_button_click().await;
+            
+            next_frame().await;
+        }
+    }
+    
+    fn update_coin_drops(&mut self) {
+        if self.state.creature().growth_stage() != GrowthStage::Adult {
+            return;
+        }
+        
+        let picked_up_coin = self.coin_drop_manager.update(&self.state);
+        if picked_up_coin {
+            self.state.inventory.coins += 1;
+            self.state.animation_queue.push(Box::new(CoinPickupAnimation::default()));
+        }
+    }
+
+    fn draw_main_ui(&mut self) {
+        draw_play_area(self.state.creature());
+        self.state.inventory.equipped_background.render();
+        
+        self.coin_drop_manager.draw_coin(self.state.creature().is_asleep());
+        self.draw_creature();
+        
+        draw_stat_display(self.state.creature());
+        
+        // Draw the "Zz" texture when sleeping
+        if self.state.creature().is_asleep() {
+            let location = self.sleep_icon_movement.next_location();
+            draw_texture(&sleeping_icon(), location.x, location.y, BLACK);
+        }
+        
+        // Draw the creatures name and age
+        ui::draw_creature_name(&self.state);
+        ui::draw_age_display(&self.state);
+        
+        for button in &self.interaction_buttons {
+            button.get_button().draw();
+        }
+        self.shop_button.draw();
+    }
+
+    fn draw_creature(&mut self) {
+        // The creature shouldn't be drawn when an animation is playing.
+        if !self.state.animation_queue.is_empty() {
+            return;
+        }
+
+        let creature_texture = self.state.creature().texture();
+        let creature_location = if self.state.creature().is_asleep() {
+            get_sleeping_location(self.state.creature())
+        } else {
+            self.state.creature_movement.next_location()
+        };
+        
+        self.draw_creature_backdrop(creature_location);
+        draw_texture_ex(
+            &creature_texture,
+            creature_location.x,
+            creature_location.y,
+            self.state.inventory.equipped_color.get_color(),
+            DrawTextureParams {
+                flip_x: self.state.creature_movement.mirror_sprite(),
+                ..Default::default()
+            }
+        );
+    }
+    
+    fn draw_creature_backdrop(&self, draw_loc: Location) {
+        if self.state.creature().growth_stage() != GrowthStage::Adult {
+            return;
+        }
+        let backdrop = self.state.creature().shape().get_backdrop();
+        
+        draw_texture_ex(
+            &backdrop,
+            draw_loc.x,
+            draw_loc.y,
+            play_area_background_color(self.state.creature().is_asleep()),
+            DrawTextureParams {
+                flip_x: self.state.creature_movement.mirror_sprite(),
+                ..Default::default()
+            }
+        );
+    }
+
+    async fn handle_button_click(&mut self) {
+        if !self.state.animation_queue.is_empty()
+            || self.state.creature().growth_stage() == GrowthStage::Egg
+        {
+            return;
+        }
+        
+        let personality = self.state.creature().personality();
+        
+        for button in &self.interaction_buttons {
+            if button.get_button().is_clicked() {
+                match button {
+                    InteractionButton::Energy(_) => self.state.creature_mut().toggle_sleep(),
+                    
+                    InteractionButton::Food(_) => {
+                        let creature = self.state.creature_mut();
+                        if creature.is_sick() {
+                            self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sick));
+                            return;
+                        }
+                        
+                        if creature.is_asleep() || creature.food().is_max() {
+                            return;
+                        }
+                        
+                        let mut menu: InteractionMenu<Food> = InteractionMenu::new(gen_interaction_items());
+                        if let Some(food) = menu.render().await {
+                            creature.eat(food);
+                            self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Eating(food)));
+
+                            // Display an animation based on if the creature likes the food:
+                            if personality.liked_food() == food {
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Love));
+                            } else if personality.hated_food() == food {
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sad));
+                            }
+                        }
+                    },
+                    
+                    InteractionButton::Joy(_) => {
+                        let creature = self.state.creature_mut();
+                        if creature.is_asleep() || creature.joy().is_max() {
+                            return;
+                        }
+                        
+                        let mut menu: InteractionMenu<CreatureGame> = InteractionMenu::new(gen_interaction_items());
+                        if let Some(game) = menu.render().await {
+                            if game.energy_cost() <= creature.energy().value() {
+                                creature.play(game);
+                                self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Play(game)));
+
+                                // Display an animation based on if the creature likes the game:
+                                if personality.liked_game() == game {
+                                    self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Love));
+                                } else if personality.hated_game() == game {
+                                    self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Sad));
+                                }
+                                
+                            } else {
+                                // Display a short animation to let the player know the interaction
+                                // was unsuccessful.
+                                self.state.push_animation(EmotionAnimation::from(EmotionAnimationType::Tired));
+                            }
+                        }
+                    },
+                    
+                    InteractionButton::Health(_) => {
+                        let creature = self.state.creature_mut();
+                        if !creature.is_asleep() && creature.is_sick() {
+                            creature.heal();
+                            self.state.push_animation(CreatureActionAnimation::new(ActionAnimationType::Health));
+                        }
+                    },
+                }
+            }
+        }
+    }
+    
+    async fn handle_shop_button_click(&mut self) {
+        if !self.shop_button.is_clicked() {
+            return;
+        }
+        
+        let mut shop = ShopPage::new(&mut self.state.inventory);
+        shop.render().await;
+    }
+}
