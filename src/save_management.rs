@@ -29,7 +29,7 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
     let save_bytes = save.as_bytes();
     
     #[cfg(not(debug_assertions))]
-    let save_bytes = binary_invert_bytes(&save_bytes);
+    let save_bytes = &binary_invert_bytes(&save_bytes);
 
     let mut file = OpenOptions::new()
         .write(true)
@@ -38,7 +38,7 @@ pub fn store_save_state(state: SaveState) -> std::io::Result<()> {
         .open(get_save_file_path())?;
 
 
-    file.write_all(&save_bytes)?;
+    file.write_all(save_bytes)?;
     file.flush()?;
 
     Ok(())
