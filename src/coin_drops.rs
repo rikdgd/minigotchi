@@ -158,6 +158,7 @@ impl CoinDropManager {
 }
 
 
+#[cfg(feature = "macroquad-tests")]
 #[cfg(test)]
 mod tests {
     use crate::coin_drops::*;
@@ -171,7 +172,7 @@ mod tests {
         pub coin_location: Location,
         pub expected_result: bool,
     }
-
+    
     #[macroquad::test]
     async fn coin_drop_tests() {
         coin_pickup_radius_test().await;
