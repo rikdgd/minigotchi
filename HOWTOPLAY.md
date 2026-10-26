@@ -80,7 +80,7 @@ items: **creature colors** and **backgrounds**, which will be discussed in more 
 
 Most importantly there are two ways in which you can receive coins:
 1. **Keeping your pet alive** - For each day your pet survives, you gain 1 coin.
-2. **Picking up dropped coins** - When the pet has developed enough *love* for the player, coins will start to appear
+2. **Picking up dropped coins** - When the pet has developed enough *love* for you as the player, coins will start to appear
   on the screen. Your pet will not collect these coins on its own, you will need to guide your pet towards it by
   using your mouse cursor.
   
